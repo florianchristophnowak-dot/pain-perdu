@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>L'affaire du pain perdu</title>
+  <meta name="description" content="Une enquête à Paris pour apprendre le français (A2) – jeu d'aventure point-and-click.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥖</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Startbildschirm -->
+  <section id="start" class="start">
+    <div class="start-card">
+      <h1 id="title">L'affaire du pain perdu</h1>
+      <p id="subtitle" class="sub">Une enquête de la 10b à Paris</p>
+      <label>Joueur 1 : <input id="p1" type="text" maxlength="30" autocomplete="off" placeholder="prénom"></label>
+      <label>Joueur 2 : <input id="p2" type="text" maxlength="30" autocomplete="off" placeholder="prénom (facultatif)"></label>
+      <fieldset>
+        <legend>Commentaires de Leo :</legend>
+        <label class="radio"><input type="radio" name="leo" value="fr" checked> en français</label>
+        <label class="radio"><input type="radio" name="leo" value="de"> auf Deutsch</label>
+      </fieldset>
+      <div class="bar">
+        <button id="btn-resume" class="btn" hidden>Continuer la partie</button>
+        <button id="btn-start" class="btn primary">Commencer</button>
+      </div>
+      <p class="tiny">Le jeu sauvegarde automatiquement sur cet appareil. À la fin, exporte le carnet.</p>
+    </div>
+  </section>
+
+  <!-- Spiel -->
+  <section id="game" hidden>
+    <header class="top">
+      <div class="left"><span class="brand">Le Pain perdu</span><span id="scene-name" class="scene"></span><span id="node-id" class="nid" hidden></span></div>
+      <div class="right">
+        <span id="mouse" class="mouse"></span>
+        <button id="btn-carnet" class="btn top-btn">Carnet <span id="carnet-count" class="badge"></span></button>
+        <button id="btn-map" class="btn top-btn">Carte</button>
+        <button id="btn-inv" class="btn top-btn">Inventaire</button>
+        <button id="btn-gloss" class="btn top-btn">Glossaire</button>
+        <button id="btn-lang" class="btn top-btn" title="Commentaires de Leo : français / deutsch">Leo FR/DE</button>
+        <button id="btn-prof" class="btn top-btn prof" hidden>Prof</button>
+      </div>
+    </header>
+    <main class="play">
+      <div id="stage" class="stage" aria-label="Scène"></div>
+      <div id="dialogue" class="dialogue"></div>
+    </main>
+  </section>
+
+  <!-- Fenster (Carnet, Karte, Aufgaben …) -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-inner">
+      <button id="modal-close" class="close" aria-label="Fermer">×</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+  <div id="toasts" class="toasts"></div>
+  <div id="gltip" class="gltip" hidden></div>
+  <footer class="foot"><span id="ver"></span></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
