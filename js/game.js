@@ -757,18 +757,49 @@
   }
 
   /* ---------- Inventar ---------- */
+  /* Bildkachel eines Gegenstands: assets/img/it_<id>.png, sonst Platzhalter-Symbol */
+  function itemPic(id) {
+    const it = G.items[id];
+    const pic = el("div", "ipic"); pic.textContent = it.emoji || "▪";
+    const im = new Image();
+    im.onload = () => { pic.textContent = ""; pic.style.backgroundImage = "url(" + im.src + ")"; pic.classList.add("img"); };
+    im.onerror = () => { if (im.src.endsWith(".png")) im.src = "assets/img/it_" + id + ".jpg"; };
+    im.src = "assets/img/it_" + id + ".png";
+    return pic;
+  }
   function openInventory(pickCb) {
     const body = openModal("inv", !!pickCb);
     body.appendChild(el("h2", "", esc(pickCb ? G.ui.inv.showTo + " " + pickCb.name + " :" : G.ui.inv.title)));
-    const grid = el("div", "grid");
+    const grid = el("div", "igrid");
     if (!S.inv.length) grid.appendChild(el("p", "", esc(G.ui.inv.empty)));
+    const detail = el("div", "idetail"); detail.hidden = true;
+    let openId = null;
+    function showDetail(id) {
+      const it = G.items[id]; openId = id;
+      $$(".item", grid).forEach(t => t.classList.toggle("on", t.dataset.id === id));
+      detail.hidden = false; detail.innerHTML = "";
+      const head = el("div", "ihead"); head.appendChild(itemPic(id)); head.appendChild(el("div", "", "<b>" + esc(it.name) + "</b><div class=\"idesc\">" + gl(it.desc) + "</div>")); detail.appendChild(head);
+      if (it.img) detail.appendChild(docImg(it.img));
+      const acts = (it.actions || []).filter(a => !a.if || flag(a.if));
+      if (acts.length) {
+        const row = el("div", "tools"); const out = el("div", "");
+        acts.forEach(a => {
+          const b = el("button", "btn small", esc(a.label));
+          b.addEventListener("click", () => { out.innerHTML = ""; out.appendChild(el("div", "paper " + (a.icon || ""), gl(a.text))); if (a.flag) setFlag(a.flag); if (a.diag) record({ id: a.diag, result: "gezählt", count: true }); });
+          row.appendChild(b);
+        });
+        detail.appendChild(row); detail.appendChild(out);
+      }
+    }
     S.inv.forEach(id => {
       const it = G.items[id];
-      const card = el("button", "item"); card.innerHTML = "<b>" + esc(it.name) + "</b><div>" + gl(it.desc) + "</div>";
-      card.addEventListener("click", () => { if (pickCb) { closeModal(); pickCb.fn(id); } else { card.classList.toggle("open"); } });
+      const card = el("button", "item"); card.dataset.id = id;
+      card.appendChild(itemPic(id)); card.appendChild(el("span", "iname", esc(it.name)));
+      card.addEventListener("click", () => { if (pickCb) { closeModal(); pickCb.fn(id); } else showDetail(id); });
       grid.appendChild(card);
     });
-    body.appendChild(grid);
+    body.appendChild(grid); body.appendChild(detail);
+    if (!pickCb) body.appendChild(el("p", "hint", esc(G.ui.inv.hint || "")));
     const bar = el("div", "bar"); const cl = el("button", "btn", pickCb ? G.ui.btn.annuler : G.ui.btn.fermer); cl.addEventListener("click", closeModal); bar.appendChild(cl); body.appendChild(bar);
   }
 
@@ -845,11 +876,21 @@
     if (Array.isArray(action)) { for (const a of action) if (cond(a.if)) return a.node; }
     return null;
   }
+  /* Symbole für die Aktionen (Strichzeichnungen, passend zum Comic-Stil) */
+  const ICONS = {
+    regarder: '<path d="M2 11s3.5-5.5 9-5.5 9 5.5 9 5.5-3.5 5.5-9 5.5S2 11 2 11z"/><circle cx="11" cy="11" r="2.6"/>',
+    parler: '<path d="M2.5 11c2.3-3.4 4.6-5 7-4.3.6.2 1.1.6 1.5 1.1.4-.5.9-.9 1.5-1.1 2.4-.7 4.7.9 7 4.3-2.3 3.2-5.1 4.8-8.5 4.8S4.8 14.2 2.5 11z"/><path d="M2.5 11c2.8.4 5.6.6 8.5.6s5.7-.2 8.5-.6"/>',
+    montrer: '<path d="M8 12V5.2a1.5 1.5 0 0 1 3 0V11M11 11V4a1.5 1.5 0 0 1 3 0v7M14 11V5.5a1.5 1.5 0 0 1 3 0V13c0 4-2.6 7-6.3 7-3 0-4.6-1.4-6-3.6L3 13.2a1.5 1.5 0 0 1 2.5-1.6L8 14"/>',
+    ecouter: '<path d="M6.5 9a5 5 0 0 1 10 0c0 2.6-1.6 3.2-2.4 5-.7 1.6-1.2 3.5-3.4 3.5-1.6 0-2.4-.9-2.6-2"/><path d="M9.5 9a2 2 0 0 1 4 0c0 1.4-1.3 1.8-1.3 3"/>',
+    comparer: '<circle cx="9" cy="9" r="5.5"/><path d="M13 13l6 6"/>',
+    courir: '<circle cx="13.5" cy="3.8" r="1.8"/><path d="M8.5 19.5l2.2-5 2.8 1.6L14 19.5M5.5 12.5l3.2-4.3 3.4-1 2.6 3.1 3.3 1.2M9 8l-2.4 1-1.3 3.2"/>'
+  };
+  function verbIcon(v) { const d = ICONS[v]; return d ? '<svg class="vicon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + "</svg>" : ""; }
   function verbMenu(h, btn) {
     $$(".verbs").forEach(v => v.remove());
     const m = el("div", "verbs");
     Object.keys(h.actions).forEach(v => {
-      const b = el("button", "btn verb", esc(G.ui.verbs[v] || v));
+      const b = el("button", "btn verb", verbIcon(v) + "<span>" + esc(G.ui.verbs[v] || v) + "</span>");
       b.addEventListener("click", e => {
         e.stopPropagation(); m.remove();
         if (v === "montrer") {
@@ -909,6 +950,19 @@
   }
 
   /* ---------- Start ---------- */
+  /* Introvideo (assets/video/intro.mp4); fehlt die Datei, geht es direkt los */
+  function playIntro(cb) {
+    const box = el("div", "intro");
+    const v = document.createElement("video"); v.src = "assets/video/intro.mp4"; v.playsInline = true; v.preload = "auto";
+    const skip = el("button", "btn skip", "Passer l'intro ▸");
+    let done = false;
+    const end = () => { if (done) return; done = true; box.remove(); cb(); };
+    skip.addEventListener("click", end);
+    v.addEventListener("ended", end); v.addEventListener("error", end);
+    v.addEventListener("canplay", () => { v.play().catch(end); }, { once: true });
+    box.appendChild(v); box.appendChild(skip); document.body.appendChild(box);
+    if (v.error) end();
+  }
   function startNew() {
     S = freshState();
     S.players = [$("#p1").value, $("#p2").value];
@@ -916,7 +970,7 @@
     save();
     $("#start").hidden = true; $("#game").hidden = false;
     S.scene = "montmartre"; enterScene("montmartre", false);
-    goNode("S02");
+    playIntro(() => goNode("S02"));
   }
   function resumeGame() {
     $("#start").hidden = true; $("#game").hidden = false;

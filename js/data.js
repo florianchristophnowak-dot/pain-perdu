@@ -40,7 +40,7 @@ window.GAME = (function () {
       title: "Notre enquête", proofs: "Preuves", notes: "Mes notes", hyp: "hypothèse", proven: "prouvé",
       cards: "Nos cartes", mission: "Mission"
     },
-    inv: { title: "Inventaire", empty: "Rien.", show: "Montrer", showTo: "Montrer à", nothing: { who: "leo", fr: "Non. Ça ne marche pas.", de: "Nein. Das bringt nichts." } },
+    inv: { title: "Inventaire", empty: "Rien.", show: "Montrer", showTo: "Montrer à", hint: "Clique sur un objet pour le regarder de près.", nothing: { who: "leo", fr: "Non. Ça ne marche pas.", de: "Nein. Das bringt nichts." } },
     partner: "Changement ! {p2} prend la souris, {p1} prend le carnet.",
     solo: "Cette question, chacun répond seul. D'abord {p1}, puis {p2}.",
     soloNow: "C'est à {p} de répondre.",
@@ -88,23 +88,23 @@ window.GAME = (function () {
 
   /* ---------- Inventar ---------- */
   G.items = {
-    sac_bernd: { name: "le sac Bernd", desc: "Un grand pain avec un visage... pas content. Dedans : les billets, la boîte bleue de Kevin, l'enveloppe rouge.", start: true },
-    carte_eleve: { name: "la carte d'élève", desc: "Leo, 10b, Erfurt.", start: true },
-    nougat: { name: "le nougat Viba", desc: "Pour les urgences.", start: true },
-    cola: { name: "la Vita Cola", desc: "Une bouteille de Thuringe. Personne à Paris ne connaît ça.", start: true },
-    telephone: { name: "le téléphone", desc: "Batterie : 23 %.", start: true },
-    sac_mime: { name: "le sac du mime", desc: "Brun, avec une fermeture rouge et un autocollant jaune. Dedans : trois baguettes en plastique, un gant blanc, un programme mouillé." },
-    carte_chloe: { name: "la carte de Chloé", desc: "« Père-Lachaise, ce matin. Merci pour les textes ! Chloé »" },
-    ticket: { name: "le ticket de caisse", desc: "Boulangerie dans le Marais. Au dos : « Nora connaît mon spectacle. »" },
-    photo_groupe: { name: "la photo de groupe", desc: "Derrière la classe, on voit le mime avec son béret." },
-    flyer: { name: "le flyer", desc: "« Marcel — Le Pain perdu — spectacle de mime — ce soir dans Paris »" },
-    photo_chloe: { name: "la photo de Chloé", desc: "Photo de ce matin : Chloé et Marcel Blanchard. Marcel avait déjà son sac brun. Le sac a une fermeture rouge et un autocollant jaune." },
-    affiche_a: { name: "l'affiche A", desc: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — place des Vosges. Première version." },
-    affiche_b: { name: "l'affiche B", desc: "Marcel Duval — Le Pain perdu — aujourd'hui, 17 h — cour de la librairie. Version corrigée." },
-    affiche_c: { name: "l'affiche C", desc: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — cour du Louvre. Version corrigée. Ce programme remplace l'ancien programme." },
-    carte_marcel: { name: "la carte de Marcel", desc: "« J'ai pris le mauvais sac à Montmartre. Je suis désolé ! … Pour avoir le sac, dites-moi ce qu'il y a dedans. — Marcel »" },
-    pain_perdu: { name: "une part de pain perdu", desc: "Un dessert. Pas un sac." },
-    carte_demain: { name: "la carte « demain »", desc: "« Demain, 11 h : rendez-vous devant l'entrée des Catacombes. Apporter les décors. — Chloé, 06 12 34 56 78 »" }
+    sac_bernd: { emoji: "🎒", name: "le sac Bernd", desc: "Un grand pain avec un visage... pas content. Dedans : les billets, la boîte bleue de Kevin, l'enveloppe rouge.", start: true },
+    carte_eleve: { emoji: "🪪", name: "la carte d'élève", desc: "Leo, 10b, Erfurt.", start: true },
+    nougat: { emoji: "🍫", name: "le nougat Viba", desc: "Pour les urgences.", start: true },
+    cola: { emoji: "🥤", name: "la Vita Cola", desc: "Une bouteille de Thuringe. Personne à Paris ne connaît ça.", start: true },
+    telephone: { emoji: "📱", name: "le téléphone", desc: "Batterie : 23 %.", start: true },
+    sac_mime: { emoji: "👜", name: "le sac du mime", desc: "Brun, avec une fermeture rouge et un autocollant jaune. Dedans : trois baguettes en plastique, un gant blanc, un programme mouillé." },
+    carte_chloe: { emoji: "📝", name: "la carte de Chloé", desc: "« Père-Lachaise, ce matin. Merci pour les textes ! Chloé »" },
+    ticket: { emoji: "🧾", name: "le ticket de caisse", desc: "Boulangerie dans le Marais. Au dos : « Nora connaît mon spectacle. »" },
+    photo_groupe: { emoji: "🖼️", name: "la photo de groupe", desc: "Derrière la classe, on voit le mime avec son béret." },
+    flyer: { emoji: "📄", name: "le flyer", desc: "« Marcel — Le Pain perdu — spectacle de mime — ce soir dans Paris »" },
+    photo_chloe: { emoji: "📷", name: "la photo de Chloé", desc: "Photo de ce matin : Chloé et Marcel Blanchard. Marcel avait déjà son sac brun. Le sac a une fermeture rouge et un autocollant jaune." },
+    affiche_a: { emoji: "📰", name: "l'affiche A", desc: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — place des Vosges. Première version." },
+    affiche_b: { emoji: "📰", name: "l'affiche B", desc: "Marcel Duval — Le Pain perdu — aujourd'hui, 17 h — cour de la librairie. Version corrigée." },
+    affiche_c: { emoji: "📰", name: "l'affiche C", desc: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — cour du Louvre. Version corrigée. Ce programme remplace l'ancien programme." },
+    carte_marcel: { emoji: "✉️", name: "la carte de Marcel", desc: "« J'ai pris le mauvais sac à Montmartre. Je suis désolé ! … Pour avoir le sac, dites-moi ce qu'il y a dedans. — Marcel »" },
+    pain_perdu: { emoji: "🍞", name: "une part de pain perdu", desc: "Un dessert. Pas un sac." },
+    carte_demain: { emoji: "📇", name: "la carte « demain »", desc: "« Demain, 11 h : rendez-vous devant l'entrée des Catacombes. Apporter les décors. — Chloé, 06 12 34 56 78 »" }
   };
 
   /* ---------- Hörtexte ---------- */
