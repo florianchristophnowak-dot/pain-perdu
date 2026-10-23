@@ -71,7 +71,7 @@
       im.onerror = () => next && next();
       im.src = "assets/img/" + name + "." + ext;
     };
-    tryLoad("png", () => tryLoad("jpg", () => { node.style.backgroundImage = "linear-gradient(160deg,#5b4636,#2d2420)"; }));
+    tryLoad("png", () => tryLoad("jpg", () => { node.style.backgroundImage = "linear-gradient(160deg,#5b4636,#2d2420)"; if (node.id === "stage") { node.style.aspectRatio = "2.12"; const l = el("div", "nobg", esc(S && S.scene ? G.scenes[S.scene].name : "")); node.appendChild(l); } }));
   }
   function portrait(who) {
     const c = G.chars[who] || { name: who, initials: "?", color: "#777" };
@@ -239,6 +239,7 @@
       case "audio": return runAudio(id, n, finish);
       case "task": return runTask(id, n, finish);
       case "convo": return runConvo(id, n, finish);
+      case "scene": enterScene(n.scene, false); finish(); return goNode(n.next);
       case "end": return runEnd(finish);
     }
   }
@@ -253,7 +254,7 @@
     if (n.once && flag(n.once)) { finish(); return; }
     if (n.once) setFlag(n.once);
     if (n.diag && n.count) record({ id: n.diag, result: "gezählt", count: true });
-    showLines(n.lines, () => { applyEffects(n.effects, id); finish(); if (n.next) goNode(n.next); });
+    showLines(n.lines, () => { applyEffects(n.effects, id); finish(); const nx = resolve(n.next); if (nx) goNode(nx); });
   }
   function runDoc(id, n, finish) {
     const body = openModal("doc");
@@ -473,7 +474,10 @@
     const list = el("div", "picklist");
     T.options.forEach(o => {
       const b = el("button", "btn opt", gl(o.label));
-      b.addEventListener("click", () => { if (sel.has(o.id)) { sel.delete(o.id); b.classList.remove("on"); } else if (sel.size < T.n) { sel.add(o.id); b.classList.add("on"); } });
+      b.addEventListener("click", () => {
+        if (sel.has(o.id)) { sel.delete(o.id); b.classList.remove("on"); }
+        else { if (T.n === 1) { sel.clear(); $$(".opt", list).forEach(x => x.classList.remove("on")); } if (sel.size < T.n) { sel.add(o.id); b.classList.add("on"); } }
+      });
       list.appendChild(b);
     });
     area.appendChild(list);
@@ -657,6 +661,7 @@
     const helps = Object.values(S.helpUsed).reduce((a, b) => a + b, 0);
     body.appendChild(el("div", "paper", "<b>" + esc(pname(0)) + (twoPlayers() ? " & " + esc(pname(1)) : "") + "</b><br>Lieux visités : " + S.visited.length + " · Aides de Marie : " + helps + " · Durée : " + mins + " min · Preuves : " + S.proofs.length));
     body.appendChild(el("p", "", "Tu peux maintenant exporter le carnet (deux fichiers) et le donner à ton prof."));
+    if (G.credits) body.appendChild(el("div", "credits", "<b>" + esc(G.credits.title) + "</b><br>" + G.credits.lines.map(esc).join("<br>")));
     const bar = el("div", "bar");
     const ex = el("button", "btn primary", G.ui.btn.exporter); ex.addEventListener("click", exportAll); bar.appendChild(ex);
     const ca = el("button", "btn", G.ui.btn.carnet); ca.addEventListener("click", () => openCarnet()); bar.appendChild(ca);
@@ -751,6 +756,7 @@
       '</svg>';
     const svg = $("svg", wrap);
     G.map.places.forEach(p => {
+      if (p.hideUntil && !flag(p.hideUntil)) return;
       const unlocked = cond(p.unlock);
       const done = p.done.every(f => flag(f));
       const missing = p.q2proof && !S.proofs.includes(p.q2proof) && !isProven("Q2");
@@ -792,7 +798,7 @@
     S.scene = id; if (!S.visited.includes(id)) S.visited.push(id); save();
     $("#start").hidden = true; $("#game").hidden = false;
     setBg(stage, sc.bg);
-    $$(".hotspot", stage).forEach(h => h.remove());
+    $$(".hotspot, .nobg", stage).forEach(h => h.remove());
     sc.hotspots.forEach(h => {
       if (h.hideIf && flag(h.hideIf)) return;
       if (h.showIf && !cond(h.showIf)) return;
@@ -832,13 +838,13 @@
     const body = openModal("prof");
     body.appendChild(el("h2", "", "Lehrkraft-Ansicht"));
     const bar = el("div", "bar");
-    const unlock = el("button", "btn", "Tout débloquer"); unlock.addEventListener("click", () => { ["M00_done", "M02_done", "M03_done", "M04b_done", "P02_done", "P03_done", "P04_done", "P05_done", "P06_done", "B01a_done", "B03_open", "B04_done", "B05_done", "B06_done", "L02_C", "L02_done", "Q2_proven", "L04_done", "L05_done"].forEach(f => S.flags[f] = true); Object.keys(G.proofs).forEach(addProof); Object.keys(G.items).forEach(id => { if (!S.inv.includes(id)) S.inv.push(id); }); save(); refreshTop(); toast("Alles freigeschaltet"); }); bar.appendChild(unlock);
+    const unlock = el("button", "btn", "Tout débloquer"); unlock.addEventListener("click", () => { ["M00_done", "M02_done", "M03_done", "M04b_done", "P02_done", "P03_done", "P04_done", "P05_done", "P06_done", "B01a_done", "B03_open", "B04_done", "B05_done", "B06_done", "L02_C", "L02_done", "Q2_proven", "L04_done", "L05_done", "C01_found", "vosges_seen"].forEach(f => S.flags[f] = true); Object.keys(G.proofs).forEach(addProof); Object.keys(G.items).forEach(id => { if (!S.inv.includes(id)) S.inv.push(id); }); save(); refreshTop(); toast("Alles freigeschaltet"); }); bar.appendChild(unlock);
     const reset = el("button", "btn", "Spielstand löschen"); reset.addEventListener("click", () => { if (confirm("Spielstand auf diesem Gerät löschen?")) { localStorage.removeItem(SAVE_KEY); location.reload(); } }); bar.appendChild(reset);
     const exr = el("button", "btn", "Alle Ergebnisse (CSV)"); exr.addEventListener("click", () => { const all = JSON.parse(localStorage.getItem(RESULTS_KEY) || "[]"); download("pain-perdu_resultats.csv", csvRows(all.flatMap(r => r.diag)), "text/csv;charset=utf-8"); }); bar.appendChild(exr);
     body.appendChild(bar);
     body.appendChild(el("h3", "", "Sprung zu einem Knoten"));
     const jump = el("div", "jumps");
-    const sceneOf = id => ({ S: "montmartre", M: "montmartre", P: "pere_lachaise", B: "marais", L: "librairie", V: "louvre" })[id[0]];
+    const sceneOf = id => ({ S: "montmartre", M: "montmartre", P: "pere_lachaise", B: "marais", L: "librairie", V: "louvre", X: "vosges", C: "catacombes" })[id[0]];
     Object.keys(G.nodes).forEach(id => { const n = G.nodes[id]; const b = el("button", "btn small", id + " <small>" + n.type + (n.title ? " · " + esc(n.title) : "") + "</small>"); b.addEventListener("click", () => { closeModal(); const sc = sceneOf(id); if (sc && S.scene !== sc) enterScene(sc, false); if (!S.scene) enterScene(sc, false); goNode(id); }); jump.appendChild(b); });
     body.appendChild(jump);
     body.appendChild(el("h3", "", "Lösungen"));

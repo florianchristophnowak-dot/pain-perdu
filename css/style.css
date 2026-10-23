@@ -198,3 +198,6 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
   .modal-inner { padding: .9rem; }
   .hotspot span { font-size: .7rem; }
 }
+
+.nobg { position: absolute; inset: 0; display: grid; place-items: center; color: #d9c7a8; font-family: var(--serif); font-size: 1.6rem; text-align: center; pointer-events: none; }
+.credits { margin-top: 1rem; padding-top: .8rem; border-top: 1px dashed var(--line); color: var(--muted); font-size: .9rem; line-height: 1.6; }
