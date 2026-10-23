@@ -109,6 +109,7 @@
   }
 
   /* ---------- Carnet-Logik ---------- */
+  function proofLabel(P) { return P.label ? esc(P.label) + ' <span class="ztag">✎ ' + esc(G.ui.zettel.tag) + "</span>" : gl(P.text); }
   function addProof(id) { if (!S.proofs.includes(id)) { S.proofs.push(id); save(); return true; } return false; }
   function addItem(id) { if (!S.inv.includes(id)) { S.inv.push(id); save(); toast("Inventaire : " + G.items[id].name); } }
   function isProven(q) {
@@ -237,6 +238,7 @@
       case "doc": return runDoc(id, n, finish);
       case "choice": return runChoice(id, n, finish);
       case "audio": return runAudio(id, n, finish);
+      case "zettel": return runZettel(id, n, finish);
       case "task": return runTask(id, n, finish);
       case "convo": return runConvo(id, n, finish);
       case "scene": enterScene(n.scene, false); finish(); return goNode(n.next);
@@ -331,6 +333,25 @@
     b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(n.next); });
     bar.appendChild(b); body.appendChild(bar);
     setTimeout(() => play.click(), 300);
+  }
+
+  /* ---------- Zettel: auf Papier notieren ---------- */
+  function runZettel(id, n, finish) {
+    const body = openModal("zettel nocl");
+    body.appendChild(el("h2", "", esc(G.ui.zettel.title) + (n.title ? " · " + esc(n.title) : "")));
+    const src = n.docOf ? G.nodes[n.docOf] : null;
+    const docText = n.doc || (src && src.doc);
+    if (docText) body.appendChild(el("div", "paper " + (n.icon || (src && src.icon) || ""), gl(docText)));
+    (n.docs || []).forEach(d => { const c = el("div", "doccard"); c.appendChild(el("div", "doclabel", esc(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
+    if (n.audio) { const tools = el("div", "tools"); const play = el("button", "btn play", "▶ " + G.ui.btn.rejouer); play.addEventListener("click", () => playAudio(n.audio, play)); tools.appendChild(play); body.appendChild(tools); }
+    body.appendChild(el("p", "zintro", esc(G.ui.zettel.intro)));
+    const ul = el("ul", "zitems"); (n.items || []).forEach(t => ul.appendChild(el("li", "", gl(t)))); body.appendChild(ul);
+    const qs = n.q ? [].concat(n.q) : [];
+    if (qs.length) body.appendChild(el("p", "hint", esc(G.ui.zettel.forQ) + " " + qs.map(q => q + " (" + esc(G.questions[q].title) + ")").join(", ")));
+    body.appendChild(el("p", "hint", esc(G.ui.zettel.hint)));
+    const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.zettel.done);
+    b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); showLines(n.after, () => { finish(); const nx = resolve(n.next); if (nx) goNode(nx); }); });
+    bar.appendChild(b); body.appendChild(bar);
   }
 
   /* ---------- Aufgaben ---------- */
@@ -558,7 +579,7 @@
       const sel = new Set(); const list = el("div", "picklist");
       S.proofs.forEach(pid => {
         const P = G.proofs[pid];
-        const b = el("button", "btn opt", "<small>" + P.q + "</small> " + gl(P.text));
+        const b = el("button", "btn opt", "<small>" + P.q + "</small> " + proofLabel(P));
         b.addEventListener("click", () => { if (sel.has(pid)) { sel.delete(pid); b.classList.remove("on"); } else if (sel.size < 2) { sel.add(pid); b.classList.add("on"); } });
         list.appendChild(b);
       });
@@ -709,7 +730,7 @@
       const box = el("div", "qbox " + (proven ? "proven" : ""));
       box.appendChild(el("div", "qtitle", "<b>" + q + "</b> " + esc(G.questions[q].title) + ' <span class="status">' + (proven ? esc(G.ui.carnet.proven) : esc(G.ui.carnet.hyp) + (q === "Q2" && S.q2noted ? " (affiche C ?)" : "")) + "</span>"));
       const ul = el("ul", "proofs");
-      S.proofs.filter(p => G.proofs[p].q === q).forEach(p => ul.appendChild(el("li", G.proofs[p].strong ? "strong" : "", gl(G.proofs[p].text))));
+      S.proofs.filter(p => G.proofs[p].q === q).forEach(p => ul.appendChild(el("li", G.proofs[p].strong ? "strong" : "", proofLabel(G.proofs[p]))));
       if (!ul.children.length) ul.appendChild(el("li", "none", "—"));
       box.appendChild(el("div", "plabel", esc(G.ui.carnet.proofs))); box.appendChild(ul);
       body.appendChild(box);
@@ -841,6 +862,8 @@
     const unlock = el("button", "btn", "Tout débloquer"); unlock.addEventListener("click", () => { ["M00_done", "M02_done", "M03_done", "M04b_done", "P02_done", "P03_done", "P04_done", "P05_done", "P06_done", "B01a_done", "B03_open", "B04_done", "B05_done", "B06_done", "L02_C", "L02_done", "Q2_proven", "L04_done", "L05_done", "C01_found", "vosges_seen"].forEach(f => S.flags[f] = true); Object.keys(G.proofs).forEach(addProof); Object.keys(G.items).forEach(id => { if (!S.inv.includes(id)) S.inv.push(id); }); save(); refreshTop(); toast("Alles freigeschaltet"); }); bar.appendChild(unlock);
     const reset = el("button", "btn", "Spielstand löschen"); reset.addEventListener("click", () => { if (confirm("Spielstand auf diesem Gerät löschen?")) { localStorage.removeItem(SAVE_KEY); location.reload(); } }); bar.appendChild(reset);
     const exr = el("button", "btn", "Alle Ergebnisse (CSV)"); exr.addEventListener("click", () => { const all = JSON.parse(localStorage.getItem(RESULTS_KEY) || "[]"); download("pain-perdu_resultats.csv", csvRows(all.flatMap(r => r.diag)), "text/csv;charset=utf-8"); }); bar.appendChild(exr);
+    const pz = el("a", "btn", "Zettel (Druck)"); pz.href = "zettel.html"; pz.target = "_blank"; bar.appendChild(pz);
+    const pq = el("a", "btn", "Quiz + Lösungen (Druck)"); pq.href = "quiz.html?prof=1"; pq.target = "_blank"; bar.appendChild(pq);
     body.appendChild(bar);
     body.appendChild(el("h3", "", "Sprung zu einem Knoten"));
     const jump = el("div", "jumps");
@@ -850,12 +873,14 @@
     body.appendChild(el("h3", "", "Lösungen"));
     const sol = el("div", "paper small");
     sol.innerHTML = [
-      "<b>M02</b> carte → Q1, ticket → Q2", "<b>M03</b> Vous avez vu cet homme ?", "<b>M04</b> ce matin = Père-Lachaise · cet après-midi = le Marais · ce soir = on ne sait pas",
-      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> A (ou Montrer la photo)", "<b>P03</b> → Q1", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune",
-      "<b>B02</b> B oder C (A = Reparatur)", "<b>B02b</b> A", "<b>B04</b> a, c, e", "<b>B05</b> → Q4", "<b>L02</b> C ; Belege: pf_nom + pf_programme", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
+      "<b>M03</b> Vous avez vu cet homme ?", "<b>M04</b> ce matin = Père-Lachaise · cet après-midi = le Marais · ce soir = on ne sait pas",
+      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> A (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune",
+      "<b>B02</b> B oder C (A = Reparatur)", "<b>B02b</b> A", "<b>B04</b> a, c, e", "<b>L02</b> C ; Belege: pf_nom + pf_programme", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
       "<b>V03</b> Schritt 1: A/B · Schritt 2: A/B · Schritt 3: boîte bleue + enveloppe rouge"
     ].join("<br>");
     body.appendChild(sol);
+    body.appendChild(el("h3", "", "Indices (Carnet-Stichwort → Inhalt auf dem Zettel)"));
+    body.appendChild(el("div", "paper small", Object.keys(G.proofs).map(k => "<b>" + esc(G.proofs[k].q) + " · " + esc(G.proofs[k].label || k) + "</b> → " + esc(G.proofs[k].text)).join("<br>")));
     body.appendChild(el("h3", "", "Transkripte"));
     Object.keys(G.audio).forEach(k => body.appendChild(el("div", "paper small", "<b>" + k + ".mp3 · " + esc(G.chars[G.audio[k].who].name) + "</b><br>" + esc(G.audio[k].text))));
     body.appendChild(el("h3", "", "Ergebnisse auf diesem Gerät"));

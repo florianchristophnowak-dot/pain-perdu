@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz · L'affaire du pain perdu</title>
+<style>
+  @page { size: A4; margin: 13mm 14mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: #222; background: #f3efe6; font-size: 11pt; line-height: 1.45; }
+  .sheet { max-width: 186mm; margin: 10mm auto; background: #fff; padding: 10mm 12mm; box-shadow: 0 2px 12px rgba(0,0,0,.12); }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #8a4b2a; padding-bottom: 3mm; margin-bottom: 3mm; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 20pt; margin: 0; color: #8a4b2a; }
+  .sub { margin: 1mm 0 0; color: #666; font-size: 10pt; }
+  .pts { font-size: 12pt; border: 1.5px solid #8a4b2a; border-radius: 2mm; padding: 1.5mm 3mm; white-space: nowrap; }
+  .meta { display: flex; gap: 6mm; font-size: 10.5pt; margin-bottom: 2.5mm; }
+  .meta span { flex: 1; border-bottom: 1px solid #999; padding-bottom: 1mm; }
+  .consigne { font-size: 10pt; background: #fbf4e6; border: 1px solid #e3d3b6; border-radius: 3mm; padding: 2mm 3.5mm; margin: 0 0 3mm; }
+  h2 { font-size: 12.5pt; margin: 4mm 0 1.5mm; color: #8a4b2a; border-bottom: 1px solid #e3d3b6; padding-bottom: .5mm; }
+  h2 small { color: #777; font-weight: 400; font-size: 9.5pt; float: right; }
+  ol { margin: 0; padding-left: 6mm; }
+  li { margin: 0 0 2.2mm; break-inside: avoid; }
+  .p { color: #777; font-size: 9pt; margin-left: 2mm; white-space: nowrap; }
+  .b { display: inline-block; min-width: 38mm; border-bottom: 1px solid #555; margin: 0 1mm; height: 5.5mm; vertical-align: bottom; }
+  .b.l { min-width: 70mm; } .b.xl { min-width: 150mm; display: block; margin: 1.5mm 0 0; }
+  .opt { white-space: nowrap; margin-right: 3mm; }
+  .box { display: inline-block; width: 4mm; height: 4mm; border: 1.2px solid #444; border-radius: .8mm; vertical-align: -0.7mm; margin-right: 1mm; }
+  footer { margin-top: 3mm; font-size: 8.5pt; color: #888; text-align: right; }
+  .sol { break-before: page; page-break-before: always; }
+  .sol h1 { font-size: 17pt; }
+  .sol table { border-collapse: collapse; width: 100%; font-size: 10.5pt; }
+  .sol td, .sol th { border-bottom: 1px solid #ddd; padding: 1.4mm 2mm; vertical-align: top; text-align: left; }
+  .sol th { background: #fbf4e6; }
+  .sol td:first-child { width: 8mm; color: #777; } .sol td:last-child { width: 14mm; text-align: right; color: #777; }
+  .hidden { display: none; }
+  @media print { body { background: #fff; } .sheet { box-shadow: none; margin: 0; max-width: none; padding: 0; } .noprint { display: none; } }
+  .noprint { text-align: center; margin: 4mm 0; font-size: 10pt; }
+  .noprint button { font: inherit; padding: 2mm 5mm; border-radius: 2mm; border: 1px solid #8a4b2a; background: #8a4b2a; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="noprint"><button onclick="window.print()">Imprimer</button> <span id="profnote"></span></div>
+<div class="sheet">
+  <header>
+    <div><h1>Quiz : L'affaire du pain perdu</h1><p class="sub">Qu'est-ce que tu as noté sur ton Zettel ? · classe 10b</p></div>
+    <div class="pts">Points : &nbsp;&nbsp;&nbsp;&nbsp; / 20</div>
+  </header>
+  <div class="meta"><span>Nom :</span><span>Date :</span><span><span class="box"></span>avec le Zettel &nbsp; <span class="box"></span>sans le Zettel</span></div>
+  <p class="consigne">Réponds en français. Pour les cases, coche la bonne réponse. Pour les phrases, fais attention au temps : <b>imparfait</b> (le décor, ce qui était) ou <b>passé composé</b> (l'action, ce qui s'est passé).</p>
+
+  <h2>A · Les faits <small>12 points</small></h2>
+  <ol>
+    <li>Comment s'appelle le mime ? (prénom et nom) <span class="b"></span><span class="p">/1</span></li>
+    <li>Qui a écrit la carte trouvée dans le sac brun du mime ?<span class="p">/1</span><br>
+      <span class="opt"><span class="box"></span>Nora</span><span class="opt"><span class="box"></span>Chloé</span><span class="opt"><span class="box"></span>Kevin</span><span class="opt"><span class="box"></span>Marie</span></li>
+    <li>D'après la dame du kiosque : ce matin, le mime était<span class="p">/2</span><br>
+      <span class="opt"><span class="box"></span>au Louvre</span><span class="opt"><span class="box"></span>au Père-Lachaise</span><span class="opt"><span class="box"></span>dans le Marais</span><br>
+      Cet après-midi, il va <span class="opt"><span class="box"></span>dans le Marais</span><span class="opt"><span class="box"></span>au Sacré-Cœur</span><span class="opt"><span class="box"></span>à la gare</span></li>
+    <li>Le ticket de caisse : qui connaît le spectacle du mime ? <span class="b"></span><span class="p">/1</span></li>
+    <li>Dans notre sac Bernd : la boîte bleue de Kevin est <span class="b"></span>. L'enveloppe rouge est <span class="b"></span>.<span class="p">/2</span></li>
+    <li>Le sac brun de Marcel : deux détails. <span class="b"></span> et <span class="b"></span><span class="p">/2</span></li>
+    <li>Où est le programme corrigé ?<span class="p">/1</span><br>
+      <span class="opt"><span class="box"></span>à la boulangerie de Nora</span><span class="opt"><span class="box"></span>à la librairie Les Mots retrouvés</span><span class="opt"><span class="box"></span>au kiosque de Montmartre</span></li>
+    <li>Aujourd'hui, Marcel joue à quelle heure ? <span class="b"></span> Où ? <span class="b"></span><span class="p">/2</span></li>
+  </ol>
+
+  <h2>B · Voleur ou erreur ? <small>3 points</small></h2>
+  <ol start="9">
+    <li>Marcel a pris notre sac. <span class="opt"><span class="box"></span>C'est un vol.</span><span class="opt"><span class="box"></span>C'est une erreur.</span><span class="p">/1</span><br>
+      Écris une preuve (une phrase) :<span class="p">/2</span><span class="b xl"></span></li>
+  </ol>
+
+  <h2>C · Raconter : imparfait ou passé composé ? <small>5 points</small></h2>
+  <ol start="10">
+    <li>Complète avec la forme correcte.<span class="p">/4</span><br>
+      Le mime (porter) <span class="b"></span> un pull rayé et un béret. Pendant que nous (regarder) <span class="b"></span> la photo, il (prendre) <span class="b"></span> notre sac. Puis il (partir) <span class="b"></span> vers le métro.</li>
+    <li>Qu'est-ce que Marcel croyait ? Écris une phrase.<span class="p">/1</span><span class="b xl"></span></li>
+  </ol>
+
+  <h2>Bonus <small>+2 points</small></h2>
+  <ol start="12">
+    <li>Les crânes de Chloé sont en <span class="b"></span>.</li>
+    <li>La balle de Gaston, le chien, est <span class="b"></span>.</li>
+  </ol>
+  <footer>L'affaire du pain perdu · Quiz</footer>
+</div>
+
+<div class="sheet sol hidden" id="sol">
+  <header><div><h1>Lösungen · Quiz « L'affaire du pain perdu »</h1><p class="sub">Nur für die Lehrkraft</p></div><div class="pts">20 (+2)</div></header>
+  <table>
+    <tr><th></th><th>Lösung</th><th>Punkte</th></tr>
+    <tr><td>1</td><td>Marcel Blanchard</td><td>1</td></tr>
+    <tr><td>2</td><td>Chloé</td><td>1</td></tr>
+    <tr><td>3</td><td>au Père-Lachaise · dans le Marais</td><td>2</td></tr>
+    <tr><td>4</td><td>Nora, la boulangère (du Marais)</td><td>1</td></tr>
+    <tr><td>5</td><td>dans la poche de devant · sous les billets (de train)</td><td>2</td></tr>
+    <tr><td>6</td><td>la fermeture rouge · l'autocollant jaune</td><td>2</td></tr>
+    <tr><td>7</td><td>à la librairie Les Mots retrouvés</td><td>1</td></tr>
+    <tr><td>8</td><td>à 17 h (17 heures) · (dans la) cour du Louvre</td><td>2</td></tr>
+    <tr><td>9</td><td>C'est une erreur. (1) — Preuve, z. B.: « Sur la photo du matin, Marcel avait déjà son sac brun. » / « Marcel dit : Je crois que j'ai pris le mauvais sac. » / « Sur sa carte : Je croyais que c'était mon sac. » / « Il y avait deux sacs bruns et il était pressé. » (2; 1 Punkt bei richtiger Idee mit größeren Fehlern)</td><td>3</td></tr>
+    <tr><td>10</td><td>portait · regardions · a pris · est parti (je 1 Punkt; nur die richtige Form zählt)</td><td>4</td></tr>
+    <tr><td>11</td><td>Il croyait que c'était son sac. (imparfait; auch: « Il croyait que le sac était à lui. »)</td><td>1</td></tr>
+    <tr><td>12</td><td>Bonus: en carton</td><td>+1</td></tr>
+    <tr><td>13</td><td>Bonus: sous le banc rouge</td><td>+1</td></tr>
+  </table>
+  <p style="font-size:10pt;color:#555;margin-top:4mm">Wo die Fakten herkommen: 1, 4 Wärter/Ticket (Père-Lachaise, Montmartre) · 2 Karte im Sack (Montmartre) · 3 Kioskfrau (Hörtext) · 5 Sack Bernd (Start) und SMS von Kevin · 6 Foto von Chloé (Père-Lachaise) · 7, 9 Marcels Nachricht (Hörtext, Boulangerie) und Marcels Karte (Librairie) · 8 Aushang C (Librairie) · 10 Rapport de témoin (Montmartre) · 12 Chloés Probe (Phase 2) · 13 Gaston (Phase 2).</p>
+  <p style="font-size:10pt;color:#555">Vorschlag Notenschlüssel (anpassbar): 20–18 sehr gut · 17–15 gut · 14–12 befriedigend · 11–9 ausreichend · 8–5 mangelhaft · unter 5 ungenügend. Bonuspunkte zählen nach oben, nicht nach unten.</p>
+  <footer>L'affaire du pain perdu · Lösungen</footer>
+</div>
+<script>
+  if (/[?&]prof=1/.test(location.search)) { document.getElementById("sol").classList.remove("hidden"); document.getElementById("profnote").textContent = "· Seite 1–2: Quiz für die Schüler, letzte Seite: Lösungen (nur Lehrkraft)."; }
+  else document.getElementById("profnote").textContent = "· Un quiz par élève. (Lösungen: quiz.html?prof=1)";
+</script>
+</body>
+</html>
