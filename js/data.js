@@ -620,8 +620,8 @@ window.GAME = (function () {
 
   /* ---------- Abspann (Namen trägt die Lehrkraft ein) ---------- */
   G.credits = {
-    title: "L'affaire du pain perdu — une enquête de la 10b.",
-    lines: ["Textes et jeu : …", "Illustrations : …", "Voix : …", "Bêta-testeurs : …"]
+    title: "L'affaire du pain perdu",
+    lines: ["Florian Nowak 2026"]
   };
 
   /* ---------- Maries Hilfestufen ---------- */
