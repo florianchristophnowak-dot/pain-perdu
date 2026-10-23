@@ -208,3 +208,4 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .modal.zettel .zitems { font-size: 1.12rem; line-height: 1.5; padding-left: 1.3rem; margin: .2rem 0 .6rem; }
 .modal.zettel .zitems li { margin: .3rem 0; }
 .ztag { color: var(--accent-2); font-size: .85rem; white-space: nowrap; }
+.docimg { display: block; max-width: 100%; max-height: 46vh; border-radius: 8px; border: 1px solid var(--line); margin: .3rem auto .5rem; }

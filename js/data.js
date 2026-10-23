@@ -167,13 +167,13 @@ window.GAME = (function () {
     /* Phase 2 */
     vosges: {
       name: "Place des Vosges", bg: "bg_vosges", enter: "X01",
-      hotspots: [{ id: "musicien", label: "le musicien", x: 40, y: 25, w: 20, h: 60, who: "musicien", actions: { parler: "X01" } }]
+      hotspots: [{ id: "musicien", label: "le musicien", x: 38, y: 42, w: 17, h: 42, who: "musicien", actions: { parler: "X01" } }]
     },
     catacombes: {
       name: "Catacombes · Denfert-Rochereau", bg: "bg_catacombes_entree", enter: "C02",
       hotspots: [
-        { id: "employee", label: "l'employée", x: 40, y: 25, w: 20, h: 60, who: "employee", actions: { parler: "C02" } },
-        { id: "tel", label: "le téléphone", x: 70, y: 60, w: 14, h: 20, actions: { regarder: "C02c" }, showIf: "C02_done" }
+        { id: "employee", label: "l'employée", x: 69, y: 34, w: 12, h: 18, who: "employee", actions: { parler: "C02" } },
+        { id: "tel", label: "le téléphone", x: 73.5, y: 54, w: 7, h: 6.5, actions: { regarder: "C02c" }, showIf: "C02_done" }
       ]
     },
     repetition: { name: "Catacombes · la répétition", bg: "bg_catacombes", enter: null, hotspots: [] },
@@ -323,7 +323,7 @@ window.GAME = (function () {
     effects: { item: "photo_chloe", flag: "P05_done" } };
 
   N.P06 = { type: "task", diag: "D_P06", help: "P06", title: "Comparer : la photo et le sac",
-    task: { kind: "pick", intro: "Photo de ce matin : Chloé et Marcel Blanchard. Marcel avait déjà son sac brun. Le sac a une fermeture rouge et un autocollant jaune.", question: "Quels deux détails sont pareils sur la photo et sur le sac ?", n: 2,
+    task: { kind: "pick", img: "doc_photo_chloe", intro: "Photo de ce matin : Chloé et Marcel Blanchard. Marcel avait déjà son sac brun. Le sac a une fermeture rouge et un autocollant jaune.", question: "Quels deux détails sont pareils sur la photo et sur le sac ?", n: 2,
       options: [{ id: "fr", label: "la fermeture rouge", ok: true }, { id: "aj", label: "l'autocollant jaune", ok: true }, { id: "fb", label: "la fermeture bleue", ok: false }, { id: "av", label: "l'autocollant vert", ok: false }, { id: "vp", label: "le visage de pain", ok: false }],
       wrong: { who: "marie", fr: "Regarde bien le sac sur la photo. Qu'est-ce que tu vois ?" } },
     effects: { proof: "pf_photo_matin", flag: "P06_done" },
@@ -332,7 +332,7 @@ window.GAME = (function () {
       { who: "leo", fr: "Ou c'est un voleur très organisé.", de: "Oder ein sehr gut organisierter Dieb." }
     ],
     next: "P06z" };
-  N.P06z = { type: "zettel", title: "La photo du matin", q: "Q3",
+  N.P06z = { type: "zettel", title: "La photo du matin", q: "Q3", img: "doc_photo_chloe",
     items: ["Sur la photo du matin, Marcel avait déjà quoi ?", "Le sac de Marcel : deux détails (la fermeture ? l'autocollant ?)"],
     next: "P06c" };
   N.P06c = { type: "choice", who: "chloe", noDiag: true,

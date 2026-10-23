@@ -73,6 +73,11 @@
     };
     tryLoad("png", () => tryLoad("jpg", () => { node.style.backgroundImage = "linear-gradient(160deg,#5b4636,#2d2420)"; if (node.id === "stage") { node.style.aspectRatio = "2.12"; const l = el("div", "nobg", esc(S && S.scene ? G.scenes[S.scene].name : "")); node.appendChild(l); } }));
   }
+  function docImg(name) {
+    const im = el("img", "docimg"); im.alt = ""; im.src = "assets/img/" + name + ".jpg";
+    im.onerror = () => { if (im.src.endsWith(".jpg")) im.src = "assets/img/" + name + ".png"; else im.remove(); };
+    return im;
+  }
   function portrait(who) {
     const c = G.chars[who] || { name: who, initials: "?", color: "#777" };
     const p = el("div", "pt");
@@ -263,6 +268,7 @@
     applyEffects(n.effects, id);
     if (n.diag && n.count) record({ id: n.diag, result: "gelesen", count: true });
     body.appendChild(el("h2", "", esc(n.title)));
+    if (n.img) body.appendChild(docImg(n.img));
     body.appendChild(el("div", "paper " + (n.icon || ""), gl(n.doc)));
     const box = el("div", "dlg-inline"); body.appendChild(box);
     const done = () => { closeModal(); finish(); if (n.next) goNode(n.next); };
@@ -341,6 +347,7 @@
     body.appendChild(el("h2", "", esc(G.ui.zettel.title) + (n.title ? " · " + esc(n.title) : "")));
     const src = n.docOf ? G.nodes[n.docOf] : null;
     const docText = n.doc || (src && src.doc);
+    if (n.img) body.appendChild(docImg(n.img));
     if (docText) body.appendChild(el("div", "paper " + (n.icon || (src && src.icon) || ""), gl(docText)));
     (n.docs || []).forEach(d => { const c = el("div", "doccard"); c.appendChild(el("div", "doclabel", esc(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
     if (n.audio) { const tools = el("div", "tools"); const play = el("button", "btn play", "▶ " + G.ui.btn.rejouer); play.addEventListener("click", () => playAudio(n.audio, play)); tools.appendChild(play); body.appendChild(tools); }
@@ -382,6 +389,7 @@
     body.appendChild(el("h2", "", esc(n.title || "")));
     if (intro) body.appendChild(el("div", "solo", esc(intro)));
     const who = T.who ? G.chars[T.who].name : null;
+    if (T.img) body.appendChild(docImg(T.img));
     if (T.intro) body.appendChild(el("div", "paper intro", (who ? "<b>" + esc(who) + " :</b> " : "") + gl(T.intro)));
     const trBox = el("div", "paper transcript"); trBox.hidden = true;
     let hc = null;
