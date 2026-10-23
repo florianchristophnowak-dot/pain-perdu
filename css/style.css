@@ -209,9 +209,9 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 @keyframes fade { 0% { opacity: 0; transform: translateY(8px);} 10%,80% { opacity: 1; transform: none;} 100% { opacity: 0;} }
 .foot { text-align: center; color: #666; font-size: .75rem; padding: .3rem; }
 /* Introvideo */
-.intro { position: fixed; inset: 0; background: #000; z-index: 50; display: grid; place-items: center; }
-.intro video { width: 100%; height: 100%; object-fit: contain; }
-.intro .skip { position: absolute; right: 1.2rem; bottom: 1.2rem; background: rgba(0,0,0,.55); color: #f1c27d; border: 1px solid rgba(241,194,125,.6); }
+.introvid { position: fixed; inset: 0; background: #000; z-index: 50; display: grid; place-items: center; }
+.introvid video { width: 100%; height: 100%; object-fit: contain; }
+.introvid .skip { position: absolute; right: 1.2rem; bottom: 1.2rem; background: rgba(0,0,0,.55); color: #f1c27d; border: 1px solid rgba(241,194,125,.6); }
 
 @media (max-width: 640px) {
   .top .brand { display: none; }
