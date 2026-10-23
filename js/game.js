@@ -67,7 +67,7 @@
     node.dataset.img = name;
     const tryLoad = (ext, next) => {
       const im = new Image();
-      im.onload = () => { if (node.dataset.img !== name) return; node.style.backgroundImage = "url(assets/img/" + name + "." + ext + ")"; if (node.id === "stage") node.style.aspectRatio = (im.naturalWidth / im.naturalHeight).toFixed(4); };
+      im.onload = () => { if (node.dataset.img !== name) return; node.style.backgroundImage = "url(assets/img/" + name + "." + ext + ")"; node.style.aspectRatio = (im.naturalWidth / im.naturalHeight).toFixed(4); };
       im.onerror = () => next && next();
       im.src = "assets/img/" + name + "." + ext;
     };

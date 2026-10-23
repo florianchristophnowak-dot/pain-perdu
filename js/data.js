@@ -120,47 +120,47 @@ window.GAME = (function () {
     montmartre: {
       name: "Montmartre · Sacré-Cœur", bg: "bg_montmartre", enter: "M01",
       hotspots: [
-        { id: "sac_brun", label: "le sac brun", x: 80, y: 58, w: 12, h: 22, actions: { regarder: "M02" }, hideIf: "M02_done" },
-        { id: "kiosque", label: "la dame du kiosque", x: 1, y: 30, w: 12, h: 50, who: "kiosque", actions: { parler: [{ if: "M04b_done", node: "M03r" }, { node: "M03" }], montrer: { photo_groupe: "M03a" } } },
-        { id: "escalier", label: "l'escalier", x: 44, y: 60, w: 30, h: 36, actions: { regarder: "M01e" } },
-        { id: "metro", label: "le métro", x: 92, y: 28, w: 8, h: 45, actions: { courir: "M06" } }
+        { id: "sac_brun", label: "le sac brun", x: 82, y: 51, w: 10, h: 15, actions: { regarder: "M02" }, hideIf: "M02_done" },
+        { id: "kiosque", label: "la dame du kiosque", x: 3, y: 19, w: 15, h: 43, who: "kiosque", actions: { parler: [{ if: "M04b_done", node: "M03r" }, { node: "M03" }], montrer: { photo_groupe: "M03a" } } },
+        { id: "escalier", label: "l'escalier", x: 26, y: 60, w: 46, h: 34, actions: { regarder: "M01e" } },
+        { id: "metro", label: "le métro", x: 91.5, y: 21, w: 8.5, h: 45, actions: { courir: "M06" } }
       ]
     },
     pere_lachaise: {
       name: "Cimetière du Père-Lachaise", bg: "bg_pere_lachaise", enter: "P01",
       hotspots: [
-        { id: "gardien", label: "le gardien", x: 78, y: 26, w: 18, h: 70, who: "gardien", actions: { parler: [{ if: "P07_done", node: "P02r" }, { if: "P03_done", node: "P07" }, { node: "P02" }], montrer: { photo_groupe: "P03", carte_chloe: "P03" } } },
-        { id: "gaston", label: "Gaston", x: 48, y: 55, w: 24, h: 30, actions: { regarder: [{ if: "P07_done", node: "P07r" }, { if: "P03_done", node: "P07" }, { node: "P01g" }] } },
-        { id: "plan", label: "le plan", x: 2, y: 4, w: 14, h: 24, actions: { regarder: [{ if: "P03_done", node: "P04" }, { node: "P01p" }] } },
-        { id: "banc", label: "le banc rouge", x: 26, y: 38, w: 16, h: 18, who: "chloe", actions: { parler: [{ if: "P04_done", node: "P05" }, { node: "P01x" }], regarder: [{ if: "P04_done", node: "P05" }, { node: "P01x" }] } },
-        { id: "chemin", label: "le chemin qui descend", x: 88, y: 72, w: 12, h: 26, actions: { regarder: "P01x" } }
+        { id: "gardien", label: "le gardien", x: 77, y: 28, w: 20, h: 57, who: "gardien", actions: { parler: [{ if: "P07_done", node: "P02r" }, { if: "P03_done", node: "P07" }, { node: "P02" }], montrer: { photo_groupe: "P03", carte_chloe: "P03" } } },
+        { id: "gaston", label: "Gaston", x: 35, y: 46, w: 21, h: 29, actions: { regarder: [{ if: "P07_done", node: "P07r" }, { if: "P03_done", node: "P07" }, { node: "P01g" }] } },
+        { id: "plan", label: "le plan", x: 1, y: 17, w: 13, h: 34, actions: { regarder: [{ if: "P03_done", node: "P04" }, { node: "P01p" }] } },
+        { id: "banc", label: "le banc rouge", x: 15, y: 41, w: 18, h: 19, who: "chloe", actions: { parler: [{ if: "P04_done", node: "P05" }, { node: "P01x" }], regarder: [{ if: "P04_done", node: "P05" }, { node: "P01x" }] } },
+        { id: "chemin", label: "le chemin qui descend", x: 57, y: 44, w: 15, h: 24, actions: { regarder: "P01x" } }
       ]
     },
     marais: {
       name: "Le Marais · boulangerie de Nora", bg: "bg_boulangerie", enter: "B01",
       hotspots: [
-        { id: "nora", label: "Nora", x: 51, y: 24, w: 12, h: 36, who: "nora", actions: { parler: [{ if: "B04_done", node: "B02r" }, { node: "B02" }], montrer: { ticket: "B02t", photo_groupe: "B02", flyer: "B02" } } },
-        { id: "flyer", label: "le flyer", x: 34, y: 42, w: 7, h: 12, actions: { regarder: "B01a" } },
-        { id: "panneau", label: "le panneau", x: 33, y: 10, w: 22, h: 30, actions: { regarder: "B01p" } },
-        { id: "telephone", label: "le téléphone de Nora", x: 69, y: 40, w: 7, h: 12, actions: { ecouter: "B03" }, showIf: "B03_open" },
-        { id: "porte", label: "la porte de la librairie", x: 90, y: 18, w: 10, h: 62, actions: { regarder: "GO_librairie" } }
+        { id: "nora", label: "Nora", x: 47, y: 21, w: 13, h: 40, who: "nora", actions: { parler: [{ if: "B04_done", node: "B02r" }, { node: "B02" }], montrer: { ticket: "B02t", photo_groupe: "B02", flyer: "B02" } } },
+        { id: "flyer", label: "le flyer", x: 73.5, y: 36, w: 6, h: 11, actions: { regarder: "B01a" } },
+        { id: "panneau", label: "le panneau", x: 64, y: 2, w: 13, h: 34, actions: { regarder: "B01p" } },
+        { id: "telephone", label: "le téléphone de Nora", x: 58, y: 60, w: 6.5, h: 7, actions: { ecouter: "B03" }, showIf: "B03_open" },
+        { id: "porte", label: "la porte de la librairie", x: 83, y: 5, w: 16, h: 80, actions: { regarder: "GO_librairie" } }
       ]
     },
     librairie: {
       name: "Librairie Les Mots retrouvés", bg: "bg_librairie", enter: "L01",
       hotspots: [
-        { id: "panneau", label: "le panneau", x: 56, y: 6, w: 18, h: 38, actions: { regarder: "L02" } },
-        { id: "lenoir", label: "M. Lenoir", x: 12, y: 18, w: 24, h: 78, who: "lenoir", actions: { parler: "L03" } },
-        { id: "table", label: "la table", x: 48, y: 72, w: 40, h: 28, actions: { regarder: [{ if: "L04_done", node: "L04r" }, { node: "L04" }] } },
-        { id: "carte_marcel", label: "la carte de Marcel", x: 86, y: 40, w: 12, h: 14, actions: { regarder: "L05" }, showIf: "L04_done" }
+        { id: "panneau", label: "le panneau", x: 61, y: 13, w: 9, h: 30, actions: { regarder: "L02" } },
+        { id: "lenoir", label: "M. Lenoir", x: 11, y: 18, w: 25, h: 80, who: "lenoir", actions: { parler: "L03" } },
+        { id: "table", label: "la table", x: 48, y: 68, w: 45, h: 30, actions: { regarder: [{ if: "L04_done", node: "L04r" }, { node: "L04" }] } },
+        { id: "carte_marcel", label: "la carte de Marcel", x: 84, y: 36, w: 12, h: 9, actions: { regarder: "L05" }, showIf: "L04_done" }
       ]
     },
     louvre: {
       name: "Cour du Louvre", bg: "bg_louvre_cour", enter: "V00",
       hotspots: [
-        { id: "assistante", label: "l'assistante", x: 1, y: 30, w: 12, h: 60, who: "assistante", actions: { parler: [{ if: "Q2_proven", node: "V02" }, { node: "V01" }] } },
-        { id: "scene", label: "la scène", x: 22, y: 8, w: 30, h: 45, actions: { regarder: "V00s" } },
-        { id: "marcel", label: "Marcel", x: 62, y: 26, w: 26, h: 72, who: "marcel", actions: { parler: [{ if: "V03_done", node: "V03r" }, { if: "V02_done", node: "V03" }, { node: "V00m" }] }, showIf: "Q2_proven" }
+        { id: "assistante", label: "l'assistante", x: 2, y: 33, w: 17, h: 30, who: "assistante", actions: { parler: [{ if: "Q2_proven", node: "V02" }, { node: "V01" }] } },
+        { id: "scene", label: "la scène", x: 22, y: 10, w: 26, h: 56, actions: { regarder: "V00s" } },
+        { id: "marcel", label: "Marcel", x: 49, y: 34, w: 19, h: 56, who: "marcel", actions: { parler: [{ if: "V03_done", node: "V03r" }, { if: "V02_done", node: "V03" }, { node: "V00m" }] }, showIf: "Q2_proven" }
       ]
     },
     /* Phase 2 */
