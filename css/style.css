@@ -144,7 +144,6 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .poster.on { border-color: var(--ok); background: #eef7f0; }
 .poster .pl { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
 .poster .ptext { margin: .3rem 0 .6rem; }
-.proofpick { margin-top: .8rem; border-top: 1px dashed var(--line); padding-top: .6rem; }
 .btn.opt small { color: var(--accent-2); font-weight: 700; margin-right: .3rem; }
 .stamps { display: flex; gap: .5rem; flex-wrap: wrap; margin: .4rem 0; }
 .btn.stamp { font-family: monospace; font-weight: 700; letter-spacing: .04em; border: 2px solid #7a1f1f; color: #7a1f1f; background: #fff; }
@@ -159,10 +158,13 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .qbox.proven { border-left-color: var(--ok); }
 .qbox .status { float: right; font-size: .8rem; padding: .1rem .5rem; border-radius: 10px; background: #e6e2da; color: #555; }
 .qbox.proven .status { background: #dcefe3; color: var(--ok); font-weight: 700; }
-.plabel { font-size: .8rem; color: var(--muted); margin-top: .3rem; text-transform: uppercase; letter-spacing: .05em; }
-.proofs { margin: .2rem 0 0; padding-left: 1.2rem; }
-.proofs li.strong { font-weight: 600; }
-.proofs li.none { color: #aaa; list-style: none; margin-left: -1.2rem; }
+/* Abfragen */
+.rin { font: inherit; font-size: 1.05rem; padding: .3rem .5rem; border: 1px solid #c9b78f; border-radius: 8px; background: #fff; margin: 0 .15rem; min-width: 4rem; }
+.rin:focus { outline: 2px solid rgba(44,111,173,.35); border-color: var(--accent-2); }
+.rin.bad { border-color: var(--no); background: #fdf0f0; }
+.rin.good { border-color: var(--ok); background: #eef7f0; }
+.rfield { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; margin: .55rem 0; }
+.rfield label { font-weight: 600; }
 .mission { background: #fde9d6; border: 1px solid #f0b98f; border-radius: 8px; padding: .5rem .8rem; margin: .4rem 0; }
 
 /* Inventar */
@@ -225,9 +227,4 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .credits b { display: block; font-family: var(--display); font-weight: 400; font-size: 1.5rem; color: var(--accent); line-height: 1.15; margin-bottom: .15rem; }
 
 /* Zettel: auf Papier notieren */
-.modal.zettel h2::before { content: "✎ "; }
-.modal.zettel .zintro { font-weight: 600; margin: .7rem 0 .2rem; }
-.modal.zettel .zitems { font-size: 1.12rem; line-height: 1.5; padding-left: 1.3rem; margin: .2rem 0 .6rem; }
-.modal.zettel .zitems li { margin: .3rem 0; }
-.ztag { color: var(--accent-2); font-size: .85rem; white-space: nowrap; }
 .docimg { display: block; max-width: 100%; max-height: 46vh; border-radius: 8px; border: 1px solid var(--line); margin: .3rem auto .5rem; }
