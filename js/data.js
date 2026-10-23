@@ -182,13 +182,13 @@ window.GAME = (function () {
   /* ---------- Karte ---------- */
   G.map = {
     places: [
-      { id: "montmartre", label: "Montmartre · Sacré-Cœur", q: "Le point de départ", x: 46, y: 13, unlock: "always", done: ["M02_done", "M04b_done"] },
-      { id: "pere_lachaise", label: "Cimetière du Père-Lachaise", q: "Qui connaît ce mime ?", x: 82, y: 26, unlock: "M02_done", done: ["P03_done", "P04_done", "P06_done"], q2proof: "pf_nom" },
-      { id: "marais", label: "Le Marais · boulangerie de Nora", q: "Quel est son spectacle ?", x: 58, y: 36, unlock: "M02_done", done: ["B04_done", "B05_done", "B06_done"], q2proof: "pf_programme" },
-      { id: "librairie", label: "Librairie Les Mots retrouvés", q: "Quel programme est le bon ?", x: 52, y: 54, unlock: "M02_done", done: ["L02_done", "L04_done"] },
-      { id: "louvre", label: "Cour du Louvre", q: "Rendez-vous à 17 h", x: 30, y: 40, unlock: "always", done: ["V03_done", "V05_done"], finale: true },
-      { id: "vosges", label: "Place des Vosges", q: "L'ancien lieu ?", x: 72, y: 46, unlock: "vosges_seen", hideUntil: "vosges_seen", done: ["X01_done"] },
-      { id: "catacombes", label: "Catacombes · Denfert-Rochereau", q: "Aujourd'hui ou demain ?", x: 30, y: 58, unlock: "C01_found", hideUntil: "C01_found", done: ["C02_done"] }
+      { id: "montmartre", label: "Montmartre · Sacré-Cœur", short: "Montmartre", q: "Le point de départ", x: 46, y: 13, unlock: "always", done: ["M02_done", "M04b_done"] },
+      { id: "pere_lachaise", label: "Cimetière du Père-Lachaise", short: "Père-Lachaise", q: "Qui connaît ce mime ?", x: 84, y: 27, unlock: "M02_done", done: ["P03_done", "P04_done", "P06_done"], q2proof: "pf_nom" },
+      { id: "marais", label: "Le Marais · boulangerie de Nora", short: "Le Marais", q: "Quel est son spectacle ?", x: 62, y: 38, unlock: "M02_done", done: ["B04_done", "B05_done", "B06_done"], q2proof: "pf_programme" },
+      { id: "librairie", label: "Librairie Les Mots retrouvés", short: "Librairie", q: "Quel programme est le bon ?", x: 56, y: 56, unlock: "M02_done", done: ["L02_done", "L04_done"] },
+      { id: "louvre", label: "Cour du Louvre", short: "Louvre", q: "Rendez-vous à 17 h", x: 30, y: 40, unlock: "always", done: ["V03_done", "V05_done"], finale: true },
+      { id: "vosges", label: "Place des Vosges", short: "Place des Vosges", q: "L'ancien lieu ?", x: 78, y: 52, unlock: "vosges_seen", hideUntil: "vosges_seen", done: ["X01_done"] },
+      { id: "catacombes", label: "Catacombes · Denfert-Rochereau", short: "Catacombes", q: "Aujourd'hui ou demain ?", x: 28, y: 60, unlock: "C01_found", hideUntil: "C01_found", done: ["C02_done"] }
     ]
   };
 
