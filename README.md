@@ -37,6 +37,19 @@ Die Hotspot-Positionen stehen in `js/data.js` (`scenes`, Angaben in Prozent des 
 - Die Lernenden exportieren am Ende (oder jederzeit aus dem Carnet) zwei Dateien: JSON (alles) und CSV (eine Zeile je Aufgabe und Person: Ergebnis, Versuche, Hilfestufe, Wiederholungen, Transkript, Dauer, Text).
 - Der Spielstand liegt im `localStorage` des Browsers; „Continuer la partie“ nimmt ihn wieder auf.
 
+## Zettel und Quiz (Papier)
+
+Hinweise werden nicht mehr im Spiel „ins Carnet sortiert“, sondern auf Papier notiert. An zehn Stellen zeigt das Spiel eine Aufforderung **✎ Sur ton Zettel** (Knotentyp `zettel` in `js/data.js`: Felder `items` = was zu notieren ist, optional `doc`/`docOf`/`docs` = Dokument zum Nachlesen, `audio` = Hörtext zum Wiederholen, `q` = betroffene Frage(n), `effects`, `after`, `next`). Das Carnet im Spiel zeigt pro Hinweis nur noch das Stichwort (`label` in `G.proofs`); der Inhalt steht auf dem Zettel der Schüler.
+
+Druckvorlagen (auch aus der Lehrkraft-Ansicht verlinkt):
+
+| Datei | Inhalt |
+|---|---|
+| `zettel.html` | Zettel d'enquête, ein Blatt pro Schüler (Q1–Q4 + Sonstiges) |
+| `quiz.html` | Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt das Lösungsblatt an |
+
+Die früheren Kennungen `D_M02`, `D_P03` und `D_B05` (Zuordnungsaufgaben) gibt es nicht mehr.
+
 ## Phase 2
 
 Die Nebenwege aus Abschnitt 10 des Drehbuchs sind eingebaut und freiwillig: die Karte „demain“ (C01) schaltet die Catacombes frei (C02, Anruf bei Chloé → C03 mit Hörtext `au_chloe`), Aushang A schaltet die place des Vosges frei (X01), Gaston (P07) ist nach dem Gespräch mit dem Wärter erreichbar, und die Assistentin bietet vor dem Finale das Brotschatten-Rätsel an (V02b, Hörtext `au_assistante`). Der Abspann steht in `js/data.js` unter `credits`; dort trägst du die Namen ein.

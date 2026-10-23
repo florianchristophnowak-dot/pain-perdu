@@ -201,3 +201,10 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 
 .nobg { position: absolute; inset: 0; display: grid; place-items: center; color: #d9c7a8; font-family: var(--serif); font-size: 1.6rem; text-align: center; pointer-events: none; }
 .credits { margin-top: 1rem; padding-top: .8rem; border-top: 1px dashed var(--line); color: var(--muted); font-size: .9rem; line-height: 1.6; }
+
+/* Zettel: auf Papier notieren */
+.modal.zettel h2::before { content: "✎ "; }
+.modal.zettel .zintro { font-weight: 600; margin: .7rem 0 .2rem; }
+.modal.zettel .zitems { font-size: 1.12rem; line-height: 1.5; padding-left: 1.3rem; margin: .2rem 0 .6rem; }
+.modal.zettel .zitems li { margin: .3rem 0; }
+.ztag { color: var(--accent-2); font-size: .85rem; white-space: nowrap; }
