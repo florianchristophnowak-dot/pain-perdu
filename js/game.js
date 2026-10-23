@@ -952,7 +952,7 @@
   /* ---------- Start ---------- */
   /* Introvideo (assets/video/intro.mp4); fehlt die Datei, geht es direkt los */
   function playIntro(cb) {
-    const box = el("div", "intro");
+    const box = el("div", "introvid");
     const v = document.createElement("video"); v.src = "assets/video/intro.mp4"; v.playsInline = true; v.preload = "auto";
     const skip = el("button", "btn skip", "Passer l'intro ▸");
     let done = false;
