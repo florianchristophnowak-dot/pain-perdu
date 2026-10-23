@@ -168,16 +168,16 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .mission { background: #fde9d6; border: 1px solid #f0b98f; border-radius: 8px; padding: .5rem .8rem; margin: .4rem 0; }
 
 /* Inventar */
-.igrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: .5rem; }
+.igrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: .5rem; }
 .item { display: flex; flex-direction: column; align-items: center; gap: .3rem; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: .55rem .4rem .5rem; font: inherit; color: var(--ink); cursor: pointer; transition: background .15s, border-color .15s; }
 .item:hover { background: #fff; border-color: #c9b78f; }
 .item.on { background: #fff3dc; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(180,83,42,.25); }
 .item .iname { font-size: .82rem; text-align: center; line-height: 1.2; }
-.ipic { width: 68px; height: 68px; border-radius: 10px; background: #efe6d2 center / contain no-repeat; display: grid; place-items: center; font-size: 2rem; flex: none; }
+.ipic { width: 80px; height: 80px; border-radius: 10px; background: #efe6d2 center / contain no-repeat; display: grid; place-items: center; font-size: 2rem; flex: none; }
 .ipic.img { background-color: transparent; }
 .idetail { margin-top: .7rem; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: .7rem .9rem; }
 .idetail .ihead { display: flex; gap: .8rem; align-items: center; }
-.idetail .ihead .ipic { width: 56px; height: 56px; }
+.idetail .ihead .ipic { width: 64px; height: 64px; }
 .idetail .idesc { color: #4a3f36; font-size: .95rem; margin-top: .15rem; }
 .idetail .docimg { max-height: 34vh; margin-top: .6rem; }
 
