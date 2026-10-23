@@ -91,6 +91,10 @@ Die Nebenwege aus Abschnitt 10 des Drehbuchs sind eingebaut und freiwillig: die 
 
 Der Titel (Startbildschirm, Kopfzeile, Abspann) nutzt die Schrift Limelight aus `assets/fonts/` (SIL Open Font License, Lizenztext liegt daneben). Alles andere nutzt Systemschriften.
 
+## Introvideo
+
+Beim Laden der Seite läuft `assets/video/intro.mp4` (8 Sekunden, 1280 × 720, mit Ton): die Klasse vor dem Sacré-Cœur, Marcel kommt dazu. Am Ende erscheint der Titel groß in der Plakatschrift des Spiels, danach das Startmenü. „Passer l'intro“ überspringt das Video, „Revoir l'intro“ im Startmenü zeigt es noch einmal, `index.html?intro=0` lässt es ganz aus (etwa für Tests). Ohne vorherigen Klick spielen Browser nur stumm ab; der Knopf links unten schaltet den Ton ein. Fehlt die Datei oder kann der Browser sie nicht abspielen, erscheint sofort das Startmenü. `intro_poster.jpg` ist das erste Bild des Videos und wird gezeigt, solange das Video lädt.
+
 ## Texte ändern
 
 Alle Spieltexte liegen in `js/data.js`. Figurentexte sind `fr`, Linos umschaltbare Kommentare zusätzlich `de`. Die Kennungen (M03, P04, …) verbinden Drehbuch, Code und Diagnose.
