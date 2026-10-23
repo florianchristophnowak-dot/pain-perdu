@@ -748,8 +748,8 @@
     const body = openModal("map");
     body.appendChild(el("h2", "", "Paris"));
     const wrap = el("div", "mapwrap");
-    wrap.innerHTML = '<svg viewBox="0 0 100 70" class="paris" aria-label="Carte de Paris">' +
-      '<rect x="0" y="0" width="100" height="70" fill="#eef0e6"/>' +
+    wrap.innerHTML = '<svg viewBox="0 0 100 74" class="paris" aria-label="Carte de Paris">' +
+      '<rect x="0" y="0" width="100" height="74" fill="#eef0e6"/>' +
       '<path d="M0 44 C 15 40, 25 52, 40 50 S 60 44, 75 50 S 90 60, 100 58" stroke="#9cc3d8" stroke-width="3.5" fill="none"/>' +
       '<ellipse cx="46" cy="49.5" rx="6" ry="1.6" fill="#cfe3d2" stroke="#9cc3d8" stroke-width="0.4"/>' +
       '<path d="M18 12 Q 50 2 86 12 Q 97 35 86 60 Q 50 72 16 60 Q 3 35 18 12 Z" fill="none" stroke="#b9b6a5" stroke-width="0.6" stroke-dasharray="1.5 1"/>' +
@@ -762,10 +762,10 @@
       const missing = p.q2proof && !S.proofs.includes(p.q2proof) && !isProven("Q2");
       const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       g.setAttribute("class", "place " + (unlocked ? "open" : "locked") + (done ? " done" : "") + (S.scene === p.id ? " here" : ""));
-      g.innerHTML = '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.2"/>' +
+      g.innerHTML = "<title>" + esc(p.label) + "</title>" + '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.2"/>' +
         (done ? '<text x="' + p.x + '" y="' + (p.y + 1.1) + '" class="chk" text-anchor="middle">✓</text>' : "") +
         (missing && unlocked && !done ? '<circle cx="' + (p.x + 2.6) + '" cy="' + (p.y - 2.6) + '" r="1.2" class="dot"/>' : "") +
-        '<text x="' + p.x + '" y="' + (p.y + 6.2) + '" text-anchor="middle" class="lbl">' + esc(p.label) + "</text>" +
+        '<text x="' + p.x + '" y="' + (p.y + 6.2) + '" text-anchor="middle" class="lbl">' + esc(p.short || p.label) + "</text>" +
         '<text x="' + p.x + '" y="' + (p.y + 9.4) + '" text-anchor="middle" class="q">' + esc(unlocked ? p.q : G.ui.locked) + "</text>";
       g.addEventListener("click", () => {
         if (!unlocked) { toast("Marie : " + G.ui.marie.locked); return; }

@@ -171,8 +171,8 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .place.here circle { stroke: #f1c27d; stroke-width: 1; }
 .place .chk { font-size: 3px; fill: #fff; font-weight: 700; pointer-events: none; }
 .place .dot { fill: var(--no); stroke: #fff; stroke-width: .3; }
-.place .lbl { font-size: 2.6px; font-weight: 700; fill: #2b241e; }
-.place .q { font-size: 2.3px; fill: #6d6257; font-style: italic; }
+.place .lbl { font-size: 2.5px; font-weight: 700; fill: #2b241e; }
+.place .q { font-size: 2.2px; fill: #6d6257; font-style: italic; }
 .place.locked .lbl, .place.locked .q { fill: #999; }
 
 /* Glossar */
