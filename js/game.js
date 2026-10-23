@@ -557,10 +557,17 @@
     const bar = el("div", "bar");
     const b = el("button", "btn primary", G.ui.recall.check);
     b.addEventListener("click", () => {
-      let ok = true; const hints = [];
-      inputs.forEach(x => { const good = answerOk(x.f, x.inp.value); x.inp.classList.toggle("bad", !good); x.inp.classList.toggle("good", good); if (!good) { ok = false; x.wrongs++; if (x.wrongs >= 2 && x.f.where && !hints.includes(x.f.where)) hints.push(x.f.where); } });
+      let ok = true; const hints = []; let trap = null;
+      inputs.forEach(x => {
+        const good = answerOk(x.f, x.inp.value); x.inp.classList.toggle("bad", !good); x.inp.classList.toggle("good", good);
+        if (!good) {
+          ok = false; x.wrongs++;
+          const tr = (x.f.traps || []).find(t => answerOk(t, x.inp.value)); if (tr && !trap) trap = tr;   // Lesefalle: eigene Antwort der Figur
+          if (x.wrongs >= 2 && x.f.where && !hints.includes(x.f.where)) hints.push(x.f.where);
+        }
+      });
       if (ok) { inputs.forEach(x => x.inp.disabled = true); b.disabled = true; api.complete({ text: inputs.map(x => x.inp.value.trim()).join(" | ") }, T.success); }
-      else api.wrong({ who: T.who || "marie", fr: (T.wrongText || G.ui.recall.wrong) + (hints.length ? " " + hints.join(" ") : "") });
+      else api.wrong({ who: (trap && trap.who) || T.who || "marie", fr: (trap ? trap.fr : (T.wrongText || G.ui.recall.wrong)) + (hints.length ? " " + hints.join(" ") : "") });
     });
     bar.appendChild(b);
     if (T.leave !== false) {
