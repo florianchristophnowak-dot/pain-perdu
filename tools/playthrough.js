@@ -41,7 +41,7 @@ const URL = process.env.URL || 'http://127.0.0.1:8765/index.html';
   log('S02:', await modalText());
   await cont(2);                       // S02 two lines
   log('M00:', await modalText());
-  await cont(2);                       // Leo line, then Continuer
+  await cont(2);                       // Lino line, then Continuer
   log('M00c:', await modalText());
   await cont(3);
   log('M01 dialogue:', await dlgText());
@@ -227,7 +227,7 @@ const URL = process.env.URL || 'http://127.0.0.1:8765/index.html';
   await cont(1); await contAll();
   log('V04:', await modalText()); await contAll();
   log('V05:', await modalText());
-  for (const p of [0, 1]) { await page.locator('textarea').fill('On était à Montmartre pour une photo. Leo tenait le sac Bernd. Pendant que nous regardions la photo, le mime a pris notre sac. Au Père-Lachaise, on a appris son nom : Marcel Blanchard. Sur une photo, Marcel avait déjà son sac brun. Donc ce n était pas un vol. Il croyait que notre sac était son sac. À la librairie, on a trouvé le bon programme. À la fin, on a échangé les sacs au Louvre.'); await btn('Valider'); await cont(1); }
+  for (const p of [0, 1]) { await page.locator('textarea').fill('On était à Montmartre pour une photo. Lino tenait le sac Bernd. Pendant que nous regardions la photo, le mime a pris notre sac. Au Père-Lachaise, on a appris son nom : Marcel Blanchard. Sur une photo, Marcel avait déjà son sac brun. Donc ce n était pas un vol. Il croyait que notre sac était son sac. À la librairie, on a trouvé le bon programme. À la fin, on a échangé les sacs au Louvre.'); await btn('Valider'); await cont(1); }
   log('END:', await modalText());
   await page.screenshot({ path: SHOT + '12_end.png' });
   const diag = await page.evaluate(() => PP.S.diag.map(d => d.id + ':' + d.player + ':' + d.result + ':' + d.attempts + ':' + d.help));

@@ -11,7 +11,7 @@
   let S = null;
   function freshState() {
     return {
-      v: 1, players: ["", ""], leoLang: "fr", mouse: 0, scene: null, resume: "S02",
+      v: 1, players: ["", ""], linoLang: "fr", mouse: 0, scene: null, resume: "S02",
       flags: {}, inv: Object.keys(G.items).filter(k => G.items[k].start), mission: "",
       diag: [], helpUsed: {}, replays: {}, transcripts: {}, travel: 0, started: Date.now(), visited: [], cards: {}, finished: false
     };
@@ -156,7 +156,7 @@
     }
     step();
   }
-  function lineText(l) { return (l.who === "leo" && l.de && S.leoLang === "de") ? l.de : l.fr; }
+  function lineText(l) { return (l.who === "lino" && l.de && S.linoLang === "de") ? l.de : l.fr; }
   function renderLine(box, l, onNext, label) {
     box.innerHTML = ""; box.classList.add("active");
     const c = G.chars[l.who] || { name: l.who };
@@ -164,7 +164,7 @@
     if (l.who !== "narrateur") row.appendChild(portrait(l.who));
     const body = el("div", "body");
     if (c.name) body.appendChild(el("div", "who", esc(c.name)));
-    const isDe = l.who === "leo" && l.de && S.leoLang === "de";
+    const isDe = l.who === "lino" && l.de && S.linoLang === "de";
     body.appendChild(el("div", "text" + (isDe ? " de" : ""), isDe ? esc(lineText(l)) : gl(lineText(l))));
     row.appendChild(body); box.appendChild(row);
     if (onNext) { const b = el("button", "btn primary", esc(label || G.ui.btn.continuer)); b.addEventListener("click", onNext); const bar = el("div", "bar"); bar.appendChild(b); box.appendChild(bar); }
@@ -915,7 +915,7 @@
   function startNew() {
     S = freshState();
     S.players = [$("#p1").value, $("#p2").value];
-    S.leoLang = $("input[name=leo]:checked").value;
+    S.linoLang = $("input[name=lino]:checked").value;
     save();
     $("#start").hidden = true; $("#game").hidden = false;
     S.scene = "montmartre"; enterScene("montmartre", false);
@@ -939,7 +939,7 @@
     $("#btn-map").addEventListener("click", () => openMap());
     $("#btn-inv").addEventListener("click", () => openInventory());
     $("#btn-gloss").addEventListener("click", openGlossary);
-    $("#btn-lang").addEventListener("click", () => { S.leoLang = S.leoLang === "fr" ? "de" : "fr"; save(); toast("Leo : " + (S.leoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });
+    $("#btn-lang").addEventListener("click", () => { S.linoLang = S.linoLang === "fr" ? "de" : "fr"; save(); toast("Lino : " + (S.linoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });
     if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#title").textContent = G.ui.title; $("#subtitle").textContent = G.ui.subtitle;
     $("#ver").textContent = "v" + G.version + (PROF ? " · prof" : "");

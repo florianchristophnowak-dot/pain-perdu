@@ -26,7 +26,7 @@ Die Platzhalter werden ersetzt, sobald eine Datei mit dem passenden Namen liegt.
 | --- | --- |
 | Hintergründe | `bg_montmartre`, `bg_pere_lachaise`, `bg_boulangerie`, `bg_librairie`, `bg_louvre_cour`; Phase 2: `bg_catacombes`, `bg_lampes` |
 | Zwischensequenzen | `cut_confusion`, `cut_final` |
-| Porträts (quadratisch, PNG) | `pt_leo`, `pt_marie`, `pt_kiosque`, `pt_gardien`, `pt_chloe`, `pt_nora`, `pt_lenoir`, `pt_marcel`, `pt_assistante` |
+| Porträts (quadratisch, PNG) | `pt_lino`, `pt_marie`, `pt_kiosque`, `pt_gardien`, `pt_chloe`, `pt_nora`, `pt_lenoir`, `pt_marcel`, `pt_assistante` |
 | Aufnahmen (MP3) | `au_kiosque.mp3`, `au_gardien.mp3`, `au_marcel.mp3`; Phase 2: `au_assistante.mp3`, `au_chloe.mp3` |
 
 Die Hotspot-Positionen stehen in `js/data.js` (`scenes`, Angaben in Prozent des Bildes) und werden nach dem Bildtausch angepasst.
@@ -81,4 +81,4 @@ Der Titel (Startbildschirm, Kopfzeile, Abspann) nutzt die Schrift Limelight aus 
 
 ## Texte ändern
 
-Alle Spieltexte liegen in `js/data.js`. Figurentexte sind `fr`, Leos umschaltbare Kommentare zusätzlich `de`. Die Kennungen (M03, P04, …) verbinden Drehbuch, Code und Diagnose.
+Alle Spieltexte liegen in `js/data.js`. Figurentexte sind `fr`, Linos umschaltbare Kommentare zusätzlich `de`. Die Kennungen (M03, P04, …) verbinden Drehbuch, Code und Diagnose.
