@@ -45,8 +45,14 @@ Druckvorlagen (auch aus der Lehrkraft-Ansicht verlinkt):
 
 | Datei | Inhalt |
 |---|---|
-| `zettel.html` | Zettel d'enquête, ein Blatt pro Schüler (Q1–Q4 + Sonstiges) |
+| `zettel.html` | Fiche d'enquête, ein Blatt pro Schüler (Q1–Q4 + Sonstiges) |
 | `quiz.html` | Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt das Lösungsblatt an |
+
+Fertige PDFs (A4) liegen im Ordner `druck/`: `Fiche_enquete.pdf`, `Quiz_eleves.pdf`, `Quiz_mit_Loesungen.pdf`. Sie sind aus den beiden HTML-Seiten erzeugt; nach Textänderungen genügt auch „Drucken → als PDF speichern“ im Browser.
+
+## Herunterladen und offline spielen
+
+Auf GitHub „Code → Download ZIP“ wählen, entpacken und `index.html` im Browser öffnen. Alle Bilder, Hörtexte und die Titelschrift liegen im Ordner und brauchen keine Internetverbindung; der Spielstand wird im Browser gespeichert.
 
 Die früheren Kennungen `D_M02`, `D_P03` und `D_B05` (Zuordnungsaufgaben) gibt es nicht mehr. Der Abspann steht in `G.credits`.
 
@@ -57,6 +63,10 @@ Die Nebenwege aus Abschnitt 10 des Drehbuchs sind eingebaut und freiwillig: die 
 ## Test
 
 `tools/playthrough.js` spielt beide Phasen automatisch durch (Playwright, Chromium) und meldet am Ende die Diagnosezeilen. Vorher `npm i -D playwright` und einen lokalen Server starten (`npx http-server -p 8765 .`), dann `node tools/playthrough.js`. Nach Änderungen an Texten oder Code zeigt ein fehlgeschlagener Durchlauf schnell, wo etwas klemmt.
+
+## Schrift
+
+Der Titel (Startbildschirm, Kopfzeile, Abspann) nutzt die Schrift Limelight aus `assets/fonts/` (SIL Open Font License, Lizenztext liegt daneben). Alles andere nutzt Systemschriften.
 
 ## Texte ändern
 
