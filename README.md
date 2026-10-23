@@ -16,7 +16,7 @@ Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: E
 | `assets/img/` | Hintergründe, Zwischensequenzen, Porträts |
 | `assets/audio/` | Hörtexte (MP3) |
 
-Kein Build, kein Server nötig: `index.html` lässt sich auch direkt im Browser öffnen. GitHub Pages veröffentlicht den Stand von `main` automatisch (Workflow in `.github/workflows/pages.yml`).
+Kein Build, kein Server nötig: `index.html` lässt sich auch direkt im Browser öffnen. GitHub Pages veröffentlicht den Stand von `main` automatisch (Workflow in `.github/workflows/pages.yml`). Voraussetzung: In den Repository-Einstellungen ist unter „Pages“ die Quelle „GitHub Actions“ gewählt; jeder Push auf `main` löst dann die Veröffentlichung aus.
 
 ## Bilder und Aufnahmen ergänzen
 
