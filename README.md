@@ -37,18 +37,29 @@ Die Hotspot-Positionen stehen in `js/data.js` (`scenes`, Angaben in Prozent des 
 - Die Lernenden exportieren am Ende (oder jederzeit aus dem Carnet) zwei Dateien: JSON (alles) und CSV (eine Zeile je Aufgabe und Person: Ergebnis, Versuche, Hilfestufe, Wiederholungen, Transkript, Dauer, Text).
 - Der Spielstand liegt im `localStorage` des Browsers; „Continuer la partie“ nimmt ihn wieder auf.
 
-## Zettel („fiche d'enquête“) und Quiz (Papier)
+## Merken statt notieren: Abfragen im Spiel
 
-Hinweise werden nicht mehr im Spiel „ins Carnet sortiert“, sondern auf Papier notiert. An zehn Stellen zeigt das Spiel eine Aufforderung **✎ Sur ta fiche** (Knotentyp `zettel` in `js/data.js`: Felder `items` = was zu notieren ist, optional `doc`/`docOf`/`docs` = Dokument zum Nachlesen, `audio` = Hörtext zum Wiederholen, `q` = betroffene Frage(n), `effects`, `after`, `next`). Das Carnet im Spiel zeigt pro Hinweis nur noch das Stichwort (`label` in `G.proofs`); der Inhalt steht auf dem Zettel der Schüler.
+Das Spiel gibt keine Notier-Hinweise und speichert keine Hinweise für die Schüler. Was wichtig ist, merken sie sich oder schreiben es auf ein Blatt (`zettel.html`, Modell zum Ausdrucken, auch als `druck/Fiche_enquete.pdf`). An sechs späteren Stellen fragt das Spiel die Informationen ab; die Antworten werden getippt (Knotentyp `task`, `kind: "recall"`, Felder `fields` oder Lücken `parts`, Prüfung ohne Groß-/Kleinschreibung und Akzente, `answers`, `keywords`, `number` oder `digits`). Wer es nicht weiß, kann „Revenir plus tard“ wählen und nachsehen; nach dem zweiten Fehlversuch nennt die Figur den Ort, an dem die Information steht.
+
+| Stelle | Wer fragt | Abgefragt | Quelle im Spiel |
+|---|---|---|---|
+| `L02q` Librairie, nach Aushang C | M. Lenoir | Nachname des Pantomimen; was Marcel über das Programm sagte | Wärter (Hörtext), Marcels Nachricht auf Noras Telefon |
+| `V01q` Louvre | die Assistentin | vollständiger Name, Uhrzeit | Aushang C (`L02r`, am Panneau nachlesbar) |
+| `V03q` Finale | Marcel | Inhalt des Rucksacks mit Orten (devant, bleue, Kevin, rouge, billets) | `M00` am Anfang, Kevins SMS (Telefon im Inventar), Notfall: Nachricht an Nowak (Telefon, ab `L05`) |
+| `X01t` Place des Vosges | der Musiker | neuer Spielort (Louvre) | Aushang C |
+| `C02t` Catacombes | die Angestellte | Tag und Uhrzeit des Treffens | Karte „demain“ im Inventar |
+| `C02n` Anruf | Marie | Chloés Telefonnummer | Karte „demain“ im Inventar |
+
+Das Carnet zeigt nur die Mission, die vier Fragen (mit „réglé“, sobald die passende Abfrage bestanden ist) und die eigenen Texte. Das Inventar enthält nur Gegenstände mit kurzer Beschreibung; die Aushänge bleiben am Panneau in der Buchhandlung. Die Diagnose-Kennungen der Abfragen: `D_L02q`, `D_V01q`, `D_V03q`, `D_X01`, `D_C02`, `D_C02n`; `D_NOWAK` zählt, wie oft Nowak nach dem Inhalt gefragt wurde. In der Lehrkraft-Ansicht listet „Abfragen im Spiel“ alle Fragen mit Antwort und Fundort.
 
 Druckvorlagen (auch aus der Lehrkraft-Ansicht verlinkt):
 
 | Datei | Inhalt |
 |---|---|
-| `zettel.html` | Fiche d'enquête, ein Blatt pro Schüler (Q1–Q4 + Sonstiges) |
-| `quiz.html` | Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt das Lösungsblatt an |
+| `zettel.html` | Notizblatt für die Schüler (Q1–Q4 + Sonstiges) |
+| `quiz.html` | optionales Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt das Lösungsblatt an |
 
-Fertige PDFs (A4) liegen im Ordner `druck/`: `Fiche_enquete.pdf`, `Quiz_eleves.pdf`, `Quiz_mit_Loesungen.pdf`. Sie sind aus den beiden HTML-Seiten erzeugt; nach Textänderungen genügt auch „Drucken → als PDF speichern“ im Browser.
+Fertige PDFs (A4) liegen im Ordner `druck/`: `Fiche_enquete.pdf`, `Quiz_eleves.pdf`, `Quiz_mit_Loesungen.pdf`. Sie sind aus den beiden HTML-Seiten erzeugt; nach Textänderungen genügt auch „Drucken → als PDF speichern“ im Browser. Der Abspann steht in `G.credits`.
 
 ## Herunterladen und offline spielen
 

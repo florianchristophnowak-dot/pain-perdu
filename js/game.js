@@ -12,8 +12,8 @@
   function freshState() {
     return {
       v: 1, players: ["", ""], leoLang: "fr", mouse: 0, scene: null, resume: "S02",
-      flags: {}, inv: Object.keys(G.items).filter(k => G.items[k].start), proofs: [], notes: "", mission: "",
-      q2noted: false, diag: [], helpUsed: {}, replays: {}, transcripts: {}, travel: 0, started: Date.now(), visited: [], cards: {}, finished: false
+      flags: {}, inv: Object.keys(G.items).filter(k => G.items[k].start), mission: "",
+      diag: [], helpUsed: {}, replays: {}, transcripts: {}, travel: 0, started: Date.now(), visited: [], cards: {}, finished: false
     };
   }
   function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { /* privat */ } }
@@ -22,7 +22,6 @@
   function setFlag(f) { S.flags[f] = true; save(); }
   function cond(c) {
     if (!c || c === "always") return true;
-    if (c === "Q2_proven") return isProven("Q2");
     return flag(c);
   }
   function twoPlayers() { return !!(S.players[1] && S.players[1].trim()); }
@@ -113,24 +112,16 @@
     au.play().catch(() => { if (currentAudio === au) { currentAudio = null; tts(); } });
   }
 
-  /* ---------- Carnet-Logik ---------- */
-  function proofLabel(P) { return P.label ? esc(P.label) + ' <span class="ztag">✎ ' + esc(G.ui.zettel.tag) + "</span>" : gl(P.text); }
-  function addProof(id) { if (!S.proofs.includes(id)) { S.proofs.push(id); save(); return true; } return false; }
+  /* ---------- Wirkungen (Flags, Gegenstände, Mission) ---------- */
   function addItem(id) { if (!S.inv.includes(id)) { S.inv.push(id); save(); toast("Inventaire : " + G.items[id].name); } }
-  function isProven(q) {
-    if (q === "Q2") return flag("Q2_proven");
-    const need = G.questions[q].need;
-    return S.proofs.filter(p => G.proofs[p].q === q && G.proofs[p].strong).length >= need;
-  }
   function applyEffects(fx, key) {
     if (!fx) return;
     if (key) { if (S.flags["fx:" + key]) return; S.flags["fx:" + key] = true; }
-    if (fx.proof) addProof(fx.proof);
-    if (fx.proofs) fx.proofs.forEach(addProof);
     if (fx.item) addItem(fx.item);
     if (fx.items) fx.items.forEach(addItem);
     if (fx.removeItem) S.inv = S.inv.filter(i => i !== fx.removeItem);
     if (fx.flag) S.flags[fx.flag] = true;
+    if (fx.flags) fx.flags.forEach(f => { S.flags[f] = true; });
     if (fx.mission) S.mission = fx.mission;
     save(); refreshTop();
   }
@@ -141,7 +132,7 @@
   function refreshTop() {
     $("#scene-name").textContent = S && S.scene ? G.scenes[S.scene].name : "";
     $("#mouse").textContent = S && twoPlayers() ? G.ui.mouse + " " + pname(S.mouse) : "";
-    const n = S ? S.proofs.length : 0; $("#carnet-count").textContent = n ? n : "";
+    $("#carnet-count").textContent = S && S.mission ? "!" : "";
   }
   function openModal(cls, keepDialogue) {
     modal.className = "modal " + (cls || "");
@@ -243,7 +234,6 @@
       case "doc": return runDoc(id, n, finish);
       case "choice": return runChoice(id, n, finish);
       case "audio": return runAudio(id, n, finish);
-      case "zettel": return runZettel(id, n, finish);
       case "task": return runTask(id, n, finish);
       case "convo": return runConvo(id, n, finish);
       case "scene": enterScene(n.scene, false); finish(); return goNode(n.next);
@@ -269,7 +259,8 @@
     if (n.diag && n.count) record({ id: n.diag, result: "gelesen", count: true });
     body.appendChild(el("h2", "", esc(n.title)));
     if (n.img) body.appendChild(docImg(n.img));
-    body.appendChild(el("div", "paper " + (n.icon || ""), gl(n.doc)));
+    if (n.doc) body.appendChild(el("div", "paper " + (n.icon || ""), gl(n.doc)));
+    (n.docs || []).forEach(d => { const c = el("div", "doccard"); c.appendChild(el("div", "doclabel", esc(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
     const box = el("div", "dlg-inline"); body.appendChild(box);
     const done = () => { closeModal(); finish(); if (n.next) goNode(n.next); };
     showLines(n.lines, () => {
@@ -341,26 +332,6 @@
     setTimeout(() => play.click(), 300);
   }
 
-  /* ---------- Zettel: auf Papier notieren ---------- */
-  function runZettel(id, n, finish) {
-    const body = openModal("zettel nocl");
-    body.appendChild(el("h2", "", esc(G.ui.zettel.title) + (n.title ? " · " + esc(n.title) : "")));
-    const src = n.docOf ? G.nodes[n.docOf] : null;
-    const docText = n.doc || (src && src.doc);
-    if (n.img) body.appendChild(docImg(n.img));
-    if (docText) body.appendChild(el("div", "paper " + (n.icon || (src && src.icon) || ""), gl(docText)));
-    (n.docs || []).forEach(d => { const c = el("div", "doccard"); c.appendChild(el("div", "doclabel", esc(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
-    if (n.audio) { const tools = el("div", "tools"); const play = el("button", "btn play", "▶ " + G.ui.btn.rejouer); play.addEventListener("click", () => playAudio(n.audio, play)); tools.appendChild(play); body.appendChild(tools); }
-    body.appendChild(el("p", "zintro", esc(G.ui.zettel.intro)));
-    const ul = el("ul", "zitems"); (n.items || []).forEach(t => ul.appendChild(el("li", "", gl(t)))); body.appendChild(ul);
-    const qs = n.q ? [].concat(n.q) : [];
-    if (qs.length) body.appendChild(el("p", "hint", esc(G.ui.zettel.forQ) + " " + qs.map(q => q + " (" + esc(G.questions[q].title) + ")").join(", ")));
-    body.appendChild(el("p", "hint", esc(G.ui.zettel.hint)));
-    const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.zettel.done);
-    b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); showLines(n.after, () => { finish(); const nx = resolve(n.next); if (nx) goNode(nx); }); });
-    bar.appendChild(b); body.appendChild(bar);
-  }
-
   /* ---------- Aufgaben ---------- */
   function runTask(id, n, finish) {
     const idxs = (n.perPlayer && twoPlayers()) ? [0, 1] : [S.mouse];
@@ -426,7 +397,7 @@
       const help = hc ? hc.level() : 0;
       const res = Object.assign({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, replays: n.audio ? (S.replays[n.audio] || 0) - replays0 : undefined, transcript: n.audio ? st.transcript : undefined, duration: Math.round((Date.now() - st.t0) / 1000), playerIdx }, extra || {});
       if (n.diag) record(res);
-      feedback(line || { who: "marie", fr: help > 0 ? G.ui.marie.afterHelp : G.ui.marie.proofOk }, true);
+      feedback(line || { who: "marie", fr: help > 0 ? G.ui.marie.afterHelp : G.ui.marie.ok }, true);
       const b = el("button", "btn primary", G.ui.btn.continuer); b.addEventListener("click", () => done(Object.assign({ player: pname(playerIdx) }, extra || {})));
       const bar = el("div", "bar"); bar.appendChild(b); fb.appendChild(bar);
       $$("button", area).forEach(x => x.disabled = true); $$("select,textarea", area).forEach(x => x.disabled = true);
@@ -437,32 +408,6 @@
 
   const TASKS = {};
   const QIDS = ["Q1", "Q2", "Q3", "Q4"];
-
-  TASKS.assign = function (T, area, api) {
-    const doneDocs = new Set();
-    T.docs.forEach(d => {
-      const card = el("div", "doccard");
-      card.appendChild(el("div", "doclabel", esc(d.label)));
-      if (d.text) card.appendChild(el("div", "doctext", gl(d.text)));
-      const qs = el("div", "qbtns");
-      QIDS.forEach(q => {
-        const b = el("button", "btn small", q + " · " + esc(G.questions[q].title));
-        b.addEventListener("click", () => {
-          if (doneDocs.has(d.id)) return;
-          if (q === d.answer) {
-            doneDocs.add(d.id); addProof(d.proof); card.classList.add("done");
-            card.appendChild(el("div", "okline", "✓ " + esc(q) + " — " + gl(d.ok)));
-            $$("button", qs).forEach(x => x.disabled = true);
-            api.feedback({ who: "marie", fr: G.ui.marie.proofOk }, true);
-            refreshTop();
-            if (doneDocs.size === T.docs.length) api.complete();
-          } else api.wrong();
-        });
-        qs.appendChild(b);
-      });
-      card.appendChild(qs); area.appendChild(card);
-    });
-  };
 
   TASKS.sort = function (T, area, api) {
     const sels = {};
@@ -579,54 +524,53 @@
 
   TASKS.poster = function (T, area, api) {
     const wall = el("div", "wall");
-    const phase2 = () => {
-      wall.querySelectorAll("button").forEach(b => b.disabled = true);
-      setFlag("L02_C");
-      const pr = el("div", "proofpick");
-      pr.appendChild(el("p", "q", esc(T.proofsIntro)));
-      const sel = new Set(); const list = el("div", "picklist");
-      S.proofs.forEach(pid => {
-        const P = G.proofs[pid];
-        const b = el("button", "btn opt", "<small>" + P.q + "</small> " + proofLabel(P));
-        b.addEventListener("click", () => { if (sel.has(pid)) { sel.delete(pid); b.classList.remove("on"); } else if (sel.size < 2) { sel.add(pid); b.classList.add("on"); } });
-        list.appendChild(b);
-      });
-      pr.appendChild(list);
-      const v = el("button", "btn primary", G.ui.btn.valider);
-      v.addEventListener("click", () => {
-        if (sel.size < 2) { api.feedback({ who: "marie", fr: "Choisis deux preuves." }, false); return; }
-        const have = T.needed.filter(x => S.proofs.includes(x));
-        if (have.length < 2) {
-          const miss = T.needed.find(x => !S.proofs.includes(x));
-          S.q2noted = true; save();
-          api.feedback({ who: "marie", fr: T.missing[miss] }, false);
-          api.st.wrongs++;
-          const b = el("button", "btn", G.ui.btn.fermer); b.addEventListener("click", () => { closeModal(); S.resume = null; save(); goNode("SCENE_librairie"); });
-          const bar = el("div", "bar"); bar.appendChild(b); api.feedback.bar = bar; $(".feedback", api.body).appendChild(bar);
-          v.disabled = true;
-          return;
-        }
-        if (T.needed.every(x => sel.has(x))) {
-          addProof("pf_louvre"); setFlag("Q2_proven"); setFlag("L02_done"); refreshTop();
-          api.complete({ text: "C ; preuves : " + Array.from(sel).join("+") }, T.success);
-          v.disabled = true;
-        } else { api.wrong(T.wrongProofs); }
-      });
-      pr.appendChild(v); area.appendChild(pr);
-    };
     T.posters.forEach(p => {
       const card = el("div", "poster");
       card.appendChild(el("div", "pl", esc(p.id)));
       card.appendChild(el("div", "ptext", gl(p.text)));
       const b = el("button", "btn small", "C'est celui-ci");
       b.addEventListener("click", () => {
-        if (p.ok) { card.classList.add("on"); phase2(); }
+        if (p.ok) { card.classList.add("on"); wall.querySelectorAll("button").forEach(x => x.disabled = true); api.complete({ text: p.id }, T.success); }
         else { if (p.flag) setFlag(p.flag); api.wrong(p.reply); }
       });
       card.appendChild(b); wall.appendChild(card);
     });
     area.appendChild(wall);
-    if (flag("L02_C")) { $$(".poster", wall)[2].classList.add("on"); phase2(); }
+  };
+
+  /* Abfrage: Antworten tippen (aus dem Gedächtnis oder vom eigenen Blatt) */
+  function normAns(v) { return String(v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[’']/g, " ").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim(); }
+  function answerOk(f, raw) {
+    const v = normAns(raw); if (!v) return false;
+    if (f.digits) { const d = v.replace(/\D/g, ""); return (f.answers || []).some(a => String(a).replace(/\D/g, "") === d); }
+    if ((f.answers || []).some(a => normAns(a) === v)) return true;
+    if (f.number !== undefined) { const m = v.match(/\d+/); if (m && +m[0] === f.number) return true; }
+    if (f.keywords) return f.keywords.some(g => g.every(k => v.includes(normAns(k))));
+    return false;
+  }
+  TASKS.recall = function (T, area, api) {
+    const inputs = [];
+    const mk = f => { const inp = el("input", "rin"); inp.type = "text"; inp.autocomplete = "off"; inp.spellcheck = false; inp.size = f.size || 14; inp.placeholder = f.placeholder || "…"; inp.dataset.id = f.id; inputs.push({ f, inp, wrongs: 0 }); return inp; };
+    if (T.parts) { const p = el("p", "gaptext"); T.parts.forEach(part => { if (typeof part === "string") p.appendChild(document.createTextNode(part)); else p.appendChild(mk(part)); }); area.appendChild(p); }
+    (T.fields || []).forEach(f => { const row = el("div", "rfield"); row.appendChild(el("label", "", gl(f.label))); row.appendChild(mk(f)); area.appendChild(row); });
+    area.appendChild(el("p", "hint", esc(G.ui.recall.intro)));
+    const bar = el("div", "bar");
+    const b = el("button", "btn primary", G.ui.recall.check);
+    b.addEventListener("click", () => {
+      let ok = true; const hints = [];
+      inputs.forEach(x => { const good = answerOk(x.f, x.inp.value); x.inp.classList.toggle("bad", !good); x.inp.classList.toggle("good", good); if (!good) { ok = false; x.wrongs++; if (x.wrongs >= 2 && x.f.where && !hints.includes(x.f.where)) hints.push(x.f.where); } });
+      if (ok) { inputs.forEach(x => x.inp.disabled = true); b.disabled = true; api.complete({ text: inputs.map(x => x.inp.value.trim()).join(" | ") }, T.success); }
+      else api.wrong({ who: T.who || "marie", fr: (T.wrongText || G.ui.recall.wrong) + (hints.length ? " " + hints.join(" ") : "") });
+    });
+    bar.appendChild(b);
+    if (T.leave !== false) {
+      const l = el("button", "btn", G.ui.recall.later);
+      l.addEventListener("click", () => { closeModal(); S.resume = null; save(); showLines(T.leaveLines || [{ who: T.who || "marie", fr: G.ui.recall.unknown }]); });
+      bar.appendChild(l);
+    }
+    area.appendChild(bar);
+    inputs.forEach(x => x.inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); b.click(); } }));
+    setTimeout(() => inputs[0] && inputs[0].inp.focus(), 50);
   };
 
   TASKS.stamp = function (T, area, api) {
@@ -660,8 +604,8 @@
       const step = n.steps[si];
       showLines(step.lines, () => {
         dlg.innerHTML = ""; dlg.classList.add("active");
-        const row = el("div", "line"); row.appendChild(portrait(n.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[n.who].name) + " · " + (si + 1) + "/3</div>")); dlg.appendChild(row);
-        if (!hc) hc = helpCtl(n.help, { wrongs: () => st.wrongs, material: () => openCarnet(true) });
+        const row = el("div", "line"); row.appendChild(portrait(n.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[n.who].name) + " · " + (si + 1) + "/" + n.steps.length + "</div>")); dlg.appendChild(row);
+        if (!hc) hc = helpCtl(n.help, { wrongs: () => st.wrongs, material: () => { $$(".choice", dlg).forEach(b => b.classList.add("hl")); } });
         const extra = el("div", "help-row"); extra.appendChild(hc.btn);
         const picked = new Set();
         renderChoices(dlg, step.choices, (ch, i, b) => {
@@ -688,7 +632,7 @@
     body.appendChild(el("h2", "", esc(G.ui.end)));
     const mins = Math.round((Date.now() - S.started) / 60000);
     const helps = Object.values(S.helpUsed).reduce((a, b) => a + b, 0);
-    body.appendChild(el("div", "paper", "<b>" + esc(pname(0)) + (twoPlayers() ? " & " + esc(pname(1)) : "") + "</b><br>Lieux visités : " + S.visited.length + " · Aides de Marie : " + helps + " · Durée : " + mins + " min · Preuves : " + S.proofs.length));
+    body.appendChild(el("div", "paper", "<b>" + esc(pname(0)) + (twoPlayers() ? " & " + esc(pname(1)) : "") + "</b><br>Lieux visités : " + S.visited.length + " · Aides de Marie : " + helps + " · Durée : " + mins + " min · Questions réglées : " + QIDS.filter(q => flag(G.questions[q].done)).length + "/4"));
     body.appendChild(el("p", "", "Tu peux maintenant exporter le carnet (deux fichiers) et le donner à ton prof."));
     if (G.credits) body.appendChild(el("div", "credits", "<b>" + esc(G.credits.title) + "</b><br>" + G.credits.lines.map(esc).join("<br>")));
     const bar = el("div", "bar");
@@ -728,28 +672,24 @@
     toast("Export : " + base + ".json / .csv");
   }
 
-  /* ---------- Carnet ---------- */
+  /* ---------- Carnet: Mission, die vier Fragen, eigene Texte. Keine automatisch gespeicherten Hinweise. ---------- */
   function openCarnet(keep) {
     const body = openModal("carnet", keep);
     body.appendChild(el("h2", "", esc(G.ui.carnet.title)));
     if (S.mission) body.appendChild(el("div", "mission", "<b>" + esc(G.ui.carnet.mission) + " :</b> " + gl(S.mission)));
+    body.appendChild(el("h3", "", esc(G.ui.carnet.questions)));
     QIDS.forEach(q => {
-      const proven = isProven(q);
-      const box = el("div", "qbox " + (proven ? "proven" : ""));
-      box.appendChild(el("div", "qtitle", "<b>" + q + "</b> " + esc(G.questions[q].title) + ' <span class="status">' + (proven ? esc(G.ui.carnet.proven) : esc(G.ui.carnet.hyp) + (q === "Q2" && S.q2noted ? " (affiche C ?)" : "")) + "</span>"));
-      const ul = el("ul", "proofs");
-      S.proofs.filter(p => G.proofs[p].q === q).forEach(p => ul.appendChild(el("li", G.proofs[p].strong ? "strong" : "", proofLabel(G.proofs[p]))));
-      if (!ul.children.length) ul.appendChild(el("li", "none", "—"));
-      box.appendChild(el("div", "plabel", esc(G.ui.carnet.proofs))); box.appendChild(ul);
+      const done = flag(G.questions[q].done);
+      const box = el("div", "qbox " + (done ? "proven" : ""));
+      box.appendChild(el("div", "qtitle", "<b>" + q + "</b> " + esc(G.questions[q].title) + ' <span class="status">' + esc(done ? G.ui.carnet.done : G.ui.carnet.open) + "</span>"));
       body.appendChild(box);
     });
+    body.appendChild(el("p", "hint", esc(G.ui.carnet.hint)));
     const cards = Object.keys(S.cards);
     if (cards.length) {
       body.appendChild(el("h3", "", esc(G.ui.carnet.cards)));
       cards.forEach(cid => { const n = G.nodes[cid]; S.cards[cid].forEach(c => body.appendChild(el("div", "paper small", "<b>" + esc(n.title) + " · " + esc(c.player) + "</b><br>" + esc(c.text)))); });
     }
-    body.appendChild(el("h3", "", esc(G.ui.carnet.notes)));
-    const ta = el("textarea"); ta.rows = 4; ta.value = S.notes; ta.addEventListener("input", () => { S.notes = ta.value; save(); }); body.appendChild(ta);
     const bar = el("div", "bar");
     const ex = el("button", "btn", G.ui.btn.exporter); ex.addEventListener("click", exportAll); bar.appendChild(ex);
     const cl = el("button", "btn primary", G.ui.btn.fermer); cl.addEventListener("click", closeModal); bar.appendChild(cl);
@@ -819,12 +759,10 @@
       if (p.hideUntil && !flag(p.hideUntil)) return;
       const unlocked = cond(p.unlock);
       const done = p.done.every(f => flag(f));
-      const missing = p.q2proof && !S.proofs.includes(p.q2proof) && !isProven("Q2");
       const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       g.setAttribute("class", "place " + (unlocked ? "open" : "locked") + (done ? " done" : "") + (S.scene === p.id ? " here" : ""));
       g.innerHTML = "<title>" + esc(p.label) + "</title>" + '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.2"/>' +
         (done ? '<text x="' + p.x + '" y="' + (p.y + 1.1) + '" class="chk" text-anchor="middle">✓</text>' : "") +
-        (missing && unlocked && !done ? '<circle cx="' + (p.x + 2.6) + '" cy="' + (p.y - 2.6) + '" r="1.2" class="dot"/>' : "") +
         '<text x="' + p.x + '" y="' + (p.y + 6.2) + '" text-anchor="middle" class="lbl">' + esc(p.short || p.label) + "</text>" +
         '<text x="' + p.x + '" y="' + (p.y + 9.4) + '" text-anchor="middle" class="q">' + esc(unlocked ? p.q : G.ui.locked) + "</text>";
       g.addEventListener("click", () => {
@@ -834,7 +772,7 @@
       svg.appendChild(g);
     });
     body.appendChild(wrap);
-    body.appendChild(el("p", "hint", "✓ = tâches faites · point rouge = il manque encore une preuve pour Q2"));
+    body.appendChild(el("p", "hint", "✓ = tâches faites"));
     const bar = el("div", "bar"); const cl = el("button", "btn", G.ui.btn.fermer); cl.addEventListener("click", closeModal); bar.appendChild(cl); body.appendChild(bar);
   }
 
@@ -908,10 +846,10 @@
     const body = openModal("prof");
     body.appendChild(el("h2", "", "Lehrkraft-Ansicht"));
     const bar = el("div", "bar");
-    const unlock = el("button", "btn", "Tout débloquer"); unlock.addEventListener("click", () => { ["M00_done", "M02_done", "M03_done", "M04b_done", "P02_done", "P03_done", "P04_done", "P05_done", "P06_done", "B01a_done", "B03_open", "B04_done", "B05_done", "B06_done", "L02_C", "L02_done", "Q2_proven", "L04_done", "L05_done", "C01_found", "vosges_seen"].forEach(f => S.flags[f] = true); Object.keys(G.proofs).forEach(addProof); Object.keys(G.items).forEach(id => { if (!S.inv.includes(id)) S.inv.push(id); }); save(); refreshTop(); toast("Alles freigeschaltet"); }); bar.appendChild(unlock);
+    const unlock = el("button", "btn", "Tout débloquer"); unlock.addEventListener("click", () => { ["M00_done", "M02_done", "M03_done", "M04b_done", "P02_done", "P03_done", "P04_done", "P05_done", "P06_done", "B01a_done", "B03_open", "B04_done", "B05_done", "B06_done", "L02_C", "L02_done", "L02q_done", "L04_done", "L05_done", "C01_found", "vosges_seen", "V01q_done"].forEach(f => S.flags[f] = true); Object.keys(G.items).forEach(id => { if (!S.inv.includes(id)) S.inv.push(id); }); save(); refreshTop(); toast("Alles freigeschaltet"); }); bar.appendChild(unlock);
     const reset = el("button", "btn", "Spielstand löschen"); reset.addEventListener("click", () => { if (confirm("Spielstand auf diesem Gerät löschen?")) { localStorage.removeItem(SAVE_KEY); location.reload(); } }); bar.appendChild(reset);
     const exr = el("button", "btn", "Alle Ergebnisse (CSV)"); exr.addEventListener("click", () => { const all = JSON.parse(localStorage.getItem(RESULTS_KEY) || "[]"); download("pain-perdu_resultats.csv", csvRows(all.flatMap(r => r.diag)), "text/csv;charset=utf-8"); }); bar.appendChild(exr);
-    const pz = el("a", "btn", "Fiche d'enquête (Druck)"); pz.href = "zettel.html"; pz.target = "_blank"; bar.appendChild(pz);
+    const pz = el("a", "btn", "Notizblatt (Druck)"); pz.href = "zettel.html"; pz.target = "_blank"; bar.appendChild(pz);
     const pq = el("a", "btn", "Quiz + Lösungen (Druck)"); pq.href = "quiz.html?prof=1"; pq.target = "_blank"; bar.appendChild(pq);
     body.appendChild(bar);
     body.appendChild(el("h3", "", "Sprung zu einem Knoten"));
@@ -924,12 +862,16 @@
     sol.innerHTML = [
       "<b>M03</b> Vous avez vu cet homme ?", "<b>M04</b> ce matin = Père-Lachaise · cet après-midi = le Marais · ce soir = on ne sait pas",
       "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> A (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune",
-      "<b>B02</b> B oder C (A = Reparatur)", "<b>B02b</b> A", "<b>B04</b> a, c, e", "<b>L02</b> C ; Belege: pf_nom + pf_programme", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
-      "<b>V03</b> Schritt 1: A/B · Schritt 2: A/B · Schritt 3: boîte bleue + enveloppe rouge"
+      "<b>B02</b> B oder C (A = Reparatur)", "<b>B02b</b> A", "<b>B04</b> a, c, e", "<b>L02</b> C", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
+      "<b>V03</b> Schritt 1: A/B · Schritt 2: A/B", "<b>C03</b> les vieux panneaux · en carton · son sac brun", "<b>V02b</b> à droite · derrière · éteinte · allumée"
     ].join("<br>");
     body.appendChild(sol);
-    body.appendChild(el("h3", "", "Indices (Carnet-Stichwort → Inhalt auf der Fiche d'enquête)"));
-    body.appendChild(el("div", "paper small", Object.keys(G.proofs).map(k => "<b>" + esc(G.proofs[k].q) + " · " + esc(G.proofs[k].label || k) + "</b> → " + esc(G.proofs[k].text)).join("<br>")));
+    body.appendChild(el("h3", "", "Abfragen im Spiel (Frage → erwartete Antwort · wo nachsehen)"));
+    const rec = Object.keys(G.nodes).filter(id => G.nodes[id].type === "task" && G.nodes[id].task.kind === "recall");
+    body.appendChild(el("div", "paper small", rec.map(id => {
+      const T = G.nodes[id].task; const fs = (T.fields || []).concat((T.parts || []).filter(x => typeof x === "object"));
+      return "<b>" + id + " · " + esc(G.nodes[id].title || "") + "</b> (" + esc(G.chars[T.who].name) + ")<br>" + fs.map(f => "– " + esc(f.label || "Lücke " + f.id) + " → <b>" + esc((f.answers || [])[0] || (f.keywords ? f.keywords.map(g => g.join(" + ")).join(" / ") : "")) + "</b>" + (f.where ? " · <i>" + esc(f.where) + "</i>" : "")).join("<br>");
+    }).join("<br><br>")));
     body.appendChild(el("h3", "", "Transkripte"));
     Object.keys(G.audio).forEach(k => body.appendChild(el("div", "paper small", "<b>" + k + ".mp3 · " + esc(G.chars[G.audio[k].who].name) + "</b><br>" + esc(G.audio[k].text))));
     body.appendChild(el("h3", "", "Ergebnisse auf diesem Gerät"));
