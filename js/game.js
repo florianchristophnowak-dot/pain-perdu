@@ -5,6 +5,7 @@
   const $ = (sel, el) => (el || document).querySelector(sel);
   const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
   const PROF = new URLSearchParams(location.search).get("mode") === "prof";
+  const TOUCH = window.matchMedia && matchMedia("(pointer: coarse)").matches;   // Handy oder Tablet
   const SAVE_KEY = "pp_save_v1", RESULTS_KEY = "pp_results_v1";
 
   /* ---------- Zustand ---------- */
@@ -56,11 +57,12 @@
     tip.innerHTML = "<b>" + esc(entry[0]) + "</b><br>" + esc(entry[1]);
     tip.hidden = false;
     const r = t.getBoundingClientRect();
-    tip.style.left = Math.min(r.left, window.innerWidth - 260) + "px";
+    tip.style.left = Math.max(8, Math.min(r.left, window.innerWidth - tip.offsetWidth - 8)) + "px";
     tip.style.top = (r.bottom + 6 + window.scrollY) + "px";
   });
+  document.addEventListener("scroll", () => { $("#gltip").hidden = true; }, true);
 
-  /* Bilder mit Fallback png -> jpg -> Farbe */
+  /* Bilder mit Fallback jpg -> png -> Farbe */
   function setBg(node, name) {
     node.style.backgroundImage = "";
     node.dataset.img = name;
@@ -70,7 +72,7 @@
       im.onerror = () => next && next();
       im.src = "assets/img/" + name + "." + ext;
     };
-    tryLoad("png", () => tryLoad("jpg", () => { node.style.backgroundImage = "linear-gradient(160deg,#5b4636,#2d2420)"; if (node.id === "stage") { node.style.aspectRatio = "2.12"; const l = el("div", "nobg", esc(S && S.scene ? G.scenes[S.scene].name : "")); node.appendChild(l); } }));
+    tryLoad("jpg", () => tryLoad("png", () => { node.style.backgroundImage = "linear-gradient(160deg,#5b4636,#2d2420)"; if (node.id === "stage") { node.style.aspectRatio = "2.12"; const l = el("div", "nobg", esc(S && S.scene ? G.scenes[S.scene].name : "")); node.appendChild(l); } }));
   }
   function docImg(name) {
     const im = el("img", "docimg"); im.alt = ""; im.src = "assets/img/" + name + ".jpg";
@@ -91,7 +93,7 @@
   function pickVoice() { const vs = speechSynthesis.getVoices(); frVoice = vs.find(v => /^fr[-_]FR/i.test(v.lang)) || vs.find(v => /^fr/i.test(v.lang)) || null; }
   if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
   function stopAudio() { if (currentAudio) { currentAudio.pause(); currentAudio = null; } if ("speechSynthesis" in window) speechSynthesis.cancel(); $$(".playing").forEach(e => e.classList.remove("playing")); }
-  function playAudio(id, btn) {
+  function playAudio(id, btn, onBlocked) {
     stopAudio();
     const a = G.audio[id];
     if (!a) return;
@@ -109,7 +111,13 @@
     currentAudio = au;
     au.onended = done;
     au.onerror = () => { if (currentAudio === au) { currentAudio = null; tts(); } };
-    au.play().catch(() => { if (currentAudio === au) { currentAudio = null; tts(); } });
+    au.play().catch(err => {
+      if (currentAudio !== au) return;
+      currentAudio = null;
+      // Handy-Browser spielen ohne Antippen nichts ab: dann wartet der Knopf, statt die Computerstimme zu starten
+      if (err && err.name === "NotAllowedError") { S.replays[id]--; save(); done(); if (onBlocked) onBlocked(); return; }
+      tts();
+    });
   }
 
   /* ---------- Wirkungen (Flags, Gegenstände, Mission) ---------- */
@@ -131,7 +139,8 @@
   function toast(msg) { const box = $("#toasts"); while (box.children.length >= 2) box.firstChild.remove(); const t = el("div", "toast", esc(msg)); box.appendChild(t); setTimeout(() => t.remove(), 2600); }
   function refreshTop() {
     $("#scene-name").textContent = S && S.scene ? G.scenes[S.scene].name : "";
-    $("#mouse").textContent = S && twoPlayers() ? G.ui.mouse + " " + pname(S.mouse) : "";
+    if (S && S.scene) stage.dataset.name = G.scenes[S.scene].name;   // Hochformat: Ortsname auf dem Bild
+    $("#mouse").innerHTML = S && twoPlayers() ? '<span class="ml">' + esc(G.ui.mouse) + "</span> " + esc(pname(S.mouse)) : "";
     $("#carnet-count").textContent = S && S.mission ? "!" : "";
   }
   function openModal(cls, keepDialogue) {
@@ -317,7 +326,8 @@
     body.appendChild(el("h2", "", esc(G.chars[a.who].name)));
     const row = el("div", "audio-row"); row.appendChild(portrait(a.who));
     const play = el("button", "btn play", "▶ " + G.ui.verbs.ecouter);
-    play.addEventListener("click", () => { playAudio(n.audio, play); play.textContent = "▶ " + G.ui.btn.rejouer; });
+    const start = onBlocked => { play.textContent = "▶ " + G.ui.btn.rejouer; playAudio(n.audio, play, onBlocked); };
+    play.addEventListener("click", () => start());
     row.appendChild(play);
     const tr = el("button", "btn", G.ui.btn.transcription);
     const trBox = el("div", "paper transcript", gl(a.text)); trBox.hidden = true;
@@ -329,7 +339,7 @@
     const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.btn.continuer);
     b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(n.next); });
     bar.appendChild(b); body.appendChild(bar);
-    setTimeout(() => play.click(), 300);
+    setTimeout(() => start(() => { play.textContent = "▶ " + G.ui.verbs.ecouter; }), 300);
   }
 
   /* ---------- Aufgaben ---------- */
@@ -550,7 +560,11 @@
   }
   TASKS.recall = function (T, area, api) {
     const inputs = [];
-    const mk = f => { const inp = el("input", "rin"); inp.type = "text"; inp.autocomplete = "off"; inp.spellcheck = false; inp.size = f.size || 14; inp.placeholder = f.placeholder || "…"; inp.dataset.id = f.id; inputs.push({ f, inp, wrongs: 0 }); return inp; };
+    const mk = f => {
+      const inp = el("input", "rin"); inp.type = "text"; inp.autocomplete = "off"; inp.spellcheck = false; inp.size = f.size || 14; inp.placeholder = f.placeholder || "…"; inp.dataset.id = f.id;
+      inp.setAttribute("autocorrect", "off"); inp.setAttribute("autocapitalize", "none"); if (f.digits) inp.inputMode = "tel";
+      inputs.push({ f, inp, wrongs: 0 }); return inp;
+    };
     if (T.parts) { const p = el("p", "gaptext"); T.parts.forEach(part => { if (typeof part === "string") p.appendChild(document.createTextNode(part)); else p.appendChild(mk(part)); }); area.appendChild(p); }
     (T.fields || []).forEach(f => { const row = el("div", "rfield"); row.appendChild(el("label", "", gl(f.label))); row.appendChild(mk(f)); area.appendChild(row); });
     area.appendChild(el("p", "hint", esc(G.ui.recall.intro)));
@@ -577,7 +591,7 @@
     }
     area.appendChild(bar);
     inputs.forEach(x => x.inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); b.click(); } }));
-    setTimeout(() => inputs[0] && inputs[0].inp.focus(), 50);
+    if (!TOUCH) setTimeout(() => inputs[0] && inputs[0].inp.focus(), 50);   // auf dem Handy würde die Tastatur die Frage verdecken
   };
 
   TASKS.stamp = function (T, area, api) {
@@ -674,9 +688,20 @@
   function exportAll() {
     const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
     const base = "pain-perdu_" + (pname(0) + (twoPlayers() ? "_" + pname(1) : "")).replace(/[^A-Za-z0-9À-ÿ_-]+/g, "_") + "_" + stamp;
-    download(base + ".json", JSON.stringify(S, null, 2), "application/json");
-    setTimeout(() => download(base + ".csv", csvRows(S.diag), "text/csv;charset=utf-8"), 400);
-    toast("Export : " + base + ".json / .csv");
+    const json = JSON.stringify(S, null, 2), csv = csvRows(S.diag);
+    const both = () => {
+      download(base + ".json", json, "application/json");
+      setTimeout(() => download(base + ".csv", csv, "text/csv;charset=utf-8"), 400);
+      toast("Export : " + base + ".json / .csv");
+    };
+    // Handy-Browser laden oft nur eine von zwei Dateien herunter; das Teilen-Menü nimmt beide
+    let files = null;
+    try { files = [new File([json], base + ".json", { type: "application/json" }), new File([csv], base + ".csv", { type: "text/csv" })]; } catch (e) { files = null; }
+    if (TOUCH && files && navigator.canShare && navigator.canShare({ files })) {
+      navigator.share({ files, title: "L'affaire du pain perdu – " + pname(0) }).then(() => toast("Export : " + base)).catch(e => { if (!e || e.name !== "AbortError") both(); });
+      return;
+    }
+    both();
   }
 
   /* ---------- Carnet: Mission, die vier Fragen, eigene Texte. Keine automatisch gespeicherten Hinweise. ---------- */
@@ -834,6 +859,8 @@
   function verbMenu(h, btn) {
     $$(".verbs").forEach(v => v.remove());
     const m = el("div", "verbs");
+    m.appendChild(el("div", "vtitle", esc(h.label)));
+    m.addEventListener("click", e => e.stopPropagation());
     Object.keys(h.actions).forEach(v => {
       const b = el("button", "btn verb", verbIcon(v) + "<span>" + esc(G.ui.verbs[v] || v) + "</span>");
       b.addEventListener("click", e => {
@@ -844,7 +871,13 @@
       });
       m.appendChild(b);
     });
-    btn.appendChild(m);
+    m.style.left = "0px"; m.style.top = "0px"; m.style.transform = "none";
+    stage.appendChild(m);
+    // über der Mitte des Hotspots, aber ganz im Bild (am Rand sonst abgeschnitten)
+    const sr = stage.getBoundingClientRect(), br = btn.getBoundingClientRect(), pad = 4;
+    const x = br.left - sr.left + br.width / 2 - m.offsetWidth / 2, y = br.top - sr.top + br.height / 2 - m.offsetHeight / 2;
+    m.style.left = Math.max(pad, Math.min(x, sr.width - m.offsetWidth - pad)) + "px";
+    m.style.top = Math.max(pad, Math.min(y, sr.height - m.offsetHeight - pad)) + "px";
   }
   document.addEventListener("click", () => $$(".verbs").forEach(v => v.remove()));
 
@@ -926,6 +959,29 @@
     enterScene(S.scene || "montmartre", false);
     if (S.resume) goNode(S.resume);
   }
+  /* Handy: Vollbild, wo der Browser es kann (nicht auf dem iPhone); Hinweis, das Telefon zu drehen */
+  function setupMobile() {
+    const de = document.documentElement;
+    const req = de.requestFullscreen || de.webkitRequestFullscreen;
+    const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+    const fb = $("#btn-full");
+    if (TOUCH && req && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
+      fb.hidden = false;
+      fb.addEventListener("click", () => {
+        if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        else { const r = req.call(de); if (r && r.catch) r.catch(() => {}); }
+      });
+    }
+    const HINT = "pp_rotate_hint";
+    let seen = false; try { seen = !!localStorage.getItem(HINT); } catch (e) { /* privat */ }
+    const rh = $("#rotate-hint");
+    const dismiss = () => { rh.hidden = true; try { localStorage.setItem(HINT, "1"); } catch (e) { /* privat */ } };
+    if (TOUCH && !seen) rh.hidden = false;
+    $(".x", rh).addEventListener("click", dismiss);
+    // einmal gedreht: Hinweis nicht mehr nötig
+    const land = window.matchMedia && matchMedia("(orientation: landscape)");
+    if (land && land.addEventListener) land.addEventListener("change", () => { if (land.matches && !$("#game").hidden) dismiss(); });
+  }
   function init() {
     const saved = loadSave();
     if (saved && saved.v === 1) {
@@ -940,6 +996,7 @@
     $("#btn-inv").addEventListener("click", () => openInventory());
     $("#btn-gloss").addEventListener("click", openGlossary);
     $("#btn-lang").addEventListener("click", () => { S.linoLang = S.linoLang === "fr" ? "de" : "fr"; save(); toast("Lino : " + (S.linoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });
+    setupMobile();
     if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#title").textContent = G.ui.title; $("#subtitle").textContent = G.ui.subtitle;
     $("#ver").textContent = "v" + G.version + (PROF ? " · prof" : "");

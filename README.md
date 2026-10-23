@@ -20,7 +20,7 @@ Kein Build, kein Server nötig: `index.html` lässt sich auch direkt im Browser 
 
 ## Bilder und Aufnahmen ergänzen
 
-Die Platzhalter werden ersetzt, sobald eine Datei mit dem passenden Namen liegt. Das Spiel sucht zuerst `.png`, dann `.jpg`; fehlt ein Porträt, zeigt es Initialen; fehlt eine Aufnahme, liest der Browser den Text vor.
+Die Platzhalter werden ersetzt, sobald eine Datei mit dem passenden Namen liegt. Hintergründe und Zwischensequenzen sucht das Spiel zuerst als `.jpg`, dann als `.png` (Gegenstände umgekehrt); fehlt ein Porträt, zeigt es Initialen; fehlt eine Aufnahme, liest der Browser den Text vor.
 
 | Typ | Dateien (in `assets/img/` bzw. `assets/audio/`) |
 | --- | --- |
@@ -60,6 +60,18 @@ Druckvorlagen (auch aus der Lehrkraft-Ansicht verlinkt):
 | `quiz.html` | optionales Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt das Lösungsblatt an |
 
 Fertige PDFs (A4) liegen im Ordner `druck/`: `Fiche_enquete.pdf`, `Quiz_eleves.pdf`, `Quiz_mit_Loesungen.pdf`. Sie sind aus den beiden HTML-Seiten erzeugt; nach Textänderungen genügt auch „Drucken → als PDF speichern“ im Browser. Der Abspann steht in `G.credits`.
+
+## Auf dem Smartphone
+
+Das Spiel läuft auch auf Handys, am besten im Querformat: Dann füllt das Bild den Bildschirm, und der Dialog liegt unten auf dem Bild. Im Hochformat steht das Bild oben und der Dialog darunter; ein Hinweis (einmal wegtippen) schlägt vor, das Telefon zu drehen.
+
+- Kopfzeile: eine Zeile mit Symbolen (Carnet, Carte, Inventaire, Glossaire, Lino FR/DE), im Querformat mit kurzer Beschriftung. Auf Android und Tablets gibt es zusätzlich „Plein écran“.
+- Bühne: Im Hochformat stehen die Beschriftungen erst im Menü, das beim Antippen erscheint („la dame du kiosque · Parler · Montrer“). Das Menü bleibt immer ganz im Bild, kleine Hotspots haben eine Tippfläche von mindestens 44 px.
+- Fenster nutzen fast den ganzen Bildschirm; Zwischensequenzen stehen im Querformat neben dem Text, die Karte links neben dem Titel.
+- Hörtexte: Handys spielen Ton erst nach Antippen ab. Startet die Aufnahme nicht von selbst, wartet der Knopf „Écouter“; die Computerstimme springt nur ein, wenn die Datei fehlt.
+- Abfragen: keine Autokorrektur, für die Telefonnummer das Ziffernfeld; die Tastatur öffnet sich erst, wenn man ins Feld tippt.
+- Export: Auf Handy und Tablet öffnet „Exporter le carnet“ das Teilen-Menü mit beiden Dateien (Mail, AirDrop, Teams …); geht das nicht, werden die Dateien heruntergeladen.
+- Zum Home-Bildschirm hinzufügen (Safari: Teilen → „Zum Home-Bildschirm“, Chrome: Menü → „App installieren“) startet das Spiel ohne Browserleiste, mit Bernd als Symbol (`manifest.webmanifest`, `assets/icons/`). Achtung iPhone: Die Home-Bildschirm-Version hat einen eigenen Spielstand, getrennt von Safari.
 
 ## Herunterladen und offline spielen
 
