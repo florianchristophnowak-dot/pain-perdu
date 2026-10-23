@@ -48,7 +48,7 @@ Druckvorlagen (auch aus der Lehrkraft-Ansicht verlinkt):
 | `zettel.html` | Zettel d'enquête, ein Blatt pro Schüler (Q1–Q4 + Sonstiges) |
 | `quiz.html` | Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt das Lösungsblatt an |
 
-Die früheren Kennungen `D_M02`, `D_P03` und `D_B05` (Zuordnungsaufgaben) gibt es nicht mehr.
+Die früheren Kennungen `D_M02`, `D_P03` und `D_B05` (Zuordnungsaufgaben) gibt es nicht mehr. Der Abspann steht in `G.credits`.
 
 ## Phase 2
 
