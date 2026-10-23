@@ -81,9 +81,9 @@
   function portrait(who) {
     const c = G.chars[who] || { name: who, initials: "?", color: "#777" };
     const p = el("div", "pt");
-    p.style.background = c.color;
+    p.style.backgroundColor = c.color;
     p.textContent = c.initials;
-    if (c.pt) { const im = new Image(); im.onload = () => { p.textContent = ""; p.style.backgroundImage = "url(" + im.src + ")"; }; im.src = "assets/img/" + c.pt + ".png"; }
+    if (c.pt) { const im = new Image(); im.onload = () => { p.textContent = ""; p.style.backgroundImage = "url(" + im.src + ")"; p.style.backgroundSize = "cover"; p.style.backgroundPosition = "center"; }; im.src = "assets/img/" + c.pt + ".png"; }
     return p;
   }
 
