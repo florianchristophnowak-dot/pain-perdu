@@ -131,7 +131,7 @@
 
   /* ---------- Oberfläche: Grundelemente ---------- */
   const stage = $("#stage"), dlg = $("#dialogue"), modal = $("#modal"), modalBody = $("#modal-body");
-  function toast(msg) { const t = el("div", "toast", esc(msg)); $("#toasts").appendChild(t); setTimeout(() => t.remove(), 2600); }
+  function toast(msg) { const box = $("#toasts"); while (box.children.length >= 2) box.firstChild.remove(); const t = el("div", "toast", esc(msg)); box.appendChild(t); setTimeout(() => t.remove(), 2600); }
   function refreshTop() {
     $("#scene-name").textContent = S && S.scene ? G.scenes[S.scene].name : "";
     $("#mouse").textContent = S && twoPlayers() ? G.ui.mouse + " " + pname(S.mouse) : "";

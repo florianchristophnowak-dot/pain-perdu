@@ -196,7 +196,7 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
   .top .brand { display: none; }
   .line .text { font-size: 1rem; }
   .modal-inner { padding: .9rem; }
-  .hotspot span { font-size: .7rem; }
+  .hotspot span { font-size: .7rem; white-space: normal; max-width: 100%; line-height: 1.2; }
 }
 
 .nobg { position: absolute; inset: 0; display: grid; place-items: center; color: #d9c7a8; font-family: var(--serif); font-size: 1.6rem; text-align: center; pointer-events: none; }
