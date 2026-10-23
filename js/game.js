@@ -932,18 +932,35 @@
   }
 
   /* ---------- Start ---------- */
-  /* Introvideo (assets/video/intro.mp4); fehlt die Datei, geht es direkt los */
+  /* Introvideo beim Laden der Seite (assets/video/intro.mp4): Video, dann großer Titel, dann Startmenü.
+     ?intro=0 überspringt es. Fehlt die Datei oder spielt der Browser sie nicht, erscheint sofort das Startmenü.
+     Ohne Klick erlauben Browser nur stummes Abspielen: dann gibt es einen Knopf für den Ton. */
   function playIntro(cb) {
     const box = el("div", "introvid");
-    const v = document.createElement("video"); v.src = "assets/video/intro.mp4"; v.playsInline = true; v.preload = "auto";
+    const v = document.createElement("video");
+    v.src = "assets/video/intro.mp4"; v.poster = "assets/video/intro_poster.jpg";
+    v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto";
+    const title = el("div", "ititle");
+    title.innerHTML = "<h1>" + esc($("#title").textContent) + "</h1><p>" + esc($("#subtitle").textContent) + "</p>";
+    const snd = el("button", "btn snd", "🔇 Son"); snd.hidden = true;
     const skip = el("button", "btn skip", "Passer l'intro ▸");
-    let done = false;
-    const end = () => { if (done) return; done = true; box.remove(); cb(); };
+    const big = el("button", "bigplay", "▶"); big.hidden = true; big.setAttribute("aria-label", "Lancer l'intro");
+    let done = false, timer = null;
+    const end = () => { if (done) return; done = true; clearTimeout(timer); box.classList.add("out"); setTimeout(() => { box.remove(); cb(); }, 900); };
+    const showTitle = () => { if (done || box.classList.contains("titled")) return; box.classList.add("titled"); skip.hidden = true; snd.hidden = true; big.hidden = true; timer = setTimeout(end, 3400); };
     skip.addEventListener("click", end);
-    v.addEventListener("ended", end); v.addEventListener("error", end);
-    v.addEventListener("canplay", () => { v.play().catch(end); }, { once: true });
-    box.appendChild(v); box.appendChild(skip); document.body.appendChild(box);
-    if (v.error) end();
+    title.addEventListener("click", end);
+    v.addEventListener("ended", showTitle);
+    v.addEventListener("error", () => { if (!box.classList.contains("titled")) end(); });
+    snd.addEventListener("click", () => { v.muted = !v.muted; snd.textContent = v.muted ? "🔇 Son" : "🔊 Son"; });
+    big.addEventListener("click", () => { big.hidden = true; v.muted = false; v.play().catch(() => { v.muted = true; v.play().catch(end); }); });
+    v.play().catch(() => {
+      if (v.error || done) return;
+      v.muted = true; snd.hidden = false;
+      v.play().catch(() => { if (!v.error && !done) big.hidden = false; });
+    });
+    box.appendChild(v); box.appendChild(title); box.appendChild(snd); box.appendChild(skip); box.appendChild(big);
+    document.body.appendChild(box);
   }
   function startNew() {
     S = freshState();
@@ -952,7 +969,7 @@
     save();
     $("#start").hidden = true; $("#game").hidden = false;
     S.scene = "montmartre"; enterScene("montmartre", false);
-    playIntro(() => goNode("S02"));
+    goNode("S02");
   }
   function resumeGame() {
     $("#start").hidden = true; $("#game").hidden = false;
@@ -997,6 +1014,8 @@
     $("#btn-gloss").addEventListener("click", openGlossary);
     $("#btn-lang").addEventListener("click", () => { S.linoLang = S.linoLang === "fr" ? "de" : "fr"; save(); toast("Lino : " + (S.linoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });
     setupMobile();
+    $("#btn-intro").addEventListener("click", e => { e.preventDefault(); playIntro(() => {}); });
+    if (new URLSearchParams(location.search).get("intro") !== "0") playIntro(() => {});
     if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#title").textContent = G.ui.title; $("#subtitle").textContent = G.ui.subtitle;
     $("#ver").textContent = "v" + G.version + (PROF ? " · prof" : "");
