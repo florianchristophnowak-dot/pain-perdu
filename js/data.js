@@ -60,7 +60,7 @@ window.GAME = (function () {
     locked: "fermé",
     done: "fait",
     missing: "il manque une preuve pour Q2",
-    zettel: { title: "Sur ton Zettel", intro: "Écris sur ton Zettel, en français, avec tes mots :", forQ: "Pour la question", hint: "Le carnet du jeu garde seulement le titre de l'indice. Le contenu, tu l'écris sur ton Zettel.", done: "C'est noté", tag: "sur ton Zettel" }
+    zettel: { title: "Sur ta fiche", intro: "Écris sur ta fiche d'enquête, en français, avec tes mots :", forQ: "Pour la question", hint: "Le carnet du jeu garde seulement le titre de l'indice. Le contenu, tu l'écris sur ta fiche.", done: "C'est noté", tag: "sur ta fiche" }
   };
 
   /* ---------- Fragen und Belege ---------- */

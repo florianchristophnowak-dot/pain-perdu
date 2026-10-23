@@ -37,9 +37,9 @@ Die Hotspot-Positionen stehen in `js/data.js` (`scenes`, Angaben in Prozent des 
 - Die Lernenden exportieren am Ende (oder jederzeit aus dem Carnet) zwei Dateien: JSON (alles) und CSV (eine Zeile je Aufgabe und Person: Ergebnis, Versuche, Hilfestufe, Wiederholungen, Transkript, Dauer, Text).
 - Der Spielstand liegt im `localStorage` des Browsers; „Continuer la partie“ nimmt ihn wieder auf.
 
-## Zettel und Quiz (Papier)
+## Zettel („fiche d'enquête“) und Quiz (Papier)
 
-Hinweise werden nicht mehr im Spiel „ins Carnet sortiert“, sondern auf Papier notiert. An zehn Stellen zeigt das Spiel eine Aufforderung **✎ Sur ton Zettel** (Knotentyp `zettel` in `js/data.js`: Felder `items` = was zu notieren ist, optional `doc`/`docOf`/`docs` = Dokument zum Nachlesen, `audio` = Hörtext zum Wiederholen, `q` = betroffene Frage(n), `effects`, `after`, `next`). Das Carnet im Spiel zeigt pro Hinweis nur noch das Stichwort (`label` in `G.proofs`); der Inhalt steht auf dem Zettel der Schüler.
+Hinweise werden nicht mehr im Spiel „ins Carnet sortiert“, sondern auf Papier notiert. An zehn Stellen zeigt das Spiel eine Aufforderung **✎ Sur ta fiche** (Knotentyp `zettel` in `js/data.js`: Felder `items` = was zu notieren ist, optional `doc`/`docOf`/`docs` = Dokument zum Nachlesen, `audio` = Hörtext zum Wiederholen, `q` = betroffene Frage(n), `effects`, `after`, `next`). Das Carnet im Spiel zeigt pro Hinweis nur noch das Stichwort (`label` in `G.proofs`); der Inhalt steht auf dem Zettel der Schüler.
 
 Druckvorlagen (auch aus der Lehrkraft-Ansicht verlinkt):
 

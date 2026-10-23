@@ -870,7 +870,7 @@
     const unlock = el("button", "btn", "Tout débloquer"); unlock.addEventListener("click", () => { ["M00_done", "M02_done", "M03_done", "M04b_done", "P02_done", "P03_done", "P04_done", "P05_done", "P06_done", "B01a_done", "B03_open", "B04_done", "B05_done", "B06_done", "L02_C", "L02_done", "Q2_proven", "L04_done", "L05_done", "C01_found", "vosges_seen"].forEach(f => S.flags[f] = true); Object.keys(G.proofs).forEach(addProof); Object.keys(G.items).forEach(id => { if (!S.inv.includes(id)) S.inv.push(id); }); save(); refreshTop(); toast("Alles freigeschaltet"); }); bar.appendChild(unlock);
     const reset = el("button", "btn", "Spielstand löschen"); reset.addEventListener("click", () => { if (confirm("Spielstand auf diesem Gerät löschen?")) { localStorage.removeItem(SAVE_KEY); location.reload(); } }); bar.appendChild(reset);
     const exr = el("button", "btn", "Alle Ergebnisse (CSV)"); exr.addEventListener("click", () => { const all = JSON.parse(localStorage.getItem(RESULTS_KEY) || "[]"); download("pain-perdu_resultats.csv", csvRows(all.flatMap(r => r.diag)), "text/csv;charset=utf-8"); }); bar.appendChild(exr);
-    const pz = el("a", "btn", "Zettel (Druck)"); pz.href = "zettel.html"; pz.target = "_blank"; bar.appendChild(pz);
+    const pz = el("a", "btn", "Fiche d'enquête (Druck)"); pz.href = "zettel.html"; pz.target = "_blank"; bar.appendChild(pz);
     const pq = el("a", "btn", "Quiz + Lösungen (Druck)"); pq.href = "quiz.html?prof=1"; pq.target = "_blank"; bar.appendChild(pq);
     body.appendChild(bar);
     body.appendChild(el("h3", "", "Sprung zu einem Knoten"));
@@ -887,7 +887,7 @@
       "<b>V03</b> Schritt 1: A/B · Schritt 2: A/B · Schritt 3: boîte bleue + enveloppe rouge"
     ].join("<br>");
     body.appendChild(sol);
-    body.appendChild(el("h3", "", "Indices (Carnet-Stichwort → Inhalt auf dem Zettel)"));
+    body.appendChild(el("h3", "", "Indices (Carnet-Stichwort → Inhalt auf der Fiche d'enquête)"));
     body.appendChild(el("div", "paper small", Object.keys(G.proofs).map(k => "<b>" + esc(G.proofs[k].q) + " · " + esc(G.proofs[k].label || k) + "</b> → " + esc(G.proofs[k].text)).join("<br>")));
     body.appendChild(el("h3", "", "Transkripte"));
     Object.keys(G.audio).forEach(k => body.appendChild(el("div", "paper small", "<b>" + k + ".mp3 · " + esc(G.chars[G.audio[k].who].name) + "</b><br>" + esc(G.audio[k].text))));
