@@ -4,7 +4,9 @@
   const G = window.GAME;
   const $ = (sel, el) => (el || document).querySelector(sel);
   const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
-  const PROF = new URLSearchParams(location.search).get("mode") === "prof";
+  const QS = new URLSearchParams(location.search);
+  const PROF = QS.get("mode") === "prof" && !!(window.ppProf && window.ppProf.ask("Lehrkraft-Ansicht: Code eingeben"));
+  const TEST = QS.get("test") === "1";   // nur für die automatischen Testdurchläufe (tools/playthrough.js)
   const TOUCH = window.matchMedia && matchMedia("(pointer: coarse)").matches;   // Handy oder Tablet
   const SAVE_KEY = "pp_save_v1", RESULTS_KEY = "pp_results_v1";
 
@@ -23,6 +25,7 @@
   function setFlag(f) { S.flags[f] = true; save(); }
   function cond(c) {
     if (!c || c === "always") return true;
+    if (Array.isArray(c)) return c.every(cond);
     return flag(c);
   }
   function twoPlayers() { return !!(S.players[1] && S.players[1].trim()); }
@@ -132,6 +135,7 @@
     if (fx.flags) fx.flags.forEach(f => { S.flags[f] = true; });
     if (fx.mission) S.mission = fx.mission;
     save(); refreshTop();
+    if (fx.flag || fx.flags) drawHotspots();   // z. B. Marcels Karte an der Tür erscheint sofort
   }
 
   /* ---------- Oberfläche: Grundelemente ---------- */
@@ -140,6 +144,7 @@
   function refreshTop() {
     $("#scene-name").textContent = S && S.scene ? G.scenes[S.scene].name : "";
     if (S && S.scene) stage.dataset.name = G.scenes[S.scene].name;   // Hochformat: Ortsname auf dem Bild
+    if (S && twoPlayers()) stage.dataset.mouse = G.ui.mouse + " " + pname(S.mouse); else delete stage.dataset.mouse;   // Hochformat: wer die Maus hat, auch auf dem Bild
     $("#mouse").innerHTML = S && twoPlayers() ? '<span class="ml">' + esc(G.ui.mouse) + "</span> " + esc(pname(S.mouse)) : "";
     $("#carnet-count").textContent = S && S.mission ? "!" : "";
   }
@@ -402,6 +407,7 @@
       if (!line) return;
       const row = el("div", "line"); row.appendChild(portrait(line.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[line.who].name) + '</div><div class="text">' + gl(line.fr) + "</div>")); fb.appendChild(row);
     }
+    function note(line) { const row = el("div", "line"); row.appendChild(portrait(line.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[line.who].name) + '</div><div class="text">' + gl(line.fr) + "</div>")); fb.appendChild(row); }
     function wrong(line) { st.wrongs++; feedback(line || T.wrong, false); if (hc) hc.update(); }
     function complete(extra, line) {
       const help = hc ? hc.level() : 0;
@@ -413,7 +419,7 @@
       $$("button", area).forEach(x => x.disabled = true); $$("select,textarea", area).forEach(x => x.disabled = true);
     }
     const K = TASKS[T.kind];
-    K(T, area, { wrong, complete, feedback, st, id, n, body });
+    K(T, area, { wrong, complete, feedback, note, st, id, n, body });
   }
 
   const TASKS = {};
@@ -550,16 +556,32 @@
 
   /* Abfrage: Antworten tippen (aus dem Gedächtnis oder vom eigenen Blatt) */
   function normAns(v) { return String(v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[’']/g, " ").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim(); }
+  function oneEdit(a, b) {   // höchstens ein Buchstabe falsch, zu viel oder zu wenig
+    if (a === b) return true;
+    if (Math.abs(a.length - b.length) > 1) return false;
+    let i = 0, j = 0, d = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++d > 1) return false;
+      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+    }
+    return d + (a.length - i) + (b.length - j) <= 1;
+  }
   function answerOk(f, raw) {
     const v = normAns(raw); if (!v) return false;
     if (f.digits) { const d = v.replace(/\D/g, ""); return (f.answers || []).some(a => String(a).replace(/\D/g, "") === d); }
     if ((f.answers || []).some(a => normAns(a) === v)) return true;
+    if ((f.traps || []).some(t => (t.answers || []).some(a => normAns(a) === v))) return false;
+    if (!/\d/.test(v) && (f.answers || []).some(a => { const na = normAns(a); return na.length >= 5 && !/\d/.test(na) && oneEdit(na, v); })) return true;
     if (f.number !== undefined) { const m = v.match(/\d+/); if (m && +m[0] === f.number) return true; }
     if (f.keywords) return f.keywords.some(g => g.every(k => v.includes(normAns(k))));
     return false;
   }
+  const RECALL_TRIES = 3, RECALL_PAUSE = 60000;
   TASKS.recall = function (T, area, api) {
     const inputs = [];
+    const pid = api.id;
+    S.recallTries = S.recallTries || {}; S.recallPause = S.recallPause || {};
     const mk = f => {
       const inp = el("input", "rin"); inp.type = "text"; inp.autocomplete = "off"; inp.spellcheck = false; inp.size = f.size || 14; inp.placeholder = f.placeholder || "…"; inp.dataset.id = f.id;
       inp.setAttribute("autocorrect", "off"); inp.setAttribute("autocapitalize", "none"); if (f.digits) inp.inputMode = "tel";
@@ -570,7 +592,21 @@
     area.appendChild(el("p", "hint", esc(G.ui.recall.intro)));
     const bar = el("div", "bar");
     const b = el("button", "btn primary", G.ui.recall.check);
+    let timer = null;
+    const left = () => Math.max(0, Math.ceil(((S.recallPause[pid] || 0) - Date.now()) / 1000));
+    function lock() {
+      inputs.forEach(x => x.inp.disabled = true); b.disabled = true;
+      clearInterval(timer);
+      const tick = () => {
+        if (!b.isConnected) { clearInterval(timer); return; }
+        const s = left();
+        if (s > 0) { b.textContent = G.ui.recall.check + " (" + s + " s)"; return; }
+        clearInterval(timer); b.textContent = G.ui.recall.check; b.disabled = false; inputs.forEach(x => { x.inp.disabled = false; });
+      };
+      tick(); timer = setInterval(tick, 1000);
+    }
     b.addEventListener("click", () => {
+      if (left() > 0) return;
       let ok = true; const hints = []; let trap = null;
       inputs.forEach(x => {
         const good = answerOk(x.f, x.inp.value); x.inp.classList.toggle("bad", !good); x.inp.classList.toggle("good", good);
@@ -580,18 +616,22 @@
           if (x.wrongs >= 2 && x.f.where && !hints.includes(x.f.where)) hints.push(x.f.where);
         }
       });
-      if (ok) { inputs.forEach(x => x.inp.disabled = true); b.disabled = true; api.complete({ text: inputs.map(x => x.inp.value.trim()).join(" | ") }, T.success); }
-      else api.wrong({ who: (trap && trap.who) || T.who || "marie", fr: (trap ? trap.fr : (T.wrongText || G.ui.recall.wrong)) + (hints.length ? " " + hints.join(" ") : "") });
+      if (ok) { delete S.recallTries[pid]; delete S.recallPause[pid]; save(); inputs.forEach(x => x.inp.disabled = true); b.disabled = true; api.complete({ text: inputs.map(x => x.inp.value.trim()).join(" | ") }, T.success); return; }
+      api.wrong({ who: (trap && trap.who) || T.who || "marie", fr: (trap ? trap.fr : (T.wrongText || G.ui.recall.wrong)) + (hints.length ? " " + hints.join(" ") : "") });
+      S.recallTries[pid] = (S.recallTries[pid] || 0) + 1;
+      if (S.recallTries[pid] % RECALL_TRIES === 0) { S.recallPause[pid] = Date.now() + RECALL_PAUSE; api.note({ who: "marie", fr: G.ui.recall.pause }); lock(); }
+      save();
     });
     bar.appendChild(b);
     if (T.leave !== false) {
       const l = el("button", "btn", G.ui.recall.later);
-      l.addEventListener("click", () => { closeModal(); S.resume = null; save(); showLines(T.leaveLines || [{ who: T.who || "marie", fr: G.ui.recall.unknown }]); });
+      l.addEventListener("click", () => { clearInterval(timer); closeModal(); S.resume = null; save(); showLines(T.leaveLines || [{ who: T.who || "marie", fr: G.ui.recall.unknown }]); });
       bar.appendChild(l);
     }
     area.appendChild(bar);
     inputs.forEach(x => x.inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); b.click(); } }));
-    if (!TOUCH) setTimeout(() => inputs[0] && inputs[0].inp.focus(), 50);   // auf dem Handy würde die Tastatur die Frage verdecken
+    if (left() > 0) { api.feedback({ who: "marie", fr: fmtTpl(G.ui.recall.paused, { s: left() }) }, false); lock(); }
+    else if (!TOUCH) setTimeout(() => inputs[0] && inputs[0].inp.focus(), 50);   // auf dem Handy würde die Tastatur die Frage verdecken
   };
 
   TASKS.stamp = function (T, area, api) {
@@ -653,12 +693,13 @@
     body.appendChild(el("h2", "", esc(G.ui.end)));
     const mins = Math.round((Date.now() - S.started) / 60000);
     const helps = Object.values(S.helpUsed).reduce((a, b) => a + b, 0);
-    body.appendChild(el("div", "paper", "<b>" + esc(pname(0)) + (twoPlayers() ? " & " + esc(pname(1)) : "") + "</b><br>Lieux visités : " + S.visited.length + " · Aides de Marie : " + helps + " · Durée : " + mins + " min · Questions réglées : " + QIDS.filter(q => flag(G.questions[q].done)).length + "/4"));
+    body.appendChild(el("div", "paper", "<b>" + esc(pname(0)) + (twoPlayers() ? " & " + esc(pname(1)) : "") + "</b><br>Lieux visités : " + S.visited.length + " · Aides de Marie : " + helps + " · Durée : " + mins + " min · Questions réglées : " + QIDS.filter(q => cond(G.questions[q].done)).length + "/4"));
     body.appendChild(el("p", "", "Tu peux maintenant exporter le carnet (deux fichiers) et le donner à ton prof."));
     if (G.credits) body.appendChild(el("div", "credits", "<b>" + esc(G.credits.title) + "</b><br>" + G.credits.lines.map(esc).join("<br>")));
     const bar = el("div", "bar");
     const ex = el("button", "btn primary", G.ui.btn.exporter); ex.addEventListener("click", exportAll); bar.appendChild(ex);
     const ca = el("button", "btn", G.ui.btn.carnet); ca.addEventListener("click", () => openCarnet()); bar.appendChild(ca);
+    const mn = el("button", "btn", G.ui.btn.menu); mn.addEventListener("click", goMenu); bar.appendChild(mn);
     const nw = el("button", "btn", G.ui.btn.nouvelle); nw.addEventListener("click", () => { if (confirm("Nouvelle partie ? La partie actuelle reste dans l'export.")) { archiveRun(); localStorage.removeItem(SAVE_KEY); location.reload(); } }); bar.appendChild(nw);
     body.appendChild(bar);
     archiveRun();
@@ -711,7 +752,7 @@
     if (S.mission) body.appendChild(el("div", "mission", "<b>" + esc(G.ui.carnet.mission) + " :</b> " + gl(S.mission)));
     body.appendChild(el("h3", "", esc(G.ui.carnet.questions)));
     QIDS.forEach(q => {
-      const done = flag(G.questions[q].done);
+      const done = cond(G.questions[q].done);
       const box = el("div", "qbox " + (done ? "proven" : ""));
       box.appendChild(el("div", "qtitle", "<b>" + q + "</b> " + esc(G.questions[q].title) + ' <span class="status">' + esc(done ? G.ui.carnet.done : G.ui.carnet.open) + "</span>"));
       body.appendChild(box);
@@ -798,7 +839,7 @@
         '<text x="' + p.x + '" y="' + (p.y + 6.2) + '" text-anchor="middle" class="lbl">' + esc(p.short || p.label) + "</text>" +
         '<text x="' + p.x + '" y="' + (p.y + 9.4) + '" text-anchor="middle" class="q">' + esc(unlocked ? p.q : G.ui.locked) + "</text>";
       g.addEventListener("click", () => {
-        if (!unlocked) { toast("Marie : " + G.ui.marie.locked); return; }
+        if (!unlocked) { toast("Marie : " + (p.lockedMsg && cond(p.lockedMsg.if) ? p.lockedMsg.fr : G.ui.marie.locked)); return; }
         closeModal(); travel(p.id);
       });
       svg.appendChild(g);
@@ -823,12 +864,10 @@
   }
 
   /* ---------- Szene ---------- */
-  function enterScene(id, runEnter) {
-    const sc = G.scenes[id];
-    S.scene = id; if (!S.visited.includes(id)) S.visited.push(id); save();
-    $("#start").hidden = true; $("#game").hidden = false;
-    setBg(stage, sc.bg);
-    $$(".hotspot, .nobg", stage).forEach(h => h.remove());
+  /* Klickflächen der aktuellen Szene (neu gezeichnet, sobald sich Flags ändern) */
+  function drawHotspots() {
+    const sc = S && S.scene && G.scenes[S.scene]; if (!sc) return;
+    $$(".hotspot", stage).forEach(h => h.remove());
     sc.hotspots.forEach(h => {
       if (h.hideIf && flag(h.hideIf)) return;
       if (h.showIf && !cond(h.showIf)) return;
@@ -837,6 +876,14 @@
       b.addEventListener("click", e => { e.stopPropagation(); verbMenu(h, b); });
       stage.appendChild(b);
     });
+  }
+  function enterScene(id, runEnter) {
+    const sc = G.scenes[id];
+    S.scene = id; if (!S.visited.includes(id)) S.visited.push(id); save();
+    $("#start").hidden = true; $("#game").hidden = false;
+    setBg(stage, sc.bg);
+    $$(".nobg", stage).forEach(h => h.remove());
+    drawHotspots();
     refreshTop();
     dlg.innerHTML = ""; dlg.classList.remove("active");
     if (runEnter && sc.enter) goNode(sc.enter);
@@ -866,7 +913,7 @@
       b.addEventListener("click", e => {
         e.stopPropagation(); m.remove();
         if (v === "montrer") {
-          openInventory({ name: h.label, fn: item => { const node = h.actions.montrer[item]; if (node) goNode(node); else showLines([G.ui.inv.nothing]); } });
+          openInventory({ name: h.label, fn: item => { const node = resolve(h.actions.montrer[item]); if (node) goNode(node); else showLines([G.ui.inv.nothing]); } });
         } else { const node = resolve(h.actions[v]); if (node) goNode(node); }
       });
       m.appendChild(b);
@@ -963,6 +1010,7 @@
     document.body.appendChild(box);
   }
   function startNew() {
+    if (S && S.diag && S.diag.length) archiveRun();   // alte Partie bleibt in den Ergebnissen auf diesem Gerät
     S = freshState();
     S.players = [$("#p1").value, $("#p2").value];
     S.linoLang = $("input[name=lino]:checked").value;
@@ -970,6 +1018,20 @@
     $("#start").hidden = true; $("#game").hidden = false;
     S.scene = "montmartre"; enterScene("montmartre", false);
     goNode("S02");
+  }
+  /* Zurück zum Startmenü: der Spielstand ist gespeichert, „Continuer la partie" macht dort weiter */
+  function refreshResume() {
+    const b = $("#btn-resume");
+    if (!S) { b.hidden = true; return; }
+    b.hidden = false; b.textContent = G.ui.btn.reprendre + " (" + pname(0) + (twoPlayers() ? " & " + pname(1) : "") + ")";
+    $("#p1").value = S.players[0] || ""; $("#p2").value = S.players[1] || "";
+    const r = $("input[name=lino][value=" + (S.linoLang === "de" ? "de" : "fr") + "]"); if (r) r.checked = true;
+  }
+  function goMenu() {
+    closeModal(); $$(".verbs").forEach(v => v.remove()); $("#gltip").hidden = true;
+    dlg.innerHTML = ""; dlg.classList.remove("active");
+    save(); refreshResume();
+    $("#game").hidden = true; $("#start").hidden = false;
   }
   function resumeGame() {
     $("#start").hidden = true; $("#game").hidden = false;
@@ -1003,10 +1065,10 @@
     const saved = loadSave();
     if (saved && saved.v === 1) {
       S = saved;
-      const b = $("#btn-resume"); b.hidden = false; b.textContent = G.ui.btn.reprendre + " (" + pname(0) + (saved.players[1] ? " & " + pname(1) : "") + ")";
-      b.addEventListener("click", resumeGame);
-      $("#p1").value = saved.players[0] || ""; $("#p2").value = saved.players[1] || "";
+      refreshResume();
     }
+    $("#btn-resume").addEventListener("click", () => { if (S) resumeGame(); });
+    $("#btn-menu").addEventListener("click", goMenu);
     $("#btn-start").addEventListener("click", () => { if (!$("#p1").value.trim()) { $("#p1").focus(); $("#p1").classList.add("bad"); return; } if (S && S.diag && S.diag.length && !confirm("Nouvelle partie ? L'ancienne partie sera remplacée.")) return; startNew(); });
     $("#btn-carnet").addEventListener("click", () => openCarnet());
     $("#btn-map").addEventListener("click", () => openMap());
@@ -1015,11 +1077,11 @@
     $("#btn-lang").addEventListener("click", () => { S.linoLang = S.linoLang === "fr" ? "de" : "fr"; save(); toast("Lino : " + (S.linoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });
     setupMobile();
     $("#btn-intro").addEventListener("click", e => { e.preventDefault(); playIntro(() => {}); });
-    if (new URLSearchParams(location.search).get("intro") !== "0") playIntro(() => {});
+    if (QS.get("intro") !== "0") playIntro(() => {});
     if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#title").textContent = G.ui.title; $("#subtitle").textContent = G.ui.subtitle;
     $("#ver").textContent = "v" + G.version + (PROF ? " · prof" : "");
   }
-  window.PP = { get S() { return S; }, goNode, enterScene, openMap, openCarnet, exportAll, flag, save, PROF };
+  if (PROF || TEST) window.PP = { get S() { return S; }, goNode, enterScene, openMap, openCarnet, exportAll, flag, save, PROF, goMenu };
   init();
 })();

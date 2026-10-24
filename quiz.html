@@ -56,7 +56,7 @@
     <li>D'après la dame du kiosque : ce matin, le mime était<span class="p">/2</span><br>
       <span class="opt"><span class="box"></span>au Louvre</span><span class="opt"><span class="box"></span>au Père-Lachaise</span><span class="opt"><span class="box"></span>dans le Marais</span><br>
       Cet après-midi, il va <span class="opt"><span class="box"></span>dans le Marais</span><span class="opt"><span class="box"></span>au Sacré-Cœur</span><span class="opt"><span class="box"></span>à la gare</span></li>
-    <li>Le ticket de caisse : qui connaît le spectacle du mime ? <span class="b"></span><span class="p">/1</span></li>
+    <li>Le ticket de caisse vient de la boulangerie de qui ? <span class="b"></span><span class="p">/1</span></li>
     <li>Dans notre sac Bernd : la boîte bleue de Kevin est <span class="b"></span>. L'enveloppe rouge est <span class="b"></span>.<span class="p">/2</span></li>
     <li>Le sac brun de Marcel : deux détails. <span class="b"></span> et <span class="b"></span><span class="p">/2</span></li>
     <li>Où est le programme corrigé ?<span class="p">/1</span><br>
@@ -92,7 +92,7 @@
     <tr><td>1</td><td>Marcel Blanchard</td><td>1</td></tr>
     <tr><td>2</td><td>Chloé</td><td>1</td></tr>
     <tr><td>3</td><td>au Père-Lachaise · dans le Marais</td><td>2</td></tr>
-    <tr><td>4</td><td>Nora, la boulangère (du Marais)</td><td>1</td></tr>
+    <tr><td>4</td><td>Nora (la boulangère, dans le Marais)</td><td>1</td></tr>
     <tr><td>5</td><td>dans la poche de devant · sous les billets (de train)</td><td>2</td></tr>
     <tr><td>6</td><td>la fermeture rouge · l'autocollant jaune</td><td>2</td></tr>
     <tr><td>7</td><td>à la librairie Les Mots retrouvés</td><td>1</td></tr>
@@ -107,9 +107,12 @@
   <p style="font-size:10pt;color:#555">Vorschlag Notenschlüssel (anpassbar): 20–18 sehr gut · 17–15 gut · 14–12 befriedigend · 11–9 ausreichend · 8–5 mangelhaft · unter 5 ungenügend. Bonuspunkte zählen nach oben, nicht nach unten.</p>
   <footer>L'affaire du pain perdu · Lösungen</footer>
 </div>
+<script src="js/prof.js"></script>
 <script>
-  if (/[?&]prof=1/.test(location.search)) { document.getElementById("sol").classList.remove("hidden"); document.getElementById("profnote").textContent = "· Seite 1–2: Quiz für die Schüler, letzte Seite: Lösungen (nur Lehrkraft)."; }
-  else document.getElementById("profnote").textContent = "· Un quiz par élève. (Lösungen: quiz.html?prof=1)";
+  /* Lösungsseite nur mit dem Code der Lehrkraft (quiz.html?prof=1) */
+  const pn = document.getElementById("profnote");
+  if (/[?&]prof=1/.test(location.search) && window.ppProf.ask("Lösungen: Code der Lehrkraft eingeben")) { document.getElementById("sol").classList.remove("hidden"); pn.textContent = "· Seite 1–2: Quiz für die Schüler, letzte Seite: Lösungen (nur Lehrkraft)."; }
+  else pn.textContent = "· Un quiz par élève.";
 </script>
 </body>
 </html>
