@@ -198,8 +198,9 @@ window.GAME = (function () {
   const N = {};
 
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
-    { who: "narrateur", fr: "Paris, 13 Uhr. Die Klasse 10b aus Ohrdruf ist in Montmartre. Herr Nowak zählt die Schüler zum fünften Mal. Lino trägt den Klassenrucksack: Bernd, ein großes Brot mit Gesicht ... und zwar kein fröhliches." },
-    { who: "lino", fr: "Ein Rucksack in Brotform. Sehr unauffällig." }
+    { who: "narrateur", fr: "Paris, 13 Uhr. Die Klasse 10b aus Ohrdruf ist in Montmartre. Herr Nowak zählt die Schüler zum fünften Mal. Lino trägt den Klassenrucksack: Bernd, ein großes Brot mit Gesicht ... und zwar kein fröhliches. Neben ihm steht Marie, seine französische Austauschpartnerin." },
+    { who: "lino", fr: "Ein Rucksack in Brotform. Sehr unauffällig." },
+    { who: "marie", fr: "Willkommen in Frankreich, Lino!" }
   ], next: "M00" };
 
   N.M00 = { type: "doc", title: "Der Rucksack Bernd", icon: "sac", doc: "Herr Nowak: „Lino, du nimmst Bernd. Da drin sind die Zugfahrkarten für heute Abend. Mein roter Umschlag liegt unter den Fahrkarten: Verlier ihn nicht! Und Kevins blaue Dose ist in der Vordertasche. Mach sie nicht auf. Treffpunkt um 17 Uhr im Innenhof des Louvre!“",
@@ -325,7 +326,7 @@ window.GAME = (function () {
   N.B01 = { type: "lines", once: "B01_seen", lines: [
     { who: "narrateur", fr: "Auf dem Schild: „Heute: Pain perdu“" },
     { who: "lino", fr: "„Pain perdu“ heißt „verlorenes Brot“. Endlich ein Laden, der mein Problem verkauft." },
-    { who: "marie", fr: "Pain perdu ist ein Nachtisch, Lino. Bei uns heißt das Arme Ritter." }
+    { who: "marie", fr: "Pain perdu ist ein Nachtisch, Lino. Bei euch heißt das Arme Ritter." }
   ] };
   N.B01p = { type: "doc", title: "Das Schild", icon: "panneau", doc: "Heute: Pain perdu — 2,50 € pro Stück", lines: [{ who: "marie", fr: "Ein Nachtisch: Brot, Milch, Eier, Zucker." }] };
   N.B01a = { type: "doc", title: "Der Flyer", icon: "flyer", diag: "D_B01", count: true, doc: "Marcel — Le Pain perdu — Pantomime-Show — heute Abend in Paris", effects: { item: "flyer", flag: "B01a_done" }, lines: [{ who: "lino", fr: "Marcel. Wie auf Chloés Karte." }] };

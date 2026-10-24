@@ -198,8 +198,9 @@ window.GAME = (function () {
   const N = {};
 
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
-    { who: "narrateur", fr: "Paris, 13 heures. La classe 10b d'Ohrdruf est à Montmartre. Monsieur Nowak compte les élèves pour la cinquième fois. Lino tient le sac de la classe : Bernd, un grand pain avec un visage... pas content." },
-    { who: "lino", fr: "Un sac en forme de pain. Très discret.", de: "Ein Rucksack in Brotform. Sehr unauffällig." }
+    { who: "narrateur", fr: "Paris, 13 heures. La classe 10b d'Ohrdruf est à Montmartre. Monsieur Nowak compte les élèves pour la cinquième fois. Lino tient le sac de la classe : Bernd, un grand pain avec un visage... pas content. Marie, sa correspondante française, est avec lui." },
+    { who: "lino", fr: "Un sac en forme de pain. Très discret.", de: "Ein Rucksack in Brotform. Sehr unauffällig." },
+    { who: "marie", fr: "Bienvenue en France, Lino !" }
   ], next: "M00" };
 
   N.M00 = { type: "doc", title: "Le sac Bernd", icon: "sac", doc: "Monsieur Nowak : « Lino, tu prends Bernd. Dedans, il y a les billets de train pour ce soir. Mon enveloppe rouge est sous les billets : ne la perds pas ! Et la boîte bleue de Kevin est dans la poche de devant. Ne l'ouvre pas. Rendez-vous à 17 heures, cour du Louvre ! »",
@@ -325,7 +326,7 @@ window.GAME = (function () {
   N.B01 = { type: "lines", once: "B01_seen", lines: [
     { who: "narrateur", fr: "Sur le panneau : « Aujourd'hui : pain perdu »" },
     { who: "lino", fr: "Enfin un magasin qui vend mon problème.", de: "Endlich ein Laden, der mein Problem verkauft." },
-    { who: "marie", fr: "Le pain perdu, c'est un dessert, Lino." }
+    { who: "marie", fr: "Le pain perdu, c'est un dessert, Lino. En Allemagne, on dit « Arme Ritter », non ?" }
   ] };
   N.B01p = { type: "doc", title: "Le panneau", icon: "panneau", doc: "Aujourd'hui : pain perdu — 2,50 € la part", lines: [{ who: "marie", fr: "Un dessert : du pain, du lait, des œufs, du sucre." }] };
   N.B01a = { type: "doc", title: "Le flyer", icon: "flyer", diag: "D_B01", count: true, doc: "Marcel — Le Pain perdu — spectacle de mime — ce soir dans Paris", effects: { item: "flyer", flag: "B01a_done" }, lines: [{ who: "lino", fr: "Marcel. Comme sur la carte de Chloé.", de: "Marcel. Wie auf Chloés Karte." }] };
@@ -663,7 +664,7 @@ window.GAME = (function () {
 
   /* ---------- Glossar ---------- */
   G.glossary = [
-    ["le sac", "die Tasche, der Rucksack"], ["le mime", "der Pantomime"], ["le kiosque", "der Kiosk"], ["l'escalier (m)", "die Treppe"],
+    ["le sac", "die Tasche, der Rucksack"], ["le correspondant, la correspondante", "der Austauschpartner, die Austauschpartnerin"], ["le mime", "der Pantomime"], ["le kiosque", "der Kiosk"], ["l'escalier (m)", "die Treppe"],
     ["le ticket de caisse", "der Kassenbon"], ["la boulangerie, la boulangère", "die Bäckerei, die Bäckerin"], ["le spectacle", "die Aufführung, die Show"],
     ["le programme", "das Programm"], ["corrigé, corrigée", "korrigiert"], ["ancien, ancienne", "alt, früher"], ["la première version", "die erste Fassung"],
     ["l'affiche (f)", "das Plakat, der Aushang"], ["le tampon", "der Stempel"], ["annulé", "abgesagt"], ["la modification", "die Änderung"],
