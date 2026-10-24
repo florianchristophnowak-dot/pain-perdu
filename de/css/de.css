@@ -1,3 +1,14 @@
 /* Deutsche Fassung: Ergänzungen zu ../css/style.css */
-/* Hörtexte erscheinen als Lesetexte */
-.audio-row .readtext { flex: 1 1 260px; margin: 0; font-size: 1.05rem; line-height: 1.5; }
+/* Hörtexte erscheinen als Lesetexte: Porträt neben dem Namen, der Text bekommt die volle Breite */
+.readhead { display: flex; align-items: center; gap: .6rem; }
+.readhead .pt { width: 44px; height: 44px; }
+.readtext { margin: .4rem 0 .6rem; font-size: 1.05rem; line-height: 1.5; }
+/* Knopf „Text noch mal lesen“ in Aufgaben (nicht die breite .play-Regel des Spielfelds) */
+.btn.read { background: var(--accent-2); color: #fff; border-color: var(--accent-2); }
+
+@media (max-width: 760px), (max-height: 520px) {
+  .readhead .pt { width: 34px; height: 34px; }
+  .readtext { font-size: 1rem; line-height: 1.45; }
+  /* aufgeklappter Text in einer Aufgabe: scrollt in sich, damit die Aufgabe sichtbar bleibt */
+  .modal.task .paper.transcript { max-height: 38vh; max-height: 38dvh; overflow-y: auto; }
+}
