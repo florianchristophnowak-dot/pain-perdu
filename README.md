@@ -108,6 +108,15 @@ Der Titel (Startbildschirm, Kopfzeile, Abspann) nutzt die Schrift Limelight aus 
 
 Beim Laden der Seite läuft `assets/video/intro.mp4` (8 Sekunden, 1280 × 720, mit Ton): die Klasse vor dem Sacré-Cœur, Marcel kommt dazu. Am Ende erscheint der Titel groß in der Plakatschrift des Spiels, danach das Startmenü. „Passer l'intro“ überspringt das Video, „Revoir l'intro“ im Startmenü zeigt es noch einmal, `index.html?intro=0` lässt es ganz aus (etwa für Tests). Ohne vorherigen Klick spielen Browser nur stumm ab; der Knopf links unten schaltet den Ton ein. Fehlt die Datei oder kann der Browser sie nicht abspielen, erscheint sofort das Startmenü. `intro_poster.jpg` ist das erste Bild des Videos und wird gezeigt, solange das Video lädt.
 
+## Deutsche Fassung
+
+Eine deutsche Testfassung (etwa für jüngere Testspieler ohne Französisch) liegt im Ordner `de/`: https://florianchristophnowak-dot.github.io/pain-perdu/de/ – sie ist von der französischen Seite aus nicht verlinkt.
+
+- Alle Texte sind übersetzt; die Hörtexte erscheinen als Lesetexte („Text noch mal lesen“ in den Aufgaben, Maries Hilfe zeigt den Text). Die Grammatikaufgaben (imparfait/passé composé) sind dort Verständnisfragen, das Glossar ist ein kleines Paris-Lexikon.
+- Bilder, Video, Schrift, `css/style.css` und `js/prof.js` kommen aus dem Hauptordner; eigene Dateien: `de/index.html`, `de/js/data.js` (alle Spieltexte), `de/css/de.css`, `de/zettel.html`, `de/manifest.webmanifest`. Eigener Spielstand (`pp_de_save_v1`), getrennt vom französischen.
+- `de/js/game.js` wird nicht von Hand geändert: `node tools/build_de.js` erzeugt es aus `js/game.js` und übersetzt die festen Texte. Nach Änderungen an `js/game.js` das Skript erneut ausführen; passt ein Ersatz nicht mehr, nennt es die Stelle. Neue Spieltexte in `js/data.js` müssen von Hand in `de/js/data.js` übernommen werden.
+- `node tools/build_de.js --zip pain-perdu_deutsch_offline.zip` baut ein Offline-Paket (ein Ordner, `index.html` öffnen). Test: `node tools/playthrough_de.js`.
+
 ## Texte ändern
 
 Alle Spieltexte liegen in `js/data.js`. Figurentexte sind `fr`, Linos umschaltbare Kommentare zusätzlich `de`. Die Kennungen (M03, P04, …) verbinden Drehbuch, Code und Diagnose.

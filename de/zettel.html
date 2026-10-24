@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meine Ermittlungsnotizen · L'affaire du pain perdu</title>
+<style>
+  @page { size: A4; margin: 13mm 14mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: #222; background: #f3efe6; }
+  .sheet { max-width: 186mm; margin: 10mm auto; background: #fff; padding: 10mm 12mm; box-shadow: 0 2px 12px rgba(0,0,0,.12); }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #8a4b2a; padding-bottom: 3mm; margin-bottom: 4mm; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 22pt; margin: 0; color: #8a4b2a; }
+  .sub { margin: 1mm 0 0; color: #666; font-size: 10.5pt; }
+  .logo { font-size: 26pt; }
+  .meta { display: flex; gap: 6mm; font-size: 10.5pt; margin-bottom: 3mm; }
+  .meta span { flex: 1; border-bottom: 1px solid #999; padding-bottom: 1mm; }
+  .how { font-size: 9.5pt; background: #fbf4e6; border: 1px solid #e3d3b6; border-radius: 3mm; padding: 2.5mm 3.5mm; margin: 0 0 4mm; line-height: 1.4; }
+  section { margin: 0 0 2.5mm; break-inside: avoid; }
+  h2 { font-size: 12pt; margin: 0 0 1.5mm; display: flex; align-items: center; gap: 2mm; }
+  h2 .q { display: inline-block; background: #8a4b2a; color: #fff; border-radius: 2mm; padding: .5mm 2mm; font-size: 10pt; }
+  h2 small { font-weight: 400; color: #777; font-size: 9pt; margin-left: auto; }
+  .line { height: 6.6mm; border-bottom: 1px solid #b9b2a4; }
+  .line.first { border-top: 0; }
+  footer { margin-top: 3mm; font-size: 8.5pt; color: #888; text-align: right; }
+  @media print { body { background: #fff; } .sheet { box-shadow: none; margin: 0; max-width: none; padding: 0; } .noprint { display: none; } }
+  .noprint { text-align: center; margin: 4mm 0; font-size: 10pt; }
+  .noprint button { font: inherit; padding: 2mm 5mm; border-radius: 2mm; border: 1px solid #8a4b2a; background: #8a4b2a; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="noprint"><button onclick="window.print()">Drucken</button> · Ein Blatt pro Kind.</div>
+<div class="sheet">
+  <header>
+    <div><h1>Meine Ermittlungsnotizen</h1><p class="sub">L'affaire du pain perdu · ein Fall der 10b in Paris</p></div>
+    <div class="logo">✎</div>
+  </header>
+  <div class="meta"><span>Name:</span><span>Partner/in:</span><span>Datum:</span></div>
+  <p class="how">Das Spiel schreibt nichts für dich auf. Notiere hier während der Ermittlung, was dir wichtig vorkommt: Namen, Orte, Uhrzeiten, Gegenstände, Farben. Später stellen dir die Figuren Fragen dazu!</p>
+
+  <section><h2><span class="q">Q1</span> Wer ist der Pantomime?</h2>
+    <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></section>
+
+  <section><h2><span class="q">Q2</span> Wo und wann spielt er heute?</h2>
+    <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></section>
+
+  <section><h2><span class="q">Q3</span> Dieb oder Irrtum?</h2>
+    <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></section>
+
+  <section><h2><span class="q">Q4</span> Was ist in unserem Rucksack?</h2>
+    <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></section>
+
+  <section><h2><span class="q">+</span> Weitere Hinweise</h2>
+    <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></section>
+
+  <footer>L'affaire du pain perdu · Meine Ermittlungsnotizen</footer>
+</div>
+</body>
+</html>
