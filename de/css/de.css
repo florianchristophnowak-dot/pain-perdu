@@ -1,0 +1,3 @@
+/* Deutsche Fassung: Ergänzungen zu ../css/style.css */
+/* Hörtexte erscheinen als Lesetexte */
+.audio-row .readtext { flex: 1 1 260px; margin: 0; font-size: 1.05rem; line-height: 1.5; }
