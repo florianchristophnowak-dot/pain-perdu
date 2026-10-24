@@ -3,7 +3,7 @@
 Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: Eine Klasse aus Erfurt sucht in Paris den Klassenrucksack „Bernd“, den ein Pantomime versehentlich mitgenommen hat. Das Spiel prüft Hör- und Leseverstehen, den Wechsel von imparfait und passé composé sowie kommunikative Grammatik (passende Fragen, höfliche Reparatur, Wegbeschreibung).
 
 **Spielen:** https://florianchristophnowak-dot.github.io/pain-perdu/
-**Lehrkraft-Ansicht:** https://florianchristophnowak-dot.github.io/pain-perdu/?mode=prof
+**Lehrkraft-Ansicht:** https://florianchristophnowak-dot.github.io/pain-perdu/?mode=prof (fragt nach dem Code der Lehrkraft)
 
 ## Aufbau
 
@@ -13,6 +13,7 @@ Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: E
 | `css/style.css` | Gestaltung |
 | `js/data.js` | Alle Texte und Spieldaten: Szenen, Hotspots, Dialogknoten (S02 … V06), Aufgaben, Hilfestufen, Glossar. Kennungen wie im Drehbuch. |
 | `js/game.js` | Spiel-Engine: Szenen, Dialoge, Aufgabentypen, Carnet, Karte, Inventar, Hilfe, Speichern, Export, Lehrkraft-Ansicht |
+| `js/prof.js` | Code-Abfrage für Lehrkraft-Ansicht und Quiz-Lösungen (im Quelltext steht nur eine Prüfsumme) |
 | `assets/img/` | Hintergründe, Zwischensequenzen, Porträts |
 | `assets/audio/` | Hörtexte (MP3) |
 
@@ -33,17 +34,18 @@ Die Hotspot-Positionen stehen in `js/data.js` (`scenes`, Angaben in Prozent des 
 
 ## Lehrkraft-Ansicht und Export
 
-- `?mode=prof` zeigt Sprungmarken zu jedem Knoten, Lösungen, Transkripte, „Tout débloquer“ und die Ergebnisse auf diesem Gerät.
+- `?mode=prof` fragt einmal pro Browser-Tab nach dem Code der Lehrkraft und zeigt dann Sprungmarken zu jedem Knoten, Lösungen, Transkripte, „Tout débloquer“ und die Ergebnisse auf diesem Gerät. Ohne Code startet das normale Spiel. Der Code steht nicht im Repository, nur seine Prüfsumme in `js/prof.js`; einen neuen Code setzt man, indem man in der Browser-Konsole `ppProf.hash("neuer code")` eingibt und das Ergebnis dort bei `HASH` einträgt.
 - Die Lernenden exportieren am Ende (oder jederzeit aus dem Carnet) zwei Dateien: JSON (alles) und CSV (eine Zeile je Aufgabe und Person: Ergebnis, Versuche, Hilfestufe, Wiederholungen, Transkript, Dauer, Text).
-- Der Spielstand liegt im `localStorage` des Browsers; „Continuer la partie“ nimmt ihn wieder auf.
+- Der Spielstand liegt im `localStorage` des Browsers; „Continuer la partie“ nimmt ihn wieder auf. Der Knopf „Menu“ oben links (Haus-Symbol, auch auf dem Endbildschirm) führt zurück zum Startmenü, der Stand bleibt dabei gespeichert. Wer dort eine neue Partie beginnt, behält die alte in den Ergebnissen auf diesem Gerät.
+- Der Testzugang `window.PP` (Sprünge, Flags) existiert nur in der Lehrkraft-Ansicht oder mit `?test=1` für die automatischen Tests.
 
 ## Merken statt notieren: Abfragen im Spiel
 
-Das Spiel gibt keine Notier-Hinweise und speichert keine Hinweise für die Schüler. Was wichtig ist, merken sie sich oder schreiben es auf ein Blatt (`zettel.html`, Modell zum Ausdrucken, auch als `druck/Fiche_enquete.pdf`). An sechs späteren Stellen fragt das Spiel die Informationen ab; die Antworten werden getippt (Knotentyp `task`, `kind: "recall"`, Felder `fields` oder Lücken `parts`, Prüfung ohne Groß-/Kleinschreibung und Akzente, `answers`, `keywords`, `number` oder `digits`). Wer es nicht weiß, kann „Revenir plus tard“ wählen und nachsehen; nach dem zweiten Fehlversuch nennt die Figur den Ort, an dem die Information steht.
+Das Spiel gibt keine Notier-Hinweise und speichert keine Hinweise für die Schüler. Was wichtig ist, merken sie sich oder schreiben es auf ein Blatt (`zettel.html`, Modell zum Ausdrucken, auch als `druck/Fiche_enquete.pdf`). An sechs späteren Stellen fragt das Spiel die Informationen ab; die Antworten werden getippt (Knotentyp `task`, `kind: "recall"`, Felder `fields` oder Lücken `parts`, Prüfung ohne Groß-/Kleinschreibung und Akzente, `answers`, `keywords`, `number` oder `digits`). Wer es nicht weiß, kann „Revenir plus tard“ wählen und nachsehen; nach dem zweiten Fehlversuch nennt die Figur den Ort, an dem die Information steht. Nach drei falschen Versuchen ist die Abfrage eine Minute gesperrt (auch nach „Revenir plus tard“), damit Raten nicht schneller ist als Nachsehen. Ein einzelner Tippfehler in Wörtern ab fünf Buchstaben ohne Ziffern zählt als richtig; Lesefallen wie „Duval“ bleiben falsch.
 
 | Stelle | Wer fragt | Abgefragt | Quelle im Spiel |
 |---|---|---|---|
-| `L02q` Librairie, nach Aushang C | M. Lenoir | Nachname des Pantomimen; was Marcel über das Programm sagte | Wärter (Hörtext), Marcels Nachricht auf Noras Telefon |
+| `L02q` Librairie, vor den Aushängen | M. Lenoir | Nachname des Pantomimen (zwei Marcel spielen das Stück) | Wärter auf dem Père-Lachaise (Hörtext) |
 | `V01q` Louvre | die Assistentin | vollständiger Name, Uhrzeit | Aushang C (`L02r`, am Panneau nachlesbar) |
 | `V03q` Finale | Marcel | Inhalt des Rucksacks mit Orten (devant, bleue, Kevin, rouge, billets) | `M00` am Anfang, Kevins SMS (Telefon im Inventar), Notfall: Nachricht an Nowak (Telefon, ab `L05`) |
 | `X01t` Place des Vosges | der Musiker | neuer Spielort (Louvre) | Aushang C |
@@ -57,9 +59,9 @@ Druckvorlagen (auch aus der Lehrkraft-Ansicht verlinkt):
 | Datei | Inhalt |
 |---|---|
 | `zettel.html` | Notizblatt für die Schüler (Q1–Q4 + Sonstiges) |
-| `quiz.html` | optionales Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt das Lösungsblatt an |
+| `quiz.html` | optionales Quiz für die Folgestunde, 20 Punkte + Bonus; `quiz.html?prof=1` hängt nach Eingabe des Lehrkraft-Codes das Lösungsblatt an |
 
-Fertige PDFs (A4) liegen im Ordner `druck/`: `Fiche_enquete.pdf`, `Quiz_eleves.pdf`, `Quiz_mit_Loesungen.pdf`. Sie sind aus den beiden HTML-Seiten erzeugt; nach Textänderungen genügt auch „Drucken → als PDF speichern“ im Browser. Der Abspann steht in `G.credits`.
+Fertige PDFs (A4) liegen im Ordner `druck/`: `Fiche_enquete.pdf`, `Quiz_eleves.pdf`, `Quiz_mit_Loesungen.pdf`. Das Lösungs-PDF liegt nur im Repository; beim Veröffentlichen lässt der Workflow es (und `tools/`) weg. Sie sind aus den beiden HTML-Seiten erzeugt; nach Textänderungen genügt auch „Drucken → als PDF speichern“ im Browser. Der Abspann steht in `G.credits`.
 
 ## Auf dem Smartphone
 
@@ -79,13 +81,24 @@ Auf GitHub „Code → Download ZIP“ wählen, entpacken und `index.html` im Br
 
 Die früheren Kennungen `D_M02`, `D_P03` und `D_B05` (Zuordnungsaufgaben) gibt es nicht mehr. Der Abspann steht in `G.credits`.
 
+## Reihenfolge und Sperren
+
+Damit niemand Stationen überspringt, geht jede erst auf, wenn die Information dafür im Spiel gefallen ist:
+
+- Père-Lachaise und Marais öffnen sich auf der Karte erst nach dem Sack (`M02`) und der Aussage der Kioskfrau (`M04b`). Vorher sagt Marie, warum.
+- Die Buchhandlung erscheint erst nach Marcels Nachricht bei Nora (`B03`); die Tür im Marais bleibt bis dahin nur eine Tür.
+- Lenoir zeigt die Aushänge erst nach dem Nachnamen, der Stempeltisch kommt nach dem richtigen Aushang, Marcels Karte nach dem Stempel.
+- Die Assistentin am Louvre lässt erst nach dem richtigen Aushang durch und fragt Name und Uhrzeit ab; Marcel fragt am Ende den Inhalt des Rucksacks ab.
+
+Frage 3 im Carnet („Voleur ou erreur ?“) gilt als geklärt, sobald Chloés Foto (`P06`) und Marcels Nachricht (`B04`) verstanden sind.
+
 ## Phase 2
 
 Die Nebenwege aus Abschnitt 10 des Drehbuchs sind eingebaut und freiwillig: die Karte „demain“ (C01) schaltet die Catacombes frei (C02, Anruf bei Chloé → C03 mit Hörtext `au_chloe`), Aushang A schaltet die place des Vosges frei (X01), Gaston (P07) ist nach dem Gespräch mit dem Wärter erreichbar, und die Assistentin bietet vor dem Finale das Brotschatten-Rätsel an (V02b, Hörtext `au_assistante`). Der Abspann steht in `js/data.js` unter `credits`; dort trägst du die Namen ein.
 
 ## Test
 
-`tools/playthrough.js` spielt beide Phasen automatisch durch (Playwright, Chromium) und meldet am Ende die Diagnosezeilen. Vorher `npm i -D playwright` und einen lokalen Server starten (`npx http-server -p 8765 .`), dann `node tools/playthrough.js`. Nach Änderungen an Texten oder Code zeigt ein fehlgeschlagener Durchlauf schnell, wo etwas klemmt.
+`tools/playthrough.js` spielt beide Phasen automatisch durch (Playwright, Chromium) und meldet am Ende die Diagnosezeilen. Vorher `npm i -D playwright` und einen lokalen Server starten (`npx http-server -p 8765 .`), dann `node tools/playthrough.js` (öffnet `index.html?intro=0&test=1`). Nach Änderungen an Texten oder Code zeigt ein fehlgeschlagener Durchlauf schnell, wo etwas klemmt.
 
 ## Schrift
 

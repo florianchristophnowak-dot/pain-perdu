@@ -33,7 +33,7 @@ window.GAME = (function () {
       carnet: "Carnet", carte: "Carte", inventaire: "Inventaire", aide: "Aide", rejouer: "Rejouer", transcription: "Transcription",
       noter: "Noter", continuer: "Continuer", retour: "Retour", exporter: "Exporter le carnet", valider: "Valider", fermer: "Fermer",
       glossaire: "Glossaire", commencer: "Commencer", reprendre: "Continuer la partie", nouvelle: "Nouvelle partie", lire: "Lire",
-      annuler: "Annuler", recommencer: "Recommencer"
+      annuler: "Annuler", recommencer: "Recommencer", menu: "Menu"
     },
     start: { p1: "Joueur 1 :", p2: "Joueur 2 :", p2hint: "(facultatif)", lino: "Commentaires de Lino :", fr: "en français", de: "auf Deutsch" },
     carnet: {
@@ -41,7 +41,7 @@ window.GAME = (function () {
       cards: "Nos cartes", mission: "Mission",
       hint: "Le carnet ne note rien pour toi. Les noms, les lieux, les heures : tu les retiens, ou tu les écris sur ta feuille."
     },
-    recall: { check: "Vérifier", later: "Revenir plus tard", wrong: "Non, ce n'est pas ça.", unknown: "Tu ne sais plus ? Va revoir sur place, puis reviens.", intro: "Réponds de mémoire ou avec ta feuille." },
+    recall: { check: "Vérifier", later: "Revenir plus tard", pause: "Là, vous devinez. Allez vérifier, et revenez dans une minute.", paused: "Pas maintenant. Vérifiez d'abord, puis revenez dans {s} secondes.", wrong: "Non, ce n'est pas ça.", unknown: "Tu ne sais plus ? Va revoir sur place, puis reviens.", intro: "Réponds de mémoire ou avec ta feuille." },
     inv: { title: "Inventaire", empty: "Rien.", show: "Montrer", showTo: "Montrer à", hint: "Clique sur un objet pour le regarder de près.", nothing: { who: "lino", fr: "Non. Ça ne marche pas.", de: "Nein. Das bringt nichts." } },
     partner: "Changement ! {p2} prend la souris, {p1} prend le carnet.",
     solo: "Cette question, chacun répond seul. D'abord {p1}, puis {p2}.",
@@ -66,7 +66,7 @@ window.GAME = (function () {
   G.questions = {
     Q1: { title: "Qui est le mime ?", done: "L02q_done" },
     Q2: { title: "Où et quand joue-t-il aujourd'hui ?", done: "V01q_done" },
-    Q3: { title: "Voleur ou erreur ?", done: "V03_done" },
+    Q3: { title: "Voleur ou erreur ?", done: ["P06_done", "B04_done"] },
     Q4: { title: "Qu'est-ce qu'il y a dans notre sac ?", done: "V03q_done" }
   };
   /* ---------- Inventar ---------- */
@@ -77,16 +77,16 @@ window.GAME = (function () {
     cola: { emoji: "🥤", name: "la Vita Cola", desc: "Une bouteille de Thuringe. Personne à Paris ne connaît ça.", start: true },
     telephone: { emoji: "📱", name: "le téléphone", desc: "Batterie : 23 %.", start: true,
       actions: [
-        { if: "B05_done", label: "Relire le SMS de Kevin", icon: "sms", text: "Lino !!! Ma boîte bleue est dans la poche de devant du sac. Dessus, il y a mon nom : KEVIN, avec un K. Dedans, c'est mon appareil dentaire. Sans lui, je ne peux pas manger de baguette. Trouve le sac !!!" },
+        { if: "B05_done", label: "Relire le SMS de Kevin", icon: "sms", text: "Lino !!! Tu as retrouvé Bernd ??? Ma boîte bleue est dans la poche de devant !!! Avec mon nom dessus : KEVIN, avec un K. Dedans, c'est mon appareil dentaire. Sans lui, je ne peux pas manger de baguette. Trouve le sac !!!" },
         { if: "L05_done", label: "Écrire à M. Nowak : « Qu'est-ce qu'il y a dans Bernd ? »", icon: "sms", flag: "nowak_asked", diag: "D_NOWAK", text: "M. Nowak : « Lino ! La boîte bleue de Kevin est dans la poche de devant. Mon enveloppe rouge est sous les billets de train. Et vous êtes où ?! Je compte... 31. »" }
       ] },
-    sac_mime: { emoji: "👜", name: "le sac du mime", desc: "Brun, avec une fermeture rouge et un autocollant jaune. Dedans : trois baguettes en plastique, un gant blanc, un programme mouillé." },
-    carte_chloe: { emoji: "📝", name: "la carte de Chloé", desc: "« Père-Lachaise, ce matin. Merci pour les textes ! Chloé »" },
-    ticket: { emoji: "🧾", name: "le ticket de caisse", desc: "Boulangerie dans le Marais, tél. 01 42 72 18 90. Au dos : « Nora connaît mon spectacle. »" },
+    sac_mime: { emoji: "👜", name: "le sac du mime", desc: "Brun, avec une fermeture rouge et un autocollant jaune. Dedans : trois baguettes en plastique, un gant blanc, un programme mouillé (on ne peut rien lire)." },
+    carte_chloe: { emoji: "📝", name: "la carte de Chloé", desc: "« Père-Lachaise, ce matin. Merci pour les textes, Marcel ! Chloé »" },
+    ticket: { emoji: "🧾", name: "le ticket de caisse", desc: "« Boulangerie Nora · le Marais · tél. 01 42 72 18 90 · 2 parts de pain perdu : 5,00 € »" },
     photo_groupe: { emoji: "🖼️", name: "la photo de groupe", desc: "Derrière la classe, on voit le mime avec son béret." },
     flyer: { emoji: "📄", name: "le flyer", desc: "« Marcel — Le Pain perdu — spectacle de mime — ce soir dans Paris »" },
     photo_chloe: { emoji: "📷", name: "la photo de Chloé", desc: "Ce matin, au Père-Lachaise : Chloé et Marcel.", img: "doc_photo_chloe" },
-    carte_marcel: { emoji: "✉️", name: "la carte de Marcel", desc: "« J'ai pris le mauvais sac à Montmartre. Je suis désolé ! … Pour avoir le sac, dites-moi ce qu'il y a dedans. — Marcel »" },
+    carte_marcel: { emoji: "✉️", name: "la carte de Marcel", desc: "« J'ai pris le mauvais sac à Montmartre. Je suis désolé ! … Pour être sûr que c'est vous, je vais vous demander ce qu'il y a dans votre sac, et où. — Marcel »" },
     pain_perdu: { emoji: "🍞", name: "une part de pain perdu", desc: "Un dessert. Pas un sac." },
     carte_demain: { emoji: "📇", name: "la carte « demain »", desc: "« Demain, 11 h : rendez-vous devant l'entrée des Catacombes. Apporter les décors. — Chloé, 06 12 34 56 78 »" }
   };
@@ -106,7 +106,7 @@ window.GAME = (function () {
       name: "Montmartre · Sacré-Cœur", bg: "bg_montmartre", enter: "M01",
       hotspots: [
         { id: "sac_brun", label: "le sac brun", x: 82, y: 51, w: 10, h: 15, actions: { regarder: "M02" }, hideIf: "M02_done" },
-        { id: "kiosque", label: "la dame du kiosque", x: 3, y: 19, w: 15, h: 43, who: "kiosque", actions: { parler: [{ if: "M04b_done", node: "M03r" }, { node: "M03" }], montrer: { photo_groupe: "M03a" } } },
+        { id: "kiosque", label: "la dame du kiosque", x: 3, y: 19, w: 15, h: 43, who: "kiosque", actions: { parler: [{ if: "M04b_done", node: "M03r" }, { node: "M03" }], montrer: { photo_groupe: [{ if: "M04b_done", node: "M03r" }, { node: "M03p" }] } } },
         { id: "escalier", label: "l'escalier", x: 26, y: 60, w: 46, h: 34, actions: { regarder: "M01e" } },
         { id: "metro", label: "le métro", x: 91.5, y: 21, w: 8.5, h: 45, actions: { courir: "M06" } }
       ]
@@ -114,7 +114,7 @@ window.GAME = (function () {
     pere_lachaise: {
       name: "Cimetière du Père-Lachaise", bg: "bg_pere_lachaise", enter: "P01",
       hotspots: [
-        { id: "gardien", label: "le gardien", x: 77, y: 28, w: 20, h: 57, who: "gardien", actions: { parler: [{ if: "P07_done", node: "P02r" }, { if: "P03_done", node: "P07" }, { node: "P02" }], montrer: { photo_groupe: "P03", carte_chloe: "P03" } } },
+        { id: "gardien", label: "le gardien", x: 77, y: 28, w: 20, h: 57, who: "gardien", actions: { parler: [{ if: "P07_done", node: "P02r" }, { if: "P03_done", node: "P07" }, { node: "P02" }], montrer: { photo_groupe: [{ if: "P03_done", node: "P02r" }, { node: "P02m" }], carte_chloe: [{ if: "P03_done", node: "P02r" }, { node: "P02m" }] } } },
         { id: "gaston", label: "Gaston", x: 35, y: 46, w: 21, h: 29, actions: { regarder: [{ if: "P07_done", node: "P07r" }, { if: "P03_done", node: "P07" }, { node: "P01g" }] } },
         { id: "plan", label: "le plan", x: 1, y: 17, w: 13, h: 34, actions: { regarder: [{ if: "P03_done", node: "P04" }, { node: "P01p" }] } },
         { id: "banc", label: "le banc rouge", x: 15, y: 41, w: 18, h: 19, who: "chloe", actions: { parler: [{ if: "P04_done", node: "P05" }, { node: "P01x" }], regarder: [{ if: "P04_done", node: "P05" }, { node: "P01x" }] } },
@@ -124,19 +124,19 @@ window.GAME = (function () {
     marais: {
       name: "Le Marais · boulangerie de Nora", bg: "bg_boulangerie", enter: "B01",
       hotspots: [
-        { id: "nora", label: "Nora", x: 47, y: 21, w: 13, h: 40, who: "nora", actions: { parler: [{ if: "B04_done", node: "B02r" }, { node: "B02" }], montrer: { ticket: "B02t", photo_groupe: "B02", flyer: "B02" } } },
+        { id: "nora", label: "Nora", x: 47, y: 21, w: 13, h: 40, who: "nora", actions: { parler: [{ if: "B04_done", node: "B02r" }, { node: "B02" }], montrer: { ticket: [{ if: "B04_done", node: "B02r" }, { node: "B02t" }], photo_groupe: [{ if: "B04_done", node: "B02r" }, { node: "B02" }], flyer: [{ if: "B04_done", node: "B02r" }, { node: "B02" }] } } },
         { id: "flyer", label: "le flyer", x: 73.5, y: 36, w: 6, h: 11, actions: { regarder: "B01a" } },
         { id: "panneau", label: "le panneau", x: 64, y: 2, w: 13, h: 34, actions: { regarder: "B01p" } },
         { id: "telephone", label: "le téléphone de Nora", x: 58, y: 60, w: 6.5, h: 7, actions: { ecouter: "B03" }, showIf: "B03_open" },
-        { id: "porte", label: "la porte de la librairie", x: 83, y: 5, w: 16, h: 80, actions: { regarder: "GO_librairie" } }
+        { id: "porte", label: "la porte de la librairie", x: 83, y: 5, w: 16, h: 80, actions: { regarder: [{ if: "B03_open", node: "GO_librairie" }, { node: "B01l" }] } }
       ]
     },
     librairie: {
       name: "Librairie Les Mots retrouvés", bg: "bg_librairie", enter: "L01",
       hotspots: [
-        { id: "panneau", label: "le panneau", x: 61, y: 13, w: 9, h: 30, actions: { regarder: [{ if: "L02_done", node: "L02r" }, { if: "L02_C", node: "L02q" }, { node: "L02" }] } },
+        { id: "panneau", label: "le panneau", x: 61, y: 13, w: 9, h: 30, actions: { regarder: [{ if: "L02_done", node: "L02r" }, { if: "L02q_done", node: "L02" }, { node: "L02q" }] } },
         { id: "lenoir", label: "M. Lenoir", x: 11, y: 18, w: 25, h: 80, who: "lenoir", actions: { parler: "L03" } },
-        { id: "table", label: "la table", x: 48, y: 68, w: 45, h: 30, actions: { regarder: [{ if: "L04_done", node: "L04r" }, { node: "L04" }] } },
+        { id: "table", label: "la table", x: 48, y: 68, w: 45, h: 30, actions: { regarder: [{ if: "L04_done", node: "L04r" }, { if: "L02_done", node: "L04" }, { node: "L04x" }] } },
         { id: "carte_marcel", label: "la carte de Marcel", x: 84, y: 36, w: 12, h: 9, actions: { regarder: "L05" }, showIf: "L04_done" }
       ]
     },
@@ -168,9 +168,9 @@ window.GAME = (function () {
   G.map = {
     places: [
       { id: "montmartre", label: "Montmartre · Sacré-Cœur", short: "Montmartre", q: "Le point de départ", x: 46, y: 13, unlock: "always", done: ["M02_done", "M04b_done"] },
-      { id: "pere_lachaise", label: "Cimetière du Père-Lachaise", short: "Père-Lachaise", q: "Qui connaît ce mime ?", x: 84, y: 27, unlock: "M02_done", done: ["P03_done", "P04_done", "P06_done"] },
-      { id: "marais", label: "Le Marais · boulangerie de Nora", short: "Le Marais", q: "Quel est son spectacle ?", x: 62, y: 38, unlock: "M02_done", done: ["B04_done", "B05_done", "B06_done"] },
-      { id: "librairie", label: "Librairie Les Mots retrouvés", short: "Librairie", q: "Les programmes changent", x: 56, y: 56, unlock: "M02_done", done: ["L02_done", "L04_done"] },
+      { id: "pere_lachaise", label: "Cimetière du Père-Lachaise", short: "Père-Lachaise", q: "Qui connaît ce mime ?", x: 84, y: 27, unlock: ["M02_done", "M04b_done"], lockedMsg: { if: "M02_done", fr: "Attends. D'abord, la dame du kiosque : elle a peut-être tout vu." }, done: ["P03_done", "P04_done", "P06_done"] },
+      { id: "marais", label: "Le Marais · boulangerie de Nora", short: "Le Marais", q: "Quel est son spectacle ?", x: 62, y: 38, unlock: ["M02_done", "M04b_done"], lockedMsg: { if: "M02_done", fr: "Attends. D'abord, la dame du kiosque : elle a peut-être tout vu." }, done: ["B04_done", "B05_done", "B06_done"] },
+      { id: "librairie", label: "Librairie Les Mots retrouvés", short: "Librairie", q: "Les programmes changent", x: 56, y: 56, unlock: "B03_open", hideUntil: "B03_open", done: ["L02_done", "L04_done"] },
       { id: "louvre", label: "Cour du Louvre", short: "Louvre", q: "Rendez-vous à 17 h", x: 30, y: 40, unlock: "always", done: ["V03_done", "V05_done"], finale: true },
       { id: "vosges", label: "Place des Vosges", short: "Place des Vosges", q: "Marcel joue ici ?", x: 78, y: 52, unlock: "vosges_seen", hideUntil: "vosges_seen", done: ["X01_done"] },
       { id: "catacombes", label: "Catacombes · Denfert-Rochereau", short: "Catacombes", q: "Le rendez-vous de Chloé", x: 28, y: 60, unlock: "C01_found", hideUntil: "C01_found", done: ["C02_done"] }
@@ -187,23 +187,23 @@ window.GAME = (function () {
     { who: "lino", fr: "Un sac en forme de pain. Très discret.", de: "Ein Rucksack in Brotform. Sehr unauffällig." }
   ], next: "M00" };
 
-  N.M00 = { type: "doc", title: "Le sac Bernd", icon: "sac", doc: "Dans le sac : les billets de train, la boîte bleue de Kevin et l'enveloppe rouge de monsieur Nowak. La boîte bleue est dans la poche de devant. L'enveloppe rouge est sous les billets.",
+  N.M00 = { type: "doc", title: "Le sac Bernd", icon: "sac", doc: "Monsieur Nowak : « Lino, tu prends Bernd. Dedans, il y a les billets de train pour ce soir. Mon enveloppe rouge est sous les billets : ne la perds pas ! Et la boîte bleue de Kevin est dans la poche de devant. Ne l'ouvre pas. Rendez-vous à 17 heures, cour du Louvre ! »",
     lines: [{ who: "lino", fr: "Les billets, la boîte de Kevin, l'enveloppe de Nowak. Tout est là. Pour l'instant.", de: "Die Fahrkarten, Kevins Dose, Nowaks Umschlag. Alles da. Noch." }],
     effects: { flag: "M00_done" }, next: "M00c" };
 
   N.M00c = { type: "cut", bg: "cut_confusion", lines: [
-    { who: "narrateur", fr: "Devant le Sacré-Cœur, un mime fait un mur invisible. Lino pose Bernd à côté du sac du mime. Un coup de vent, des baguettes partout... et le mime s'en va. Avec Bernd !" },
+    { who: "narrateur", fr: "Photo de groupe devant le Sacré-Cœur ! Lino pose Bernd près de l'escalier, à côté du sac brun d'un mime. « Souriez ! » Clic. Tout le monde regarde la photo... Quand Lino se retourne, le mime court vers le métro, avec un sac brun. Près de l'escalier, il reste un sac brun. Ce n'est pas Bernd." },
     { who: "lino", fr: "Hé ! Le clown ! Mon sac !", de: "He! Der Clown! Mein Rucksack!" },
     { who: "marie", fr: "Attends. On regarde d'abord." }
   ], effects: { item: "photo_groupe", removeItem: "sac_bernd" }, next: "SCENE_montmartre" };
 
-  N.M01 = { type: "lines", once: "M01_seen", lines: [{ who: "marie", fr: "Il a laissé quelque chose sur l'escalier. Et la dame du kiosque a tout vu, non ?" }] };
+  N.M01 = { type: "lines", once: "M01_seen", lines: [{ who: "marie", fr: "Il reste un sac près de l'escalier. Et la dame du kiosque... elle a peut-être tout vu." }] };
   N.M01e = { type: "lines", lines: [{ who: "narrateur", fr: "Des marches, des feuilles mortes et des touristes. Le mime n'est plus là." }] };
 
-  N.M02 = { type: "doc", title: "Le sac brun", icon: "sac", doc: "Ce n'est pas mon sac ! Il y a trois baguettes en plastique, un gant blanc et un programme mouillé. Sur une carte, on peut lire : « Père-Lachaise, ce matin. Merci pour les textes ! Chloé » Le ticket de caisse vient d'une boulangerie dans le Marais (tél. 01 42 72 18 90). Au dos : « Nora connaît mon spectacle. » Il y a aussi une deuxième carte : « Demain, 11 h : rendez-vous devant l'entrée des Catacombes. Apporter les décors. — Chloé, 06 12 34 56 78 »",
+  N.M02 = { type: "doc", title: "Le sac brun", icon: "sac", doc: "Ce n'est pas Bernd ! Un sac brun, avec une fermeture rouge et un autocollant jaune. Dedans : trois baguettes en plastique, un gant blanc, un programme mouillé (on ne peut rien lire)... et des papiers. Une carte : « Père-Lachaise, ce matin. Merci pour les textes, Marcel ! Chloé » Un ticket de caisse : « Boulangerie Nora · le Marais · tél. 01 42 72 18 90 · 2 parts de pain perdu : 5,00 € » Et une deuxième carte : « Demain, 11 h : rendez-vous devant l'entrée des Catacombes. Apporter les décors. — Chloé, 06 12 34 56 78 »",
     lines: [
       { who: "lino", fr: "Le pain a eu des bébés. Ce n'est pas bon signe.", de: "Das Brot hat Nachwuchs bekommen. Das ist kein gutes Zeichen." },
-      { who: "marie", fr: "Deux papiers, deux lieux. Lis bien... et après, regarde la carte." }
+      { who: "marie", fr: "Des baguettes, un gant blanc... C'est le sac du mime. Et ses papiers, c'est un peu son agenda." }
     ],
     effects: { items: ["sac_mime", "carte_chloe", "ticket", "carte_demain"], flags: ["C01_found", "M02_done"] },
     next: "SCENE_montmartre" };
@@ -211,11 +211,13 @@ window.GAME = (function () {
   N.M03 = { type: "choice", who: "kiosque", diag: "D_M03", help: "M03", helpAfter: 2,
     lines: [{ who: "kiosque", fr: "Bonjour, les jeunes. Vous avez l'air perdus." }],
     choices: [
-      { fr: "Vous avez vu cet homme ?", kind: "ok", next: "M03a" },
+      { fr: "Vous avez vu cet homme ?", kind: "ok", reply: [{ who: "kiosque", fr: "Le mime ? Je le connais ! Il achète son journal ici tous les jours, et il me raconte toute sa journée. Pour un mime, il parle beaucoup !" }], next: "M03a" },
       { fr: "Vous cherchez cet homme ?", kind: "wrong", reply: [{ who: "kiosque", fr: "Moi ? Non. C'est vous qui le cherchez ?" }], next: "M03" },
       { fr: "Vous allez voir cet homme ?", kind: "wrong", reply: [{ who: "kiosque", fr: "Plus tard ? Je ne sais pas. Vous voulez savoir si je l'ai vu ?" }], next: "M03" }
     ] };
-  N.M03r = { type: "lines", lines: [{ who: "kiosque", fr: "Nora, la boulangère. Dans le Marais." }] };
+  /* Foto gezeigt statt gefragt: dieselbe Einleitung, dann die Aufnahme */
+  N.M03p = { type: "lines", lines: [{ who: "kiosque", fr: "Le mime sur votre photo ? Je le connais ! Il achète son journal ici tous les jours, et il me raconte toute sa journée. Pour un mime, il parle beaucoup !" }], next: "M03a" };
+  N.M03r = { type: "lines", lines: [{ who: "kiosque", fr: "Pour ce soir, demandez à Nora, la boulangère du Marais. Elle le connaît mieux que moi." }] };
 
   N.M03a = { type: "audio", audio: "au_kiosque", transcriptHelp: "M04", effects: { flag: "M03_done" }, next: "M04" };
 
@@ -255,20 +257,22 @@ window.GAME = (function () {
   N.P02 = { type: "choice", who: "gardien", diag: "D_P02", help: "P02", firstOnly: true,
     lines: [{ who: "gardien", fr: "Bonjour. Vous cherchez une tombe ? Jim Morrison, c'est par là. Tout le monde cherche Jim Morrison." }],
     choices: [
-      { fr: "Non, on cherche un homme. Vous avez vu ce mime ?", hint: "(montre la photo de groupe)", kind: "ok", next: "P03" },
+      { fr: "Non, on cherche un homme. Vous avez vu ce mime ?", hint: "(montre la photo de groupe)", kind: "ok", next: "P02m" },
       { fr: "Oui, Jim Morrison, s'il vous plaît.", kind: "repair", reply: [{ who: "gardien", fr: "Tout droit, puis à droite. Bonne visite !" }, { who: "lino", fr: "Marie, on ne cherche pas Jim Morrison.", de: "Marie, wir suchen nicht Jim Morrison." }], next: "P02" },
       { fr: "Vous connaissez Chloé ?", kind: "repair", reply: [{ who: "gardien", fr: "Chloé ? Oui, elle est là-bas avec son groupe de théâtre. Pourquoi ?" }], next: "P02" }
     ] };
+  /* Der Wärter kennt Marcel: Vorspann vor der Aufnahme */
+  N.P02m = { type: "lines", lines: [{ who: "gardien", fr: "Ah, lui ! Il vient souvent, avec sa compagnie de théâtre : ils font des balades littéraires entre les tombes. Et son amie Chloé fait des photos de tout. De tout !" }], next: "P03" };
   N.P02r = { type: "lines", lines: [{ who: "gardien", fr: "Marcel Blanchard. Tout droit, puis à gauche." }] };
 
   N.P03 = { type: "audio", audio: "au_gardien", transcriptHelp: "P04", effects: { flags: ["P02_done", "P03_done"] }, next: "P03a" };
-  N.P03a = { type: "lines", lines: [{ who: "marie", fr: "Tu as bien écouté le chemin ? Regarde le plan." }], next: "SCENE_pere_lachaise" };
+  N.P03a = { type: "lines", lines: [{ who: "marie", fr: "Il parle vite, ce gardien. Heureusement, il y a un plan à l'entrée." }], next: "SCENE_pere_lachaise" };
 
   N.P04 = { type: "task", diag: "D_P04", help: "P04", audio: "au_gardien", title: "Le plan : quel chemin ?",
     task: { kind: "route", intro: "Clique sur le chemin de Chloé, étape par étape.",
       steps: [
         { id: "s1", prompt: "Depuis l'entrée...", opts: [{ id: "droit", label: "tout droit", ok: true }, { id: "descend", label: "le chemin qui descend", ok: false, reply: "Non, pas par là ! Ça descend vers l'autre sortie." }] },
-        { id: "s2", prompt: "Au carrefour...", opts: [{ id: "gauche", label: "à gauche", ok: true }, { id: "droite", label: "à droite", ok: false, reply: "Non, pas par là ! Ça descend vers l'autre sortie." }] }
+        { id: "s2", prompt: "Au carrefour...", opts: [{ id: "gauche", label: "à gauche", ok: true }, { id: "droite", label: "à droite", ok: false, reply: "Non ! À droite, c'est Jim Morrison. Encore lui !" }] }
       ],
       who: "gardien" },
     effects: { flag: "P04_done" },
@@ -276,12 +280,12 @@ window.GAME = (function () {
     next: "P05" };
 
   N.P05 = { type: "choice", who: "chloe", diag: "D_P05", count: true,
-    lines: [{ who: "chloe", fr: "Salut ! Vous êtes des amis de Marcel ?" }],
+    lines: [{ who: "chloe", fr: "Salut ! Vous êtes perdus ? Jim Morrison, c'est de l'autre côté." }],
     choices: [
-      { fr: "Non. Marcel a pris notre sac à Montmartre.", kind: "ok", reply: [{ who: "chloe", fr: "Marcel ? Il a pris votre sac ? Ça m'étonne... Regardez : ce matin, il avait déjà son sac." }], next: "P06" },
-      { fr: "On cherche Marcel. Il était ici ce matin ?", kind: "ok", reply: [{ who: "chloe", fr: "Oui ! Il a apporté les textes pour notre balade littéraire. J'ai une photo de ce matin, regardez." }], next: "P06" },
+      { fr: "Non. Marcel a pris notre sac à Montmartre.", kind: "ok", reply: [{ who: "chloe", fr: "Marcel ? Votre sac ? Ça m'étonne. Marcel ne prend jamais rien, même pas le dernier croissant ! Tenez, c'est lui ce matin, avec moi." }], next: "P06" },
+      { fr: "On cherche Marcel. Il était ici ce matin ?", kind: "ok", reply: [{ who: "chloe", fr: "Oui ! Il a apporté les textes pour notre balade littéraire. Tenez, j'ai fait une photo de nous deux." }], next: "P06" },
       { fr: "Marcel a volé notre sac ce matin, à Montmartre.", kind: "wrong", reply: [{ who: "chloe", fr: "Ce matin ? Impossible : ce matin, il était ici, avec moi. Et « volé »... vous êtes sûrs ?" }], next: "P05" },
-      { fr: "Vous avez le sac Bernd ?", kind: "repair", reply: [{ who: "chloe", fr: "Un sac... Bernd ? Non, désolée. Mais j'ai une photo de Marcel de ce matin." }], next: "P06" }
+      { fr: "Vous avez le sac Bernd ?", kind: "repair", reply: [{ who: "chloe", fr: "Un sac qui s'appelle Bernd ? Euh... non. Vous cherchez quoi, exactement ?" }], next: "P05" }
     ],
     effects: { item: "photo_chloe", flag: "P05_done" } };
 
@@ -311,21 +315,23 @@ window.GAME = (function () {
   N.B01p = { type: "doc", title: "Le panneau", icon: "panneau", doc: "Aujourd'hui : pain perdu — 2,50 € la part", lines: [{ who: "marie", fr: "Un dessert : du pain, du lait, des œufs, du sucre." }] };
   N.B01a = { type: "doc", title: "Le flyer", icon: "flyer", diag: "D_B01", count: true, doc: "Marcel — Le Pain perdu — spectacle de mime — ce soir dans Paris", effects: { item: "flyer", flag: "B01a_done" }, lines: [{ who: "lino", fr: "Marcel. Comme sur la carte de Chloé.", de: "Marcel. Wie auf Chloés Karte." }] };
 
+  N.B01l = { type: "lines", lines: [{ who: "marie", fr: "Une librairie. On cherche un sac, pas un livre." }] };
+
   N.B02 = { type: "choice", who: "nora", diag: "D_B02", help: "B02", firstOnly: true,
     lines: [{ who: "nora", fr: "Bonjour ! Qu'est-ce que je vous sers ?" }],
     choices: [
       { fr: "Je voudrais du pain perdu.", kind: "repair", reply: [{ who: "nora", fr: "Avec plaisir ! Une part ou deux ?" }, { who: "nora", fr: "Et voilà. Autre chose ?" }, { who: "marie", fr: "Lino, on ne cherche pas un dessert." }], effects: { item: "pain_perdu" }, next: "B02" },
-      { fr: "Je cherche un sac qui ressemble à un pain.", kind: "ok", reply: [{ who: "nora", fr: "Un sac... comme un pain ? D'habitude, c'est le pain qui va dans le sac. Il est comment ?" }], next: "B02b" },
-      { fr: "Je cherche le spectacle qui s'appelle Le Pain perdu.", kind: "ok", reply: [{ who: "nora", fr: "Le Pain perdu ! C'est le spectacle de Marcel. Il est passé ici à 14 heures et il a laissé un message pour moi. Écoutez." }], next: "B03" }
+      { fr: "Je cherche un sac qui ressemble à un pain.", kind: "ok", reply: [{ who: "nora", fr: "Un sac... comme un pain ? D'habitude, c'est le pain qui va dans le sac !" }], next: "B02b" },
+      { fr: "Je cherche le spectacle qui s'appelle Le Pain perdu.", kind: "ok", reply: [{ who: "nora", fr: "Le Pain perdu ? C'est le spectacle de Marcel, un client. Où il joue ce soir ? Aucune idée, son programme change tout le temps. Mais pourquoi vous cherchez Marcel ?" }, { who: "marie", fr: "Il a notre sac. Enfin... on pense." }], next: "B02b" }
     ] };
-  N.B02t = { type: "lines", lines: [{ who: "nora", fr: "Mon ticket ! Vous l'avez trouvé où ? Un sac... Il est comment ?" }], next: "B02b" };
+  N.B02t = { type: "lines", lines: [{ who: "nora", fr: "Un ticket de chez moi ! Deux parts de pain perdu... ça, c'est Marcel : il en prend deux tous les jours. Pourquoi vous avez son ticket ?" }, { who: "marie", fr: "Il était dans un sac. Pas dans notre sac. C'est compliqué." }], next: "B02b" };
   N.B02r = { type: "lines", lines: [{ who: "nora", fr: "Le message de Marcel ? Il est encore sur mon téléphone." }] };
 
   N.B02b = { type: "choice", who: "nora", diag: "D_B02b", count: true,
-    lines: [{ who: "nora", fr: "Il est comment, ce sac ?" }],
+    lines: [{ who: "nora", fr: "Et votre sac, il est comment ?" }],
     choices: [
-      { fr: "Brun, grand, avec un visage de pain.", kind: "ok", reply: [{ who: "nora", fr: "Un mime l'a pris ? Ah, Marcel ! Il est passé ici à 14 heures. Il avait l'air inquiet. Il a laissé un message. Écoutez." }], next: "B03" },
-      { fr: "Brun, avec une fermeture rouge et un autocollant jaune.", kind: "wrong", reply: [{ who: "nora", fr: "Ça, c'est le sac de Marcel ! Il était là ce matin, avec ce sac." }, { who: "marie", fr: "C'est le sac du mime, Lino. Pas Bernd." }], next: "B02b" }
+      { fr: "Brun, grand, avec un visage de pain.", kind: "ok", reply: [{ who: "nora", fr: "Un sac avec un visage ? Attendez... Marcel m'a laissé un message vers 14 heures. Il avait l'air inquiet, et il parle d'un sac. Écoutez." }], next: "B03" },
+      { fr: "Brun, avec une fermeture rouge et un autocollant jaune.", kind: "wrong", reply: [{ who: "nora", fr: "Une fermeture rouge, un autocollant jaune ? Mais c'est le sac de Marcel, ça ! Vous l'avez à la main !" }, { who: "marie", fr: "Elle a raison, Lino. Ça, c'est le sac du mime. Nous, on cherche Bernd." }], next: "B02b" }
     ] };
 
   N.B03 = { type: "audio", audio: "au_marcel", transcriptHelp: "B04", effects: { flag: "B03_open" }, next: "B04" };
@@ -348,7 +354,7 @@ window.GAME = (function () {
     ],
     next: "B05" };
 
-  N.B05 = { type: "doc", title: "SMS de Kevin", icon: "sms", doc: "Lino !!! Ma boîte bleue est dans la poche de devant du sac. Dessus, il y a mon nom : KEVIN, avec un K. Dedans, c'est mon appareil dentaire. Sans lui, je ne peux pas manger de baguette. Trouve le sac !!!",
+  N.B05 = { type: "doc", title: "SMS de Kevin", icon: "sms", doc: "Lino !!! Tu as retrouvé Bernd ??? Ma boîte bleue est dans la poche de devant !!! Avec mon nom dessus : KEVIN, avec un K. Dedans, c'est mon appareil dentaire. Sans lui, je ne peux pas manger de baguette. Trouve le sac !!!",
     lines: [{ who: "narrateur", fr: "Le téléphone de Lino vibre." }, { who: "lino", fr: "Kevin et son appareil dentaire. La France entière attend.", de: "Kevin und seine Zahnspange. Ganz Frankreich wartet." }],
     effects: { flag: "B05_done" }, next: "B06" };
 
@@ -366,30 +372,29 @@ window.GAME = (function () {
     { who: "lino", fr: "Une échelle trop grande pour une étagère trop petite. J'aime cet homme.", de: "Eine zu große Leiter für ein zu kleines Regal. Ich mag diesen Mann." }
   ] };
 
+  /* Abfrage vor den Aushängen: Lenoir will wissen, welcher Marcel gemeint ist (Nachname nur vom Wärter) */
+  N.L02q = { type: "task", diag: "D_L02q", help: "L02q", title: "M. Lenoir",
+    task: { kind: "recall", who: "lenoir", intro: "Le panneau du Pain perdu ? Attention : deux Marcel jouent ce spectacle, et j'ai trois affiches. Votre Marcel, c'est Marcel qui ?",
+      fields: [
+        { id: "nom", label: "Le nom de famille de votre Marcel :", answers: ["Blanchard", "Marcel Blanchard"], size: 18, where: "Le gardien du Père-Lachaise connaît son nom.",
+          traps: [{ answers: ["Duval", "Marcel Duval"], who: "lenoir", fr: "Duval ? Vous êtes sûrs ? Qui vous a donné ce nom ?" }] }
+      ],
+      wrongText: "Marcel qui ? Je ne connais pas ce nom.", success: { who: "lenoir", fr: "Marcel Blanchard. Bon. Voilà les trois affiches : une seule est la bonne." },
+      leaveLines: [{ who: "lenoir", fr: "Revenez quand vous saurez. Les livres restent." }] },
+    effects: { flag: "L02q_done" },
+    next: "L02" };
+
   N.L02 = { type: "task", diag: "D_L02", help: "L02", title: "Le panneau : trois affiches",
     task: { kind: "poster", intro: "Quel programme est le bon ?",
       posters: [
-        { id: "A", text: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — place des Vosges. Première version.", ok: false, reply: { who: "lenoir", fr: "C'est la première version. Regardez : « Version corrigée », c'est une autre affiche." }, flag: "vosges_seen" },
-        { id: "B", text: "Marcel Duval — Le Pain perdu — aujourd'hui, 17 h — cour de la librairie. Version corrigée.", ok: false, reply: { who: "lenoir", fr: "Marcel Duval ? Vous êtes sûrs ? Il y a deux Marcel dans la compagnie." } },
+        { id: "A", text: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — place des Vosges. Première version.", ok: false, reply: { who: "lenoir", fr: "La première version ? Elle est vieille comme mes livres. Les programmes changent, je vous dis !" }, flag: "vosges_seen" },
+        { id: "B", text: "Marcel Duval — Le Pain perdu — aujourd'hui, 17 h — cour de la librairie. Version corrigée.", ok: false, reply: { who: "lenoir", fr: "Duval ? Mais vous cherchez Blanchard, non ?" } },
         { id: "C", text: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — cour du Louvre. Version corrigée. Ce programme remplace l'ancien programme.", ok: true }
       ],
-      success: { who: "lenoir", fr: "C ? Hmm. Vous êtes sûrs ? J'ai deux questions." } },
-    effects: { flag: "L02_C" },
-    next: "L02q" };
-
-  /* Abfrage: M. Lenoir will wissen, ob die Wahl begründet ist (Name vom Wärter, Programmänderung aus Marcels Nachricht) */
-  N.L02q = { type: "task", diag: "D_L02q", help: "L02q", title: "M. Lenoir vérifie",
-    task: { kind: "recall", who: "lenoir", intro: "L'affiche C, vous êtes sûrs ? Alors, deux questions.",
-      fields: [
-        { id: "nom", label: "Le nom de famille du mime, c'est... ?", answers: ["Blanchard", "Marcel Blanchard"], size: 18, where: "Le gardien du Père-Lachaise connaît son nom.",
-          traps: [{ answers: ["Duval", "Marcel Duval"], who: "lenoir", fr: "Duval ? Lui, il joue dans la cour de la librairie, et ce n'est pas lui sur votre photo. Qui vous a dit le nom du mime ?" }] },
-        { id: "prog", label: "Et pourquoi pas l'affiche A ? Marcel a dit quoi sur le programme, dans son message à Nora ?", keywords: [["chang"], ["corrig"], ["nouveau"], ["remplac"], ["plus", "vosges"]], size: 34, placeholder: "Il a dit que...", where: "Le message de Marcel est sur le téléphone de Nora, dans le Marais." }
-      ],
-      wrongText: "Non...", success: { who: "lenoir", fr: "Blanchard, et le programme a changé. Alors c'est bien l'affiche C : 17 heures, cour du Louvre." },
-      leaveLines: [{ who: "lenoir", fr: "Revenez quand vous saurez. Les livres restent." }] },
-    effects: { flags: ["L02_done", "L02q_done"] },
-    after: [{ who: "marie", fr: "Rendez-vous à 17 h, cour du Louvre. Tu retiens ?" }],
-    next: "SCENE_librairie" };
+      success: { who: "lenoir", fr: "Bien lu ! Les livres restent, les programmes changent." } },
+    effects: { flags: ["L02_C", "L02_done"] },
+    after: [{ who: "lino", fr: "Le Louvre, 17 heures ? Comme le rendez-vous de Nowak. Paris est petit.", de: "Louvre, 17 Uhr? Wie Nowaks Treffpunkt. Paris ist klein." }],
+    next: "L04" };
   N.L02r = { type: "doc", title: "Le panneau : trois affiches", icon: "flyer",
     docs: [
       { label: "A", text: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — place des Vosges. Première version." },
@@ -401,14 +406,14 @@ window.GAME = (function () {
   N.L03 = { type: "choice", who: "lenoir", noDiag: true, stay: true,
     lines: [{ who: "lenoir", fr: "Vous cherchez un livre ? Ou un programme ?" }],
     choices: [
-      { fr: "Pourquoi il y a deux Marcel ?", kind: "ok", reply: [{ who: "lenoir", fr: "Le Pain perdu, c'est le spectacle de la compagnie. Deux Marcel le jouent, à deux endroits : Blanchard et Duval." }], next: "L03" },
+      { fr: "Pourquoi il y a deux Marcel ?", kind: "ok", reply: [{ who: "lenoir", fr: "Le Pain perdu, c'est le spectacle de la compagnie. Deux Marcel le jouent, à deux endroits. Deux Marcel, trois affiches... et moi, un seul panneau." }], next: "L03" },
       { fr: "Le programme a changé ?", kind: "ok", reply: [{ who: "lenoir", fr: "Oui, deux fois aujourd'hui. Les livres restent, les programmes changent." }], next: "L03" },
-      { fr: "Vous avez un message pour nous ?", kind: "ok", reply: [{ who: "lenoir", fr: "Un message ? Peut-être. Mais d'abord, vous pouvez m'aider ? Regardez la table." }], next: "END", unless: "L04_done", replyIf: [{ who: "lenoir", fr: "Oui ! Marcel a laissé une carte pour vous. Elle est sur la porte." }] },
+      { fr: "Vous avez un message pour nous ?", kind: "ok", reply: [{ who: "lenoir", fr: "Un message ? Je reçois beaucoup de messages. Pour qui ? D'abord, dites-moi quel Marcel vous cherchez." }], next: "END", unless: "L04_done", replyIf: [{ who: "lenoir", fr: "Oui ! Marcel a laissé une carte pour vous. Elle est sur la porte." }] },
       { fr: "Merci, au revoir.", kind: "ok", next: "END" }
     ] };
 
   N.L04 = { type: "task", diag: "D_L04", help: "L04", title: "Le bon tampon",
-    task: { kind: "stamp", intro: "Je prépare une affiche pour la porte. Il faut le bon tampon. Le spectacle de Blanchard n'est plus place des Vosges, il est au Louvre.", who: "lenoir",
+    task: { kind: "stamp", intro: "Vous pouvez m'aider ? Je prépare une affiche pour la porte. Il faut le bon tampon. Le spectacle de Blanchard n'est plus place des Vosges, il est au Louvre.", who: "lenoir",
       stamps: [{ id: "ancien", label: "ANCIEN PROGRAMME" }, { id: "modif", label: "MODIFICATION" }, { id: "annule", label: "ANNULÉ" }],
       sheets: [
         { id: "C", label: "Copie de l'affiche C", text: "Marcel Blanchard — 17 h — cour du Louvre. Version corrigée." },
@@ -422,27 +427,28 @@ window.GAME = (function () {
         "A:modif": "Hmm. La place des Vosges, c'est l'ancien lieu."
       } },
     effects: { flag: "L04_done" },
-    after: [{ who: "lenoir", fr: "Parfait. Ah, j'oubliais : Marcel a laissé ça pour vous. Regardez sur la porte." }],
-    next: "SCENE_librairie" };
+    after: [{ who: "lenoir", fr: "Parfait, merci ! Ah, j'oubliais : Marcel est passé tout à l'heure. Il a laissé une carte pour vous, sur la porte." }],
+    next: "L05" };
+  N.L04x = { type: "lines", lines: [{ who: "narrateur", fr: "Des livres, des tampons, une tasse de café froid. Rien sur Marcel." }] };
   N.L04r = { type: "lines", lines: [{ who: "lenoir", fr: "L'affiche est sur la porte. Merci encore !" }] };
 
-  N.L05 = { type: "doc", title: "La carte de Marcel", icon: "carte", doc: "J'ai pris le mauvais sac à Montmartre. Je suis désolé ! Je croyais que c'était mon sac. Je garde toutes les affaires ensemble. À 17 heures, je suis à mon spectacle. Demandez Marcel. Pour avoir le sac, dites-moi ce qu'il y a dedans. — Marcel",
+  N.L05 = { type: "doc", title: "La carte de Marcel", icon: "carte", doc: "Aux jeunes qui ont mon sac brun : j'ai pris le mauvais sac à Montmartre. Je suis désolé ! Je croyais que c'était mon sac. Votre sac est avec moi, et tout est dedans. À 17 heures, je suis à mon spectacle : demandez Marcel. Mais attention : pour être sûr que c'est vous, je vais vous demander ce qu'il y a dans votre sac, et où. — Marcel",
     effects: { item: "carte_marcel", flag: "L05_done", mission: "Pour avoir le sac : dire à Marcel ce qu'il y a dans notre sac, et où." },
     lines: [
-      { who: "marie", fr: "Mission : dire ce qu'il y a dans notre sac. Tu te souviens de tout ?" },
+      { who: "marie", fr: "Il veut savoir ce qu'il y a dans notre sac, et où. Tu te souviens de tout ?" },
       { who: "lino", fr: "Une porte normale. Un tampon normal. Ce monsieur est dangereux.", de: "Eine normale Tür. Ein normaler Stempel. Dieser Mann ist gefährlich." }
     ] };
 
   /* Louvre */
-  N.V00 = { type: "lines", once: "V00_seen", lines: [{ who: "narrateur", fr: "La cour du Louvre, 17 heures. Une petite scène, des lampes, du public." }] };
+  N.V00 = { type: "lines", once: "V00_seen", lines: [{ who: "narrateur", fr: "La cour du Louvre. Une petite scène, des lampes, du public." }] };
   N.V00s = { type: "lines", lines: [{ who: "narrateur", fr: "Une petite scène avec une Joconde en carton." }, { who: "lino", fr: "Même la Joconde est une copie, ici.", de: "Sogar die Mona Lisa ist hier eine Kopie." }] };
   N.V00m = { type: "lines", lines: [{ who: "marie", fr: "Parlons d'abord à l'assistante." }] };
 
   N.V01 = { type: "choice", who: "assistante", noDiag: true,
     lines: [{ who: "assistante", fr: "Bonsoir ! Ce soir, il y a cinq artistes dans la cour, et moi, j'ai un seul casque. Vous cherchez quel spectacle ? À quelle heure ?" }],
     choices: [
-      { fr: "Le Pain perdu, à 17 heures.", kind: "ok", reply: [{ who: "assistante", fr: "Il y a deux Pain perdu ce soir, avec deux Marcel ! Et le programme a changé plusieurs fois. La version corrigée est affichée dans une librairie, dans le Marais... Les Mots quelque chose." }, { who: "lino", fr: "Deux Marcel, trois mimes, cinq artistes. Et un seul sac.", de: "Zwei Marcel, drei Pantomimen, fünf Künstler. Und ein einziger Rucksack." }], next: "MAP" },
-      { fr: "On cherche un mime avec notre sac.", kind: "ok", reply: [{ who: "assistante", fr: "Un mime ? Il y a trois mimes ce soir ! Revenez avec un nom et une heure." }, { who: "lino", fr: "Deux Marcel, trois mimes, cinq artistes. Et un seul sac.", de: "Zwei Marcel, drei Pantomimen, fünf Künstler. Und ein einziger Rucksack." }], next: "MAP" }
+      { fr: "Le Pain perdu, à 17 heures.", kind: "ok", reply: [{ who: "assistante", fr: "Le Pain perdu ? Il y en a deux ce soir, avec deux Marcel ! Et le programme a encore changé. Ici, on suit seulement le programme corrigé. Revenez quand vous l'aurez lu." }, { who: "lino", fr: "Deux Marcel, trois mimes, cinq artistes. Et un seul sac.", de: "Zwei Marcel, drei Pantomimen, fünf Künstler. Und ein einziger Rucksack." }], next: "MAP" },
+      { fr: "On cherche un mime avec notre sac.", kind: "ok", reply: [{ who: "assistante", fr: "Un mime ? Il y a trois mimes ce soir ! Revenez avec un nom complet et une heure." }, { who: "lino", fr: "Deux Marcel, trois mimes, cinq artistes. Et un seul sac.", de: "Zwei Marcel, drei Pantomimen, fünf Künstler. Und ein einziger Rucksack." }], next: "MAP" }
     ] };
 
   N.V01q = { type: "task", diag: "D_V01q", help: "V01q", title: "L'assistante",
@@ -458,8 +464,8 @@ window.GAME = (function () {
     next: "V02" };
 
   N.V02 = { type: "lines", lines: [
-    { who: "assistante", fr: "Vous êtes les jeunes au sac Bernd ? Marcel vous attend après son numéro. Deux minutes. Enfin, deux minutes de mime : ça peut durer." },
-    { who: "narrateur", fr: "Marcel finit son numéro : un mur invisible, une porte invisible et... un pain invisible. Le public applaudit." }
+    { who: "assistante", fr: "Et ce sac brun... c'est le sac de Marcel ! Alors c'est vous, les jeunes de Montmartre. Marcel vous attend après son numéro. Deux minutes. Enfin, deux minutes de mime : ça peut durer." },
+    { who: "narrateur", fr: "Marcel finit son numéro : un mur invisible, une porte invisible... et un sac en forme de pain, très visible. Le public adore Bernd." }
   ], effects: { flag: "V02_done" }, next: "V02c" };
   N.V02c = { type: "choice", who: "assistante", noDiag: true,
     lines: [{ who: "assistante", fr: "En attendant, tu peux m'aider deux minutes ? C'est pour l'ombre sur l'écran." }],
@@ -483,15 +489,15 @@ window.GAME = (function () {
           { fr: "À Montmartre, vous avez pris notre sac.", kind: "ok" },
           { fr: "À Montmartre, vous preniez notre sac pendant qu'on a regardé la photo.", kind: "wrong", reply: [{ who: "marcel", fr: "Pendant que... quoi ?" }, { who: "marie", fr: "Le décor ou l'action ?" }] },
           { fr: "Vous avez volé notre sac à Montmartre.", kind: "wrong", reply: [{ who: "marcel", fr: "Volé ? Non !" }, { who: "marie", fr: "Lino..." }] }
-        ], after: [{ who: "marcel", fr: "Le sac sur l'escalier ! Et moi, je croyais que vous aviez mon sac ! Mais attendez : il y a trois sacs bruns dans la compagnie. Qu'est-ce qu'il y a dans votre sac ? Et où ?" }] }
+        ], after: [{ who: "marcel", fr: "Le sac près de l'escalier, oui ! Je suis désolé. Mais ce soir, votre sac était sur scène : tout le monde l'a vu ! Alors, pour être sûr que c'est vous... Qu'est-ce qu'il y a dedans ? Et où ?" }] }
     ],
     effects: { flag: "V03_talked" },
     next: "V03q" };
 
   /* Abfrage: der Inhalt des Rucksacks (aus M00 und Kevins SMS), getippt */
   N.V03q = { type: "task", diag: "D_V03q", help: "V03q", title: "Le finale : notre sac",
-    task: { kind: "recall", who: "marcel", intro: "Il y a trois sacs bruns dans la compagnie. Qu'est-ce qu'il y a dans votre sac ? Et où ?",
-      parts: ["Dans la poche de ", { id: "g1", answers: ["devant", "devant du sac"], size: 8 }, ", il y a une boîte ", { id: "g2", answers: ["bleue", "bleu"], size: 8 }, ". Dessus, il y a le nom ", { id: "g3", answers: ["Kevin"], size: 8, traps: [{ answers: ["Marcel", "Lino", "Bernd"], who: "marcel", fr: "Ce nom-là ? Sur votre boîte ? Hmm, non." }] }, ". L'enveloppe ", { id: "g4", answers: ["rouge"], size: 8 }, " est sous les ", { id: "g5", answers: ["billets", "billets de train", "tickets", "billets de trains"], size: 10, traps: [{ answers: ["baguettes", "baguettes en plastique", "trois baguettes", "baguette"], who: "marcel", fr: "Des baguettes en plastique ? Ça, c'est mon sac !" }] }, "."],
+    task: { kind: "recall", who: "marcel", intro: "Qu'est-ce qu'il y a dans votre sac ? Et où ?",
+      parts: ["Dans la poche de ", { id: "g1", answers: ["devant", "devant du sac"], size: 8, where: "Kevin a écrit un SMS : il est sur ton téléphone." }, ", il y a une boîte ", { id: "g2", answers: ["bleue", "bleu"], size: 8, where: "Kevin a écrit un SMS : il est sur ton téléphone." }, ". Dessus, il y a le nom ", { id: "g3", answers: ["Kevin"], size: 8, where: "Kevin a écrit un SMS : il est sur ton téléphone.", traps: [{ answers: ["Marcel", "Lino", "Bernd"], who: "marcel", fr: "Ce nom-là ? Sur votre boîte ? Hmm, non." }] }, ". L'enveloppe ", { id: "g4", answers: ["rouge"], size: 8, where: "Monsieur Nowak sait où est son enveloppe : écris-lui." }, " est sous les ", { id: "g5", answers: ["billets", "billets de train", "tickets", "billets de trains"], size: 10, where: "Monsieur Nowak sait où est son enveloppe : écris-lui.", traps: [{ answers: ["baguettes", "baguettes en plastique", "trois baguettes", "baguette"], who: "marcel", fr: "Des baguettes en plastique ? Ça, c'est mon sac !" }] }, "."],
       wrongText: "Hmm, non. Ce n'est pas ça. Vous êtes sûrs que c'est votre sac ?",
       success: { who: "marcel", fr: "C'est bien ça. Voici votre sac. Et je suis désolé !" },
       leaveLines: [{ who: "marcel", fr: "Réfléchissez. Je suis là." }] },
@@ -499,15 +505,15 @@ window.GAME = (function () {
     after: [
       { who: "lino", fr: "Voici votre sac. On échange ?" },
       { who: "narrateur", fr: "Marcel cherche longtemps une fermeture éclair invisible... sur un vrai sac." },
-      { who: "lino", fr: "Il cherche une fermeture éclair invisible. Sur un vrai sac.", de: "Er sucht einen unsichtbaren Reißverschluss. An einer echten Tasche." }
+      { who: "lino", fr: "Trop de sacs invisibles. Ça laisse des traces.", de: "Zu viele unsichtbare Taschen. Das hinterlässt Spuren." }
     ],
     next: "V04" };
   N.V03r = { type: "lines", lines: [{ who: "marcel", fr: "Merci encore, et bonne soirée !" }] };
 
   N.V04 = { type: "cut", bg: "cut_final", lines: [
-    { who: "marcel", fr: "Et moi, je croyais que vous aviez mon sac !" },
-    { who: "lino", fr: "Moi aussi. Enfin... votre sac, mon sac... On a un problème avec les sacs." },
-    { who: "narrateur", fr: "Monsieur Nowak arrive avec la classe. Kevin ouvre sa boîte bleue. Marie ouvre l'enveloppe rouge : « Plan B : rester calme et recompter. » Nowak compte : 31... 32. Il regarde Bernd." },
+    { who: "marcel", fr: "Un sac brun, un sac en forme de pain... Pour un mime, c'est presque pareil !" },
+    { who: "lino", fr: "Pour vous, peut-être. Bernd, lui, n'est pas d'accord.", de: "Für Sie vielleicht. Bernd sieht das anders." },
+    { who: "narrateur", fr: "Monsieur Nowak arrive avec la classe. Kevin ouvre sa boîte bleue. Monsieur Nowak ouvre son enveloppe rouge : « Plan B : rester calme et recompter. » Il compte : 31... 32. Il regarde Bernd." },
     { who: "lino", fr: "Il ne compte pas. Il juge.", de: "Er zählt nicht. Er beurteilt nur." },
     { who: "lino", fr: "Note pour moi : ne pas crier « voleur » sans preuves.", de: "Notiz an mich: nicht „Dieb“ rufen ohne Beweise.", onlyIf: "V03_voleur" }
   ], next: "V05" };
@@ -534,7 +540,7 @@ window.GAME = (function () {
   N.P07r = { type: "lines", lines: [{ who: "narrateur", fr: "Gaston dort. Devant la caméra." }] };
 
   N.X01 = { type: "lines", lines: [
-    { who: "musicien", fr: "Marcel ? Il n'est plus ici. Je joue sur cette place depuis midi : un mime, ça ne fait pas de bruit, mais je l'aurais vu. Le programme a changé. Vous savez où il joue maintenant ?" }
+    { who: "musicien", fr: "Marcel ? Il devait jouer ici à 17 heures, mais il n'est pas venu. Je joue sur cette place depuis midi : un mime, ça ne fait pas de bruit, mais je l'aurais vu. On m'a dit que le programme a changé. Vous savez où il joue maintenant ?" }
   ], next: "X01t" };
   N.X01t = { type: "task", diag: "D_X01", title: "Place des Vosges",
     task: { kind: "recall", who: "musicien", intro: "La place des Vosges, c'est l'ancien lieu. Le nouveau lieu, c'est où ?",
@@ -546,16 +552,16 @@ window.GAME = (function () {
     next: "MAP" };
 
   N.C02 = { type: "lines", lines: [
-    { who: "employee", fr: "Les Catacombes ? L'entrée est ici. Six millions de Parisiens là-dessous, et aucun ne s'appelle Marcel. Le rendez-vous de la compagnie... vous avez bien lu la carte ?" }
+    { who: "employee", fr: "Les Catacombes ? L'entrée est ici. Six millions de Parisiens là-dessous, et aucun ne s'appelle Marcel. La compagnie de théâtre ? Elle vient répéter ici, oui. Mais pas aujourd'hui. Vous avez rendez-vous avec eux ? C'est quand ?" }
   ], next: [{ if: "C02_done", node: "C02c" }, { node: "C02t" }] };
   N.C02t = { type: "task", diag: "D_C02", title: "Les Catacombes",
-    task: { kind: "recall", who: "employee", intro: "Le rendez-vous de la compagnie, c'est quand ? Vous avez lu la carte ?",
+    task: { kind: "recall", who: "employee", intro: "Le rendez-vous avec la compagnie, c'est quand ?",
       fields: [
         { id: "jour", label: "C'est quel jour ?", answers: ["demain"], keywords: [["demain"]], size: 12, where: "La carte « demain » est dans l'inventaire.",
-          traps: [{ answers: ["aujourd'hui", "ce soir", "ce matin", "cet après-midi"], who: "employee", fr: "Non. Relisez la carte : le premier mot." }] },
+          traps: [{ answers: ["aujourd'hui", "ce soir", "ce matin", "cet après-midi"], who: "employee", fr: "Aujourd'hui ? Non, il n'y a personne. Regardez encore votre carte : le premier mot." }] },
         { id: "heure", label: "À quelle heure ?", answers: ["11 h", "11h", "11", "11 heures", "onze heures", "a 11 heures", "a 11 h"], number: 11, size: 10, where: "L'heure est sur la carte « demain »." }
       ],
-      wrongText: "Non. Regardez votre carte.", success: { who: "employee", fr: "Demain, 11 heures. Pas aujourd'hui !" },
+      wrongText: "Non. Regardez votre carte.", success: { who: "employee", fr: "Demain, 11 heures. Alors, à demain !" },
       leaveLines: [{ who: "employee", fr: "Revenez quand vous aurez lu la carte." }] },
     effects: { flag: "C02_done" },
     after: [
@@ -584,7 +590,7 @@ window.GAME = (function () {
       parts: ["On ne doit pas prendre ", { id: "q1", opts: ["les vieux panneaux", "les crânes", "le nouveau panneau"], answer: "les vieux panneaux" }, ". Les crânes sont ", { id: "q2", opts: ["en carton", "vrais", "en plastique"], answer: "en carton" }, ". Marcel doit apporter ", { id: "q3", opts: ["son sac brun", "les crânes", "un pain"], answer: "son sac brun" }, "."],
       wrong: { who: "marie", fr: "Écoute encore. Qu'est-ce qu'elle dit vraiment ?" } },
     effects: { flag: "C03_done" },
-    after: [{ who: "marie", fr: "Le sac brun avec la fermeture rouge et l'autocollant jaune est à Marcel. Encore un indice." }],
+    after: [{ who: "marie", fr: "Une fermeture rouge, un autocollant jaune... C'est le sac qu'on a ! Il est donc bien à Marcel." }],
     next: "MAP" };
 
   N.V02bs = { type: "scene", scene: "lampes", next: "V02b" };
@@ -618,10 +624,10 @@ window.GAME = (function () {
     P04: ["Tout droit, puis... à gauche ou à droite ? Écoute encore.", { fr: "Écoute encore le gardien.", action: "replay" }, { fr: "Voici la transcription : tout droit, à gauche, ne prenez pas.", action: "transcript" }, "Geradeaus bis zur Kreuzung, dann links. Nicht den Weg, der bergab führt."],
     P06: ["Regarde bien le sac sur la photo. Qu'est-ce que tu vois ?", { fr: "Zoom sur le sac : la fermeture et l'autocollant.", action: "material" }, "Regarde aussi le sac brun dans l'inventaire : la fermeture, l'autocollant.", "Reißverschluss und Aufkleber: auf dem Foto und an der Tasche im Inventar."],
     B02: ["Lino, on ne cherche pas un dessert. Qu'est-ce qu'on cherche ?", { fr: "Regarde le flyer : Le Pain perdu, c'est un spectacle.", action: "material" }, "Dis-lui : Je cherche un sac... ou Je cherche le spectacle...", "Sag ihr, was ihr sucht: die Tasche oder die Aufführung, nicht das Gericht."],
-    B04: ["Écoute encore. Qu'est-ce qu'il dit vraiment ?", { fr: "Écoute encore le message de Marcel.", action: "replay" }, { fr: "Voici la transcription : j'ai trouvé, je crois que, le programme a changé.", action: "transcript" }, "Sicher ist nur, was er wörtlich sagt. Was er will oder wo er ist, sagt er nicht."],
+    B04: ["Écoute encore. Qu'est-ce qu'il dit vraiment ?", { fr: "Écoute encore le message de Marcel.", action: "replay" }, { fr: "Voici la transcription. Cherche : « ce n'est pas à moi », « je crois que », « le programme a changé ».", action: "transcript" }, "Sicher ist nur, was er wörtlich sagt. Was er will oder wo er ist, sagt er nicht."],
     B06: ["Trois choses : ce qui s'est passé, pourquoi, où on va.", { fr: "Regarde les débuts de phrases.", action: "material" }, "Tu peux commencer : Le mime avait un sac brun, comme nous.", "Was passiert ist (Hintergrund im imparfait, Handlung im passé composé) und wohin ihr geht."],
     L02: ["Trois critères : le nom, le spectacle, la version.", { fr: "Regarde bien les trois affiches : le nom de famille, le lieu, la version.", action: "material" }, "Une seule affiche a le bon nom de famille et « version corrigée ».", "Nur ein Aushang hat den richtigen Nachnamen und „Version corrigée“."],
-    L02q: ["Qui a dit le nom du mime ? Qui a parlé du programme ?", { fr: "Pense aux personnes : le gardien, Nora et son téléphone.", action: "material" }, "Le nom : demande au gardien du Père-Lachaise. Le programme : réécoute Marcel chez Nora.", "Der Nachname kommt vom Wärter auf dem Friedhof, die Programmänderung aus Marcels Nachricht bei Nora."],
+    L02q: ["Votre Marcel, c'est Marcel qui ? Qui vous a dit son nom ?", { fr: "Pense au Père-Lachaise.", action: "material" }, "Le gardien du Père-Lachaise connaît son nom. Retourne le voir.", "Den Nachnamen hat euch der Wärter auf dem Friedhof gesagt."],
     V01q: ["Le nom complet et l'heure : tu les as vus sur une affiche.", { fr: "L'affiche C, à la librairie.", action: "material" }, "Retourne à la librairie et relis le panneau.", "Vollständiger Name und Uhrzeit stehen auf Aushang C in der Buchhandlung."],
     V03q: ["Qu'est-ce qu'il y avait dans Bernd ? La boîte, l'enveloppe... et où ?", { fr: "Kevin a envoyé un SMS. Il est sur ton téléphone, dans l'inventaire.", action: "material" }, "Tu peux écrire à monsieur Nowak avec le téléphone : il sait ce qu'il y a dans le sac.", "Kevins SMS steht auf dem Telefon im Inventar; Nowak weiß, wo der Umschlag liegt."],
     L04: ["Le spectacle a lieu ? Oui. Le lieu a changé ? Oui. Alors ?", { fr: "Les trois tampons : ancien = vieux, modification = changement, annulé = pas de spectacle.", action: "material" }, "Changé = modification. Annulé = pas de spectacle.", "Verlegt heißt „modification“, nicht „annulé“ (abgesagt)."],
@@ -634,7 +640,7 @@ window.GAME = (function () {
     D_M03: "Passende Frage an die Zeugin", D_M04: "Zeitangaben der Zeugin", D_M04b: "Rapport de témoin, vier Formen",
     D_M06: "Sackgasse Métro", D_P02: "Weg zum Wärter", D_P04: "Wegbeschreibung auf dem Plan", D_P05: "Gespräch mit Chloé", D_P06: "Zwei Merkmale vergleichen",
     D_B01: "Flyer gelesen", D_B02: "Gesprächsweg bei Nora", D_B02b: "Rucksack beschreiben", D_B04: "Drei gesicherte Aussagen", D_B06: "Nachricht an Nowak",
-    D_L02: "Aushang C gewählt", D_L02q: "Abfrage Lenoir: Nachname + Programmänderung", D_L04: "Stempel", D_V01q: "Abfrage Assistentin: Name + Uhrzeit",
+    D_L02: "Aushang C gewählt", D_L02q: "Abfrage Lenoir: Nachname vor den Aushängen", D_L04: "Stempel", D_V01q: "Abfrage Assistentin: Name + Uhrzeit",
     D_V03: "Finale: Gespräch in zwei Schritten", D_V03q: "Abfrage Finale: Inhalt des Rucksacks", D_V05: "Rapport final",
     D_P07: "Gaston und der Ball", D_X01: "Abfrage Vosges: neuer Ort", D_C02: "Abfrage Catacombes: Tag + Uhrzeit", D_C02n: "Chloés Nummer gewählt", D_C03: "Chloés Probe", D_V02b: "Brotschatten",
     D_NOWAK: "Nowak nach dem Inhalt gefragt (Nachschlagen)"
@@ -659,7 +665,9 @@ window.GAME = (function () {
     ["le rendez-vous", "das Treffen, die Verabredung"], ["avoir l'air inquiet", "besorgt aussehen"], ["le numéro", "die Nummer (der Auftritt)"], ["le public", "das Publikum"],
     ["l'ombre (f)", "der Schatten"], ["allumer", "anschalten"], ["le miroir", "der Spiegel"],
     ["le casque", "das Headset, der Kopfhörer"], ["là-dessous", "da unten"], ["par là", "dort entlang"], ["non attribué", "nicht vergeben (Telefonnummer)"],
-    ["la part", "das Stück (Kuchen, Dessert)"], ["volé, voler", "gestohlen, stehlen"], ["d'habitude", "normalerweise"], ["durer", "dauern"]
+    ["la part", "das Stück (Kuchen, Dessert)"], ["volé, voler", "gestohlen, stehlen"], ["d'habitude", "normalerweise"], ["durer", "dauern"],
+    ["se retourner", "sich umdrehen"], ["sourire, Souriez !", "lächeln, Bitte lächeln!"], ["le journal", "die Zeitung"], ["raconter", "erzählen"], ["la balade littéraire", "der literarische Spaziergang"],
+    ["l'agenda (m)", "der Terminkalender"], ["à la main", "in der Hand"], ["la scène", "die Bühne"], ["pareil", "gleich"], ["ça m'étonne", "das wundert mich"]
   ];
 
   return G;
