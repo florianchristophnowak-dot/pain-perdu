@@ -49,6 +49,13 @@ window.GAME = (function () {
     travel: { who: "lino", fr: "Schon wieder Métro. Ich kenne Paris von unten." },
     end: "Bravo! Der Fall ist gelöst.",
     mouse: "Maus:",
+    full: {
+      label: "Vollbild", exit: "Vollbild beenden", exitShort: "Vollbild aus", title: "Vollbild",
+      ios: "Auf dem iPhone kann der Browser das Spiel nicht auf Vollbild schalten. Du kannst das Spiel aber auf den Home-Bildschirm legen:",
+      iosSteps: ["Tippe auf „Teilen“: das Quadrat mit dem Pfeil (manchmal unter „…“).", "Wähle „Zum Home-Bildschirm“.", "Öffne das Spiel über das neue Symbol: Es läuft dann im Vollbild."],
+      iosNote: "Achtung: Dort hat das Spiel einen eigenen Spielstand. Und dreh dein Handy quer: Dann wird das Bild größer.",
+      other: "Dein Browser kann das Spiel nicht auf Vollbild schalten. Öffne das Browser-Menü und wähle „Zum Startbildschirm hinzufügen“. Über das neue Symbol startet das Spiel ohne Browserleiste."
+    },
     marie: {
       ok: "Ja, genau!",
       locked: "Noch nicht. Wir brauchen erst einen Hinweis, um dorthin zu gehen.",

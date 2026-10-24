@@ -1024,17 +1024,49 @@
     enterScene(S.scene || "montmartre", false);
     if (S.resume) goNode(S.resume);
   }
-  /* Handy: Vollbild, wo der Browser es kann (nicht auf dem iPhone); Hinweis, das Telefon zu drehen */
+  /* Vollbild geht auf dem iPhone nicht: dort erklärt der Knopf den Weg über den Home-Bildschirm */
+  function showFullHelp() {
+    const F = G.ui.full;
+    const body = openModal("full");
+    body.appendChild(el("h2", "", esc(F.title)));
+    const p = el("div", "paper");
+    if (/iPhone|iPod/.test(navigator.userAgent)) {
+      p.appendChild(el("p", "", esc(F.ios)));
+      const ol = el("ol"); F.iosSteps.forEach(s => ol.appendChild(el("li", "", esc(s)))); p.appendChild(ol);
+      p.appendChild(el("p", "", esc(F.iosNote)));
+    } else p.appendChild(el("p", "", esc(F.other)));
+    body.appendChild(p);
+    const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.btn.fermer); b.addEventListener("click", closeModal); bar.appendChild(b); body.appendChild(bar);
+  }
+  /* Handy: Vollbild-Knopf in der Kopfleiste und auf dem Startbildschirm, auf jedem Handy (nicht in der installierten App, die ist schon Vollbild); Hinweis, das Telefon zu drehen */
   function setupMobile() {
     const de = document.documentElement;
     const req = de.requestFullscreen || de.webkitRequestFullscreen;
     const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
-    const fb = $("#btn-full");
-    if (TOUCH && req && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
-      fb.hidden = false;
-      fb.addEventListener("click", () => {
-        if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-        else { const r = req.call(de); if (r && r.catch) r.catch(() => {}); }
+    const fbs = [$("#btn-full"), $("#btn-full-start")].filter(Boolean);
+    const mq = q => !!(window.matchMedia && matchMedia(q).matches);
+    const app = navigator.standalone === true || mq("(display-mode: fullscreen)") || mq("(display-mode: standalone)");
+    if (TOUCH && !app) {
+      const F = G.ui.full, canFs = req && (document.fullscreenEnabled || document.webkitFullscreenEnabled);
+      // Beschriftung und Symbol zeigen, was ein Tipp bewirkt
+      const mark = () => {
+        const on = !!fsEl();
+        fbs.forEach(fb => {
+          fb.classList.toggle("on", on);
+          $(".tl", fb).textContent = on ? F.exitShort : F.label;
+          fb.title = on ? F.exit : F.label; fb.setAttribute("aria-label", fb.title);
+          $("path", fb).setAttribute("d", on ? "M8 3v5H3M14 3v5h5M19 14h-5v5M3 14h5v5" : "M3 8V3h5M14 3h5v5M19 14v5h-5M8 19H3v-5");
+        });
+      };
+      mark();
+      document.addEventListener("fullscreenchange", mark); document.addEventListener("webkitfullscreenchange", mark);
+      fbs.forEach(fb => {
+        fb.hidden = false;
+        fb.addEventListener("click", () => {
+          if (!canFs) showFullHelp();
+          else if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+          else { const r = req.call(de); if (r && r.catch) r.catch(() => {}); }
+        });
       });
     }
     const HINT = "pp_rotate_hint";
