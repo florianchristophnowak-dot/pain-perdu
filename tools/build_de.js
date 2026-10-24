@@ -57,8 +57,6 @@ const PATCHES = [
       st.showTranscript = () => { if (trBox.hidden) tr.click(); };`],
   [R`(who ? "<b>" + esc(who) + " :</b> " : "")`, R`(who ? "<b>" + esc(who) + ":</b> " : "")`],
   [R`api.feedback({ who: "marie", fr: "Choisis " + T.n + " réponses." }, false)`, R`api.feedback({ who: "marie", fr: "Wähle " + T.n + " Antworten." }, false)`],
-  [R`cnt.textContent = w + " mots (minimum " + T.min + ")";`, R`cnt.textContent = w + " Wörter (mindestens " + T.min + ")";`],
-  [R`fr: "Encore " + (T.min - w) + " mots, au moins." }`, R`fr: "Noch mindestens " + (T.min - w) + " Wörter." }`],
   [R`fill="#555">le banc rouge</text>`, R`fill="#555">die rote Bank</text>`],
   [R`fill="#555">sortie</text>`, R`fill="#555">Ausgang</text>`, 2],
   [R`fill="#555">carrefour</text>`, R`fill="#555">Kreuzung</text>`],

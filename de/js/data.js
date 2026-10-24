@@ -49,6 +49,14 @@ window.GAME = (function () {
     travel: { who: "lino", fr: "Schon wieder Métro. Ich kenne Paris von unten." },
     end: "Bravo! Der Fall ist gelöst.",
     mouse: "Maus:",
+    write: {
+      count: "{n} Wörter (mindestens {min})",
+      more: "Noch mindestens {n} Wörter.",
+      finish: "Schreib den Satz „{s}“ zu Ende.",
+      dots: "In „{s}“ stehen noch „...“. Ersetze sie durch deine Wörter.",
+      junk: "Das sind keine Wörter: „{w}“. Schreib echte Sätze.",
+      repeat: "Du wiederholst immer dieselben Wörter. Erzähl mit verschiedenen Sätzen."
+    },
     full: {
       label: "Vollbild", exit: "Vollbild beenden", exitShort: "Vollbild aus", title: "Vollbild",
       ios: "Auf dem iPhone kann der Browser das Spiel nicht auf Vollbild schalten. Du kannst das Spiel aber auf den Home-Bildschirm legen:",
