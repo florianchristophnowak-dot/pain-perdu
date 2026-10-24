@@ -329,11 +329,9 @@
   function runAudio(id, n, finish) {
     const a = G.audio[n.audio];
     const body = openModal("audio");
-    body.appendChild(el("h2", "", esc(G.chars[a.who].name)));
-    const row = el("div", "audio-row"); row.appendChild(portrait(a.who));
-    /* deutsche Fassung: der Hörtext erscheint als Lesetext */
-    row.appendChild(el("div", "paper transcript readtext", gl(a.text)));
-    body.appendChild(row);
+    /* deutsche Fassung: der Hörtext erscheint als Lesetext, das Porträt steht neben dem Namen (auf dem Handy bleibt die volle Breite für den Text) */
+    const head = el("h2", "readhead"); head.appendChild(portrait(a.who)); head.appendChild(document.createTextNode(G.chars[a.who].name)); body.appendChild(head);
+    body.appendChild(el("div", "paper transcript readtext", gl(a.text)));
     S.transcripts[n.audio] = true; save();
     body.appendChild(el("p", "hint", "Lies genau: Diese Infos brauchst du gleich."));
     const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.btn.continuer);
@@ -377,7 +375,7 @@
     if (n.audio) {
       const a = G.audio[n.audio];
       trBox.innerHTML = "<b>" + esc(G.chars[a.who].name) + ":</b> " + gl(a.text);
-      const tr = el("button", "btn play", "📄 " + G.ui.btn.rejouer);
+      const tr = el("button", "btn read", "📄 " + G.ui.btn.rejouer);
       tr.addEventListener("click", () => { trBox.hidden = !trBox.hidden; if (!trBox.hidden) { S.replays[n.audio] = (S.replays[n.audio] || 0) + 1; st.transcript = true; S.transcripts[n.audio] = true; save(); } });
       tools.appendChild(tr);
       st.showTranscript = () => { if (trBox.hidden) tr.click(); };
