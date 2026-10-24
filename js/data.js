@@ -49,6 +49,13 @@ window.GAME = (function () {
     travel: { who: "lino", fr: "Encore le métro. Je connais Paris par en dessous.", de: "Schon wieder Métro. Ich kenne Paris von unten." },
     end: "Bravo ! L'affaire est résolue.",
     mouse: "Souris :",
+    full: {
+      label: "Plein écran", exit: "Quitter le plein écran", exitShort: "Écran normal", title: "Plein écran",
+      ios: "Sur l'iPhone, le navigateur ne peut pas mettre le jeu en plein écran. Mais tu peux mettre le jeu sur l'écran d'accueil :",
+      iosSteps: ["Touche « Partager » : le carré avec la flèche (parfois sous « … »).", "Choisis « Sur l'écran d'accueil ».", "Ouvre le jeu avec la nouvelle icône : il est en plein écran."],
+      iosNote: "Attention : là, le jeu a sa propre sauvegarde. Et tourne ton téléphone : l'image est plus grande.",
+      other: "Ton navigateur ne peut pas mettre le jeu en plein écran. Ouvre le menu du navigateur et choisis « Ajouter à l'écran d'accueil ». Avec la nouvelle icône, le jeu s'ouvre sans la barre du navigateur."
+    },
     marie: {
       ok: "Oui, c'est ça !",
       locked: "Pas encore. Il nous faut un indice pour aller là-bas.",
