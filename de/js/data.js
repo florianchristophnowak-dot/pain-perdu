@@ -200,7 +200,7 @@ window.GAME = (function () {
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
     { who: "narrateur", fr: "Paris, 13 Uhr. Die Klasse 10b aus Ohrdruf ist in Montmartre. Herr Nowak zählt die Schüler zum fünften Mal. Lino trägt den Klassenrucksack: Bernd, ein großes Brot mit Gesicht ... und zwar kein fröhliches. Neben ihm steht Marie, seine französische Austauschpartnerin." },
     { who: "lino", fr: "Ein Rucksack in Brotform. Sehr unauffällig." },
-    { who: "marie", fr: "Willkommen in Frankreich, Lino!" }
+    { who: "marie", fr: "Hier in Montmartre ist immer viel los. Pass gut auf Bernd auf!" }
   ], next: "M00" };
 
   N.M00 = { type: "doc", title: "Der Rucksack Bernd", icon: "sac", doc: "Herr Nowak: „Lino, du nimmst Bernd. Da drin sind die Zugfahrkarten für heute Abend. Mein roter Umschlag liegt unter den Fahrkarten: Verlier ihn nicht! Und Kevins blaue Dose ist in der Vordertasche. Mach sie nicht auf. Treffpunkt um 17 Uhr im Innenhof des Louvre!“",

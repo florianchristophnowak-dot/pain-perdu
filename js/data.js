@@ -200,7 +200,7 @@ window.GAME = (function () {
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
     { who: "narrateur", fr: "Paris, 13 heures. La classe 10b d'Ohrdruf est à Montmartre. Monsieur Nowak compte les élèves pour la cinquième fois. Lino tient le sac de la classe : Bernd, un grand pain avec un visage... pas content. Marie, sa correspondante française, est avec lui." },
     { who: "lino", fr: "Un sac en forme de pain. Très discret.", de: "Ein Rucksack in Brotform. Sehr unauffällig." },
-    { who: "marie", fr: "Bienvenue en France, Lino !" }
+    { who: "marie", fr: "Ici, à Montmartre, il y a toujours beaucoup de monde. Fais attention à Bernd !" }
   ], next: "M00" };
 
   N.M00 = { type: "doc", title: "Le sac Bernd", icon: "sac", doc: "Monsieur Nowak : « Lino, tu prends Bernd. Dedans, il y a les billets de train pour ce soir. Mon enveloppe rouge est sous les billets : ne la perds pas ! Et la boîte bleue de Kevin est dans la poche de devant. Ne l'ouvre pas. Rendez-vous à 17 heures, cour du Louvre ! »",
