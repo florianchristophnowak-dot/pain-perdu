@@ -20,7 +20,9 @@ const PATCHES = [
   [R`toast("Marie : " + G.ui.marie.afterHelp)`, R`toast("Marie: " + G.ui.marie.afterHelp)`],
   [R`toast("Marie : " + (p.lockedMsg`, R`toast("Marie: " + (p.lockedMsg`],
   [R`'<div class="who">Marie · ' + level + "/4</div><div class=\"text" + (level === 4 ? " de" : "") + '">' + (level === 4 ? esc(txt) : gl(txt)) + "</div>"`, R`'<div class="who">Marie · ' + level + '/4</div><div class="text">' + gl(txt) + "</div>"`],
-  [R`    const play = el("button", "btn play", "▶ " + G.ui.verbs.ecouter);
+  [R`    body.appendChild(el("h2", "", esc(G.chars[a.who].name)));
+    const row = el("div", "audio-row"); row.appendChild(portrait(a.who));
+    const play = el("button", "btn play", "▶ " + G.ui.verbs.ecouter);
     const start = onBlocked => { play.textContent = "▶ " + G.ui.btn.rejouer; playAudio(n.audio, play, onBlocked); };
     play.addEventListener("click", () => start());
     row.appendChild(play);
@@ -30,9 +32,9 @@ const PATCHES = [
     tr.hidden = !canTranscript;
     tr.addEventListener("click", () => { trBox.hidden = !trBox.hidden; S.transcripts[n.audio] = true; save(); });
     row.appendChild(tr); body.appendChild(row); body.appendChild(trBox);
-    body.appendChild(el("p", "hint", "Tu peux écouter plusieurs fois."));`, R`    /* deutsche Fassung: der Hörtext erscheint als Lesetext */
-    row.appendChild(el("div", "paper transcript readtext", gl(a.text)));
-    body.appendChild(row);
+    body.appendChild(el("p", "hint", "Tu peux écouter plusieurs fois."));`, R`    /* deutsche Fassung: der Hörtext erscheint als Lesetext, das Porträt steht neben dem Namen (auf dem Handy bleibt die volle Breite für den Text) */
+    const head = el("h2", "readhead"); head.appendChild(portrait(a.who)); head.appendChild(document.createTextNode(G.chars[a.who].name)); body.appendChild(head);
+    body.appendChild(el("div", "paper transcript readtext", gl(a.text)));
     S.transcripts[n.audio] = true; save();
     body.appendChild(el("p", "hint", "Lies genau: Diese Infos brauchst du gleich."));`],
   [R`    bar.appendChild(b); body.appendChild(bar);
@@ -49,7 +51,7 @@ const PATCHES = [
       tr.addEventListener("click", () => { trBox.hidden = !trBox.hidden; st.transcript = true; S.transcripts[n.audio] = true; save(); });
       tools.appendChild(tr);
       st.showTranscript = () => { tr.hidden = false; trBox.hidden = false; st.transcript = true; };`, R`      trBox.innerHTML = "<b>" + esc(G.chars[a.who].name) + ":</b> " + gl(a.text);
-      const tr = el("button", "btn play", "📄 " + G.ui.btn.rejouer);
+      const tr = el("button", "btn read", "📄 " + G.ui.btn.rejouer);
       tr.addEventListener("click", () => { trBox.hidden = !trBox.hidden; if (!trBox.hidden) { S.replays[n.audio] = (S.replays[n.audio] || 0) + 1; st.transcript = true; S.transcripts[n.audio] = true; save(); } });
       tools.appendChild(tr);
       st.showTranscript = () => { if (trBox.hidden) tr.click(); };`],
