@@ -43,6 +43,8 @@ Die Hotspot-Positionen stehen in `js/data.js` (`scenes`, Angaben in Prozent des 
 
 Das Spiel gibt keine Notier-Hinweise und speichert keine Hinweise für die Schüler. Was wichtig ist, merken sie sich oder schreiben es auf ein Blatt (`zettel.html`, Modell zum Ausdrucken, auch als `druck/Fiche_enquete.pdf`). An sechs späteren Stellen fragt das Spiel die Informationen ab; die Antworten werden getippt (Knotentyp `task`, `kind: "recall"`, Felder `fields` oder Lücken `parts`, Prüfung ohne Groß-/Kleinschreibung und Akzente, `answers`, `keywords`, `number` oder `digits`). Wer es nicht weiß, kann „Revenir plus tard“ wählen und nachsehen; nach dem zweiten Fehlversuch nennt die Figur den Ort, an dem die Information steht. Nach drei falschen Versuchen ist die Abfrage eine Minute gesperrt (auch nach „Revenir plus tard“), damit Raten nicht schneller ist als Nachsehen. Ein einzelner Tippfehler in Wörtern ab fünf Buchstaben ohne Ziffern zählt als richtig; Lesefallen wie „Duval“ bleiben falsch.
 
+Die freien Texte (`kind: "write"`: Nachricht an M. Nowak `B06`, Abschlussbericht `V05`) zählen nur echte Wörter: mindestens ein Vokal, kein Buchstabe dreimal hintereinander, einzelne Buchstaben nur à/a/y (Zahlen, Uhrzeiten wie 17 h, M. und Abkürzungen wie SMS zählen). Ein Satzanfang mit „...“ muss mit eigenen Wörtern weitergeführt werden, „...“ mitten im Satzanfang muss ersetzt sein. Ab drei Nicht-Wörtern oder bei ständig denselben Wörtern lehnt Marie den Text ab. Die Rückmeldungen stehen in `G.ui.write`.
+
 | Stelle | Wer fragt | Abgefragt | Quelle im Spiel |
 |---|---|---|---|
 | `L02q` Librairie, vor den Aushängen | M. Lenoir | Nachname des Pantomimen (zwei Marcel spielen das Stück) | Wärter auf dem Père-Lachaise (Hörtext) |

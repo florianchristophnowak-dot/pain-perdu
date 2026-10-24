@@ -49,6 +49,14 @@ window.GAME = (function () {
     travel: { who: "lino", fr: "Encore le métro. Je connais Paris par en dessous.", de: "Schon wieder Métro. Ich kenne Paris von unten." },
     end: "Bravo ! L'affaire est résolue.",
     mouse: "Souris :",
+    write: {
+      count: "{n} mots (minimum {min})",
+      more: "Encore {n} mots, au moins.",
+      finish: "Termine la phrase « {s} ».",
+      dots: "Il reste des « ... » dans « {s} ». Remplace-les par tes mots.",
+      junk: "Ça, ce ne sont pas des mots : « {w} ». Écris de vraies phrases.",
+      repeat: "Tu répètes toujours les mêmes mots. Raconte avec des phrases différentes."
+    },
     full: {
       label: "Plein écran", exit: "Quitter le plein écran", exitShort: "Écran normal", title: "Plein écran",
       ios: "Sur l'iPhone, le navigateur ne peut pas mettre le jeu en plein écran. Mais tu peux mettre le jeu sur l'écran d'accueil :",

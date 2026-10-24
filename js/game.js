@@ -35,7 +35,20 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
   function fmtTpl(t, map) { return t.replace(/\{(\w+)\}/g, (m, k) => map[k] !== undefined ? map[k] : m); }
-  function words(t) { return (t.trim().match(/[A-Za-zÀ-ÿ0-9']+/g) || []).length; }
+  /* Freitext: Wörter zerlegen (auch l’ vom iPhone und œ) und nur echte Wörter zählen, kein Tastengeklimper */
+  function tokens(t) {
+    t = t.replace(/(\d)\s*h\b/gi, "$1h").replace(/\bM\./g, "Monsieur").replace(/-t-/gi, " ")   // 17 h, M. Nowak, a-t-il
+      .replace(/\bz\.\s?B\./g, "zum Beispiel").replace(/\bd\.\s?h\./g, "das heißt");
+    return t.match(/[A-Za-zÀ-ÿŒœÆæ0-9'’]+/g) || [];
+  }
+  function realWord(w) {
+    if (/\d/.test(w) || /^[A-Za-zÀ-ÿ]{1,2}['’]$/.test(w)) return true;     // Zahlen und Uhrzeiten (17h, 10b); l' d' qu' allein
+    const x = w.replace(/^['’]+|['’]+$/g, "");
+    if (x.length === 1) return /^[aàyAÀY]$/.test(x);                       // à, a, y; sonst kein Wort aus einem Buchstaben
+    if (/^[A-ZÄÖÜ]{2,4}$/.test(x) || /^(mme|mlle|dr|st|sms|hm+)$/i.test(x)) return true;   // Abkürzungen wie SMS, Mme
+    return /[aeiouyäöüàâæéèêëîïôœùûÿ]/i.test(x) && !/(.)\1\1/i.test(x);       // mindestens ein Vokal, kein Buchstabe dreimal hintereinander
+  }
+  function words(t) { return tokens(t).filter(realWord).length; }
 
   /* Glossar */
   const GL = (function () {
@@ -487,13 +500,32 @@
     T.starters.forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\.\.\.$/, " ") ; ta.focus(); count(); }); chips.appendChild(c); });
     area.appendChild(chips); area.appendChild(ta);
     const cnt = el("div", "count"); area.appendChild(cnt);
-    function count() { const w = words(ta.value); cnt.textContent = w + " mots (minimum " + T.min + ")"; cnt.classList.toggle("ok", w >= T.min); }
+    const W = G.ui.write;
+    function count() { const w = words(ta.value); cnt.textContent = fmtTpl(W.count, { n: w, min: T.min }); cnt.classList.toggle("ok", w >= T.min); }
     ta.addEventListener("input", count); count();
+    /* Was fehlt noch? Satzanfänge mit „...“ brauchen eigene Wörter dahinter, Punkte im Satzanfang müssen ersetzt sein */
+    function problem(text) {
+      const marks = [];
+      used.forEach(s => { const ins = s.replace(/\.\.\.$/, "").trim(), i = text.indexOf(ins); if (i >= 0) marks.push({ s, ins, i, end: i + ins.length }); });
+      marks.sort((a, b) => a.i - b.i);
+      for (let k = 0; k < marks.length; k++) {
+        const m = marks[k];
+        if (m.ins.includes("...")) return fmtTpl(W.dots, { s: m.s });
+        if (/\.\.\.$/.test(m.s) && !words(text.slice(m.end, k + 1 < marks.length ? marks[k + 1].i : text.length))) return fmtTpl(W.finish, { s: m.s });
+      }
+      const toks = tokens(text), junk = toks.filter(t => !realWord(t));
+      if (junk.length >= 3) return fmtTpl(W.junk, { w: junk.slice(0, 6).join(" ") });
+      const real = toks.filter(realWord).map(t => t.toLowerCase());
+      if (real.length >= 15 && new Set(real).size < real.length * 0.4) return W.repeat;
+      const w = real.length;
+      if (w < T.min) return fmtTpl(W.more, { n: T.min - w });
+      return null;
+    }
     const b = el("button", "btn primary", G.ui.btn.valider);
     b.addEventListener("click", () => {
-      const w = words(ta.value);
-      if (w < T.min) { api.st.wrongs++; api.feedback({ who: "marie", fr: "Encore " + (T.min - w) + " mots, au moins." }, false); return; }
-      api.complete({ text: ta.value.trim(), words: w, starters: Array.from(used).join(" | ") });
+      const p = problem(ta.value);
+      if (p) { api.st.wrongs++; api.feedback({ who: "marie", fr: p }, false); return; }
+      api.complete({ text: ta.value.trim(), words: words(ta.value), starters: Array.from(used).join(" | ") });
     });
     area.appendChild(b);
   };
