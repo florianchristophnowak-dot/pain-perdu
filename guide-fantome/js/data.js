@@ -790,7 +790,7 @@ window.GAME = (function () {
     marie("Nous deux."),
     L("vendeuse", "(Elle prend le manteau.) Il est comme neuf."),
     lino("Finalement, elle nous a aidés."),
-    marie("Elle a surtout refusé d'aider tout le monde de la même façon.")
+    marie("Elle n'a aidé personne. Pas nous, pas lui.")
   ], next: [{ if: "B_done", node: "Z00" }, { node: "F09" }] };
   N.F09 = { type: "task", title: "Le rapport de Marie", perPlayer: true, help: "F09", diag: "D_F09", doneAt: true,
     task: { kind: "write", min: 50, rows: 10, check: "rapport",
