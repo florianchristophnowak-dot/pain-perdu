@@ -203,7 +203,7 @@ window.GAME = (function () {
     { who: "marie", fr: "Ici, à Montmartre, il y a toujours beaucoup de monde. Fais attention à Bernd !" }
   ], next: "M00" };
 
-  N.M00 = { type: "doc", title: "Le sac Bernd", icon: "sac", doc: "Monsieur Nowak : « Lino, tu prends Bernd. Dedans, il y a les billets de train pour ce soir. Mon enveloppe rouge est sous les billets : ne la perds pas ! Et la boîte bleue de Kevin est dans la poche de devant. Ne l'ouvre pas. Rendez-vous à 17 heures, cour du Louvre ! »",
+  N.M00 = { type: "doc", title: "Le sac Bernd", icon: "sac", doc: "Monsieur Nowak : « Lino, tu prends Bernd. Dedans, il y a les billets de train pour le retour. Mon enveloppe rouge est sous les billets : ne la perds pas ! Et la boîte bleue de Kevin est dans la poche de devant. Ne l'ouvre pas. Rendez-vous à 17 heures, cour du Louvre ! »",
     lines: [{ who: "lino", fr: "Les billets, la boîte de Kevin, l'enveloppe de Nowak. Tout est là. Pour l'instant.", de: "Die Fahrkarten, Kevins Dose, Nowaks Umschlag. Alles da. Noch." }],
     effects: { flag: "M00_done" }, next: "M00c" };
 
