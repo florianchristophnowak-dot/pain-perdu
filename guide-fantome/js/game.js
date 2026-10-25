@@ -1429,10 +1429,11 @@
       if (p.hideUntil && !cond(p.hideUntil)) return;
       const unlocked = cond(p.unlock);
       const done = p.done.every(f => flag(f));
+      const pick = p.pick && flag(p.pick) && !S.visited.includes(p.id);   // in N08w gewählter Startort, bis man dort war
       const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       g.setAttribute("class", "place " + (unlocked ? "open" : "locked") + (done ? " done" : "") + (S.scene === p.id ? " here" : "") + (p.optional ? " optional" : ""));
       const ly = p.labelAbove ? p.y - 6.4 : p.y + 6.2, qy = p.labelAbove ? p.y - 3.6 : p.y + 9.4;
-      g.innerHTML = "<title>" + esc(p.label) + "</title>" + '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.2"/>' +
+      g.innerHTML = "<title>" + esc(p.label) + "</title>" + (pick ? '<circle class="pick" cx="' + p.x + '" cy="' + p.y + '" r="4.6"/>' : "") + '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.2"/>' +
         (done ? '<text x="' + p.x + '" y="' + (p.y + 1.1) + '" class="chk" text-anchor="middle">✓</text>' : "") +
         '<text x="' + p.x + '" y="' + ly + '" text-anchor="middle" class="lbl">' + esc(p.short || p.label) + "</text>" +
         '<text x="' + p.x + '" y="' + qy + '" text-anchor="middle" class="q">' + esc(unlocked ? p.q : G.ui.locked) + "</text>";

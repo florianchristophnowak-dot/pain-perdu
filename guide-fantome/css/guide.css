@@ -132,3 +132,8 @@
   .modal.wide .loupe, .modal.wide .observe { width: min(100%, calc((100dvh - 4.2rem) * var(--ar, 1.333))); margin-top: 0; }
   .modal.wide #modal-body > h2 { margin-top: 0; }
 }
+
+/* Karte: der in N08w gewählte Startort, bis man dort war */
+.place circle.pick { fill: none; stroke: var(--accent); stroke-width: .7; stroke-dasharray: 1.6 1; animation: pick-pulse 1.4s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes pick-pulse { to { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .place circle.pick { animation: none; } }
