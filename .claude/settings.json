@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git config user.name \"Florian Christoph Nowak\" && git config user.email \"256548614+florianchristophnowak-dot@users.noreply.github.com\""
+          }
+        ]
+      }
+    ]
+  }
+}
