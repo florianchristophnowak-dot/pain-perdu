@@ -4,6 +4,7 @@ Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: E
 
 **Spielen:** https://florianchristophnowak-dot.github.io/pain-perdu/
 **Lehrkraft-Ansicht:** https://florianchristophnowak-dot.github.io/pain-perdu/?mode=prof (fragt nach dem Code der Lehrkraft)
+**Teil 2 « Le guide fantôme »:** https://florianchristophnowak-dot.github.io/pain-perdu/guide-fantome/ (siehe Abschnitt [Teil 2](#teil-2-le-guide-fantôme))
 
 ## Aufbau
 
@@ -137,3 +138,27 @@ Eine deutsche Testfassung (etwa für jüngere Testspieler ohne Französisch) lie
 ## Texte ändern
 
 Alle Spieltexte liegen in `js/data.js`. Figurentexte sind `fr`, Linos umschaltbare Kommentare zusätzlich `de`. Die Kennungen (M03, P04, …) verbinden Drehbuch, Code und Diagnose.
+
+## Teil 2: Le guide fantôme
+
+Zweiter Fall, unabhängig von Teil 1 spielbar: Vor Notre-Dame kassiert ein falscher Stadtführer, « M. Beaumont », die Anzahlung der Klasse und verschwindet. Die Lernenden spielen Marie; Lino begleitet sie und gibt die Hilfe, in vier Stufen und nur auf Französisch (das Glossar bleibt französisch-deutsch). Stationen: Auftakt an Notre-Dame, Galeries Lafayette, Tour Eiffel, freiwillig die Bouquinisten, Finale am Service des retours, nach den Bouquinisten ein kurzes Nachspiel, zum Schluss der Rapport. Grundlage sind das Spielkonzept und das Drehbuch Teil 2; die Kennungen (N03, G04, E02, R1 …) stimmen mit dem Drehbuch überein.
+
+| Datei | Inhalt |
+| --- | --- |
+| `guide-fantome/index.html` | Oberfläche (wie Teil 1, ohne Sprachschalter und Intro) |
+| `guide-fantome/js/data.js` | Alle Texte und Spieldaten von Teil 2 |
+| `guide-fantome/js/game.js` | Engine, abgeleitet von `js/game.js`, mit den neuen Bausteinen |
+| `guide-fantome/css/guide.css` | Ergänzungen zu `css/style.css` (Bildlupe, Karte mit Aufkleber, Lino-Farbe) |
+| `guide-fantome/assets/ph/` | gezeichnete Platzhalter (SVG), bis die echten Bilder da sind |
+
+Eigener Spielstand (`pg_save_v1`, Ergebnisse `pg_results_v1`), getrennt von Teil 1. Lehrkraft-Ansicht mit demselben Code: `guide-fantome/?mode=prof`.
+
+**Neue Bausteine:** Bildlupe (`loupe`: zoomen mit + und −, Mausrad oder zwei Fingern, verschieben, Details antippen; die Karte « Visite exclusive » hat einen Aufkleber, den man an der Ecke abzieht, und eine Rückseite), Beobachtung (`observe`: vier Bilder in Schleife, drei Auffälligkeiten finden, das Telefon klingelt erst zum Schluss), Fragen an die Verkäuferin (`ask`: Ja-Nein-Fragen bekommen nur « Oui. », nach der dritten eine Minute Pause), Spalten (`cols`), Ketten mit Lücken (`chain`), Beweise (`proofs`) sowie Inhaltsprüfungen für eigene Fragen, die Nachricht an M. Nowak, die Warnung und den Rapport (imparfait, passé composé, Verneinung, Zeitangabe). Alle Bremsen aus Teil 1 gelten weiter; neu ist die Tempobremse (drei Fehlversuche hintereinander in weniger als zwei Sekunden: « Doucement. Lis d'abord. », 20 Sekunden; in Bildlupe und Beobachtung nach acht Fehlklicks). Die Abfragen R1 bis R5 sind Tore: Eine Station gilt erst als erledigt, wenn ihre Abfrage gelöst ist; wer sie aufschiebt, wird im leeren Dialogfeld daran erinnert.
+
+**Bilder und Aufnahmen:** Das Spiel sucht jedes Bild zuerst als `guide-fantome/assets/img/<name>.jpg`, dann `.png`, dann den Platzhalter `assets/ph/<name>.svg`. Die Namen: Hintergründe `bg_parvis`, `bg_lafayette`, `bg_eiffel`, `bg_quai`, `bg_retours`; Zwischensequenzen `cut_beaumont`, `cut_compte`, `cut_parapluie`; Bildlupe und Beobachtung `doc_photo_groupe`, `doc_selfie`, `obs_bonneteau_1` bis `obs_bonneteau_4`; Porträts (PNG, quadratisch) `pt_lino`, `pt_marie`, `pt_nowak`, `pt_beaumont`, `pt_lucien`, `pt_vendeuse`, `pt_joueur`, `pt_spectateur`, `pt_spectatrice`, `pt_bouquiniste`, `pt_agent`, `pt_policiere`, `pt_touriste`. Hörtexte in `guide-fantome/assets/audio/`: `au_beaumont.mp3`, `au_telephone.mp3`, `au_bouquiniste.mp3` (fehlt eine Datei, liest der Browser vor). Wichtig für die Bildlupe und die Beobachtung: Die Fundpunkte stehen in Prozent des Bildes in `data.js` (`points`); neue Bilder müssen die Details an denselben Stellen zeigen wie die Platzhalter, sonst die Werte dort anpassen. Schrift, die man lesen muss (Tüte, Etikett, Preis im Buch, Karte, Ausweis), legt das Spiel selbst über das Bild.
+
+**Test:** `node tools/playthrough-guide.js` (lokaler Server im Hauptordner, z. B. `python3 -m http.server 8765`) spielt Teil 2 mit zwei Spielenden ganz durch, prüft Fallen, Zählungen und Tore und macht Bildschirmfotos auf dem Computer und dem Handy (hoch und quer) in `test-shots/guide/`.
+
+**Stand der Bilder:** Eingesetzt sind `bg_parvis`, `bg_lafayette`, `bg_eiffel`, `bg_quai`, `bg_retours`, `cut_beaumont`, `doc_photo_groupe` und die Inventar-Symbole (`it_*.png`, aus einem 3 × 3-Sammelbild geschnitten); zehn Porträts sind aus den Szenenbildern geschnitten und danach in einem 4 × 3-Raster im Stil der Teil-1-Porträts neu gezeichnet (`pt_nowak`, `pt_beaumont`, `pt_lucien`, `pt_vendeuse`, `pt_joueur`, `pt_spectateur`, `pt_spectatrice`, `pt_bouquiniste`, `pt_agent`, `pt_policiere`); die Fundpunkte und Hotspots sind auf diese Bilder eingestellt. Die drei Hörtexte sind aufgenommen und eingesetzt. Die vier Bilder des Hütchenspiels (`obs_bonneteau_1` bis `obs_bonneteau_4`) sind eingesetzt. Das Selfie (`doc_selfie`) und die Zwischenbilder `cut_compte` und `cut_parapluie` sind eingesetzt, damit hat kein Bild mehr einen Platzhalter. `pt_touriste` ist ein eigenes Porträt.
+
+**Noch offen (Schritt 2):** deutsche Fassung, Offline-Pakete.
