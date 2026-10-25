@@ -1665,7 +1665,7 @@
     const opened = () => PROF || cond(G.openAfter);
     const notYet = () => toast("Lino : " + G.ui.lino.locked);
     $("#btn-carnet").addEventListener("click", () => { if (busy()) return; if (!opened()) notYet(); else openCarnet(); });
-    $("#btn-map").addEventListener("click", () => { if (busy()) return; if (!opened()) notYet(); else openMap(); });
+    $("#btn-map").addEventListener("click", () => { if (busy()) return; if (!opened()) notYet(); else if (!PROF && G.mapLock && cond(G.mapLock)) toast("Lino : " + G.ui.lino.finale); else openMap(); });
     $("#btn-inv").addEventListener("click", () => { if (!busy()) openInventory(); });
     $("#btn-gloss").addEventListener("click", () => { if (!busy()) openGlossary(); });
     setupMobile();
