@@ -87,7 +87,27 @@ window.GAME = (function () {
     },
     mapQuestion: "Question sur place :",
     locked: "fermé",
-    done: "fait"
+    done: "fait",
+    /* Startmenü mit zwei Teilen und Schlüsselwort für Teil 2 */
+    parts: {
+      wrong: "Ce n'est pas le bon mot de passe.",
+      ok: "La partie 2 est ouverte !",
+      endTitle: "Le mot de passe pour la partie 2",
+      endNote: "Note-le bien : avec ce mot de passe, tu ouvres la partie 2, aussi sur un autre appareil.",
+      endGo: "Jouer la partie 2 ▸"
+    }
+  };
+
+  /* ---------- Teil 2 « Le guide fantôme » (Ordner guide-fantome/) ----------
+     Im Startmenü gesperrt, bis Teil 1 geschafft ist oder jemand das Schlüsselwort eingibt (Groß-/Kleinschreibung,
+     Leerzeichen, Bindestrich und Akzente egal). Die Freischaltung steht unter store, Teil 2 speichert unter save. */
+  G.part2 = {
+    title: "Le guide fantôme",
+    subtitle: "Une enquête de Marie à Paris",
+    key: "Notre Dame",
+    href: "guide-fantome/index.html",
+    store: "pp_partie2",
+    save: "pg_save_v1"
   };
 
   /* ---------- Freie Texte: häufige Wörter der Spielsprache (own) und typische Wörter anderer Sprachen (foreign),

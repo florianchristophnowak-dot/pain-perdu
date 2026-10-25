@@ -4,7 +4,7 @@ Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: E
 
 **Spielen:** https://florianchristophnowak-dot.github.io/pain-perdu/
 **Lehrkraft-Ansicht:** https://florianchristophnowak-dot.github.io/pain-perdu/?mode=prof (fragt nach dem Code der Lehrkraft)
-**Teil 2 « Le guide fantôme »:** https://florianchristophnowak-dot.github.io/pain-perdu/guide-fantome/ (siehe Abschnitt [Teil 2](#teil-2-le-guide-fantôme))
+**Teil 2 « Le guide fantôme »:** startet aus demselben Startmenü, sobald Teil 1 geschafft ist oder das Schlüsselwort eingegeben wurde (siehe [Zwei Teile und Schlüsselwort](#zwei-teile-und-schlüsselwort) und [Teil 2](#teil-2-le-guide-fantôme)). Der alte Link `…/guide-fantome/` führt ins Startmenü.
 
 ## Aufbau
 
@@ -80,7 +80,7 @@ Das Spiel läuft auch auf Handys, am besten im Querformat: Dann füllt das Bild 
 
 ## Herunterladen und offline spielen
 
-Auf GitHub „Code → Download ZIP“ wählen, entpacken und `index.html` im Browser öffnen. Alle Bilder, Hörtexte und die Titelschrift liegen im Ordner und brauchen keine Internetverbindung; der Spielstand wird im Browser gespeichert.
+Auf GitHub „Code → Download ZIP“ wählen, entpacken und `index.html` im Browser öffnen. Alle Bilder, Hörtexte und die Titelschrift liegen im Ordner und brauchen keine Internetverbindung; der Spielstand wird im Browser gespeichert. Teil 2 liegt im Ordner `guide-fantome/` und startet ebenfalls aus `index.html`.
 
 Die früheren Kennungen `D_M02`, `D_P03` und `D_B05` (Zuordnungsaufgaben) gibt es nicht mehr. Der Abspann steht in `G.credits`.
 
@@ -126,6 +126,20 @@ Der Titel (Startbildschirm, Kopfzeile, Abspann) nutzt die Schrift Limelight aus 
 
 Beim Laden der Seite läuft `assets/video/intro.mp4` (8 Sekunden, 1280 × 720, mit Ton): die Klasse vor dem Sacré-Cœur, Marcel kommt dazu. Am Ende erscheint der Titel groß in der Plakatschrift des Spiels, danach das Startmenü. „Passer l'intro“ überspringt das Video, „Revoir l'intro“ im Startmenü zeigt es noch einmal, `index.html?intro=0` lässt es ganz aus (etwa für Tests). Ohne vorherigen Klick spielen Browser nur stumm ab; der Knopf links unten schaltet den Ton ein. Fehlt die Datei oder kann der Browser sie nicht abspielen, erscheint sofort das Startmenü. `intro_poster.jpg` ist das erste Bild des Videos und wird gezeigt, solange das Video lädt.
 
+## Zwei Teile und Schlüsselwort
+
+Beide Teile laufen über ein gemeinsames Startmenü (`index.html`, mit dem Introvideo von Teil 1):
+
+- Unter dem Titel stehen beide Teile zur Auswahl: « Partie 1 · L'affaire du pain perdu » und « Partie 2 · Le guide fantôme ». Beim ersten Mal ist Teil 2 gesperrt (gestrichelt, mit Schloss); wer ihn antippt, bekommt das Feld für das Schlüsselwort.
+- Am Ende von Teil 1 zeigt der Endbildschirm das Schlüsselwort **Notre Dame**. Teil 2 ist damit auf diesem Gerät offen; „Jouer la partie 2“ zeigt das Intro mit dem Titel von Teil 2 und danach das Startmenü mit Teil 2.
+- Mit dem Schlüsselwort lässt sich Teil 2 auch ohne Teil 1 öffnen, etwa auf einem anderen Gerät. Groß- und Kleinschreibung, Leerzeichen, Bindestrich und Akzente sind egal („notre-dame“, „NOTREDAME“, „Notre-Dâme“).
+- Ist Teil 2 offen, zeigt das Intro beim nächsten Laden den Titel von Teil 2, und Teil 2 ist vorgewählt. Teil 1 bleibt wählbar. Titel, Untertitel und die Sprachwahl für Lino (nur Teil 1) wechseln mit der Auswahl.
+- Die Freischaltung steht im Browser (`pp_partie2`), unabhängig von den Spielständen: „Nouvelle partie“ sperrt Teil 2 nicht wieder. Wer Teil 1 schon vor dieser Änderung beendet hat, hat Teil 2 ebenfalls offen. In der Lehrkraft-Ansicht (`?mode=prof`) sind beide Teile wählbar, und „Teil 2 wieder sperren“ nimmt die Freischaltung auf diesem Gerät zurück.
+- Die Spielstände bleiben getrennt (Teil 1 `pp_save_v1`, Teil 2 `pg_save_v1`); „Continuer la partie“ gilt für den gewählten Teil. Teil 2 bekommt die Namen beim Start über die Adresse (`guide-fantome/index.html?go=new&p1=…`, bei „Continuer“ `?go=resume`), die gleich danach wieder aus der Adresszeile verschwinden. „Menu“ und „Nouvelle partie“ in Teil 2 führen zurück ins gemeinsame Startmenü (ohne Intro, Teil 2 gewählt). Wer `guide-fantome/` direkt aufruft, landet im Startmenü, außer es gibt auf dem Gerät schon einen Spielstand von Teil 2.
+- Das Wechseln zwischen den Teilen lädt eine neue Seite. Auf Android endet dabei der Vollbildmodus; der Knopf „Plein écran“ steht in Teil 2 ebenfalls oben rechts.
+- Das Schlüsselwort ist eine Sperre für den Unterricht, kein echter Schutz: Wer die Adresse mit `?go=new` kennt, kommt auch so in Teil 2.
+- Schlüsselwort, Titel und Texte: `G.part2` und `G.ui.parts` in `js/data.js`. Test: `node tools/zwei-teile.js` (lokaler Server wie unter „Test“, Bildschirmfotos in `test-shots/teile/`).
+
 ## Deutsche Fassung
 
 Eine deutsche Testfassung (etwa für jüngere Testspieler ohne Französisch) liegt im Ordner `de/`: https://florianchristophnowak-dot.github.io/pain-perdu/de/ – sie ist von der französischen Seite aus nicht verlinkt.
@@ -134,6 +148,7 @@ Eine deutsche Testfassung (etwa für jüngere Testspieler ohne Französisch) lie
 - Bilder, Video, Schrift, `css/style.css` und `js/prof.js` kommen aus dem Hauptordner; eigene Dateien: `de/index.html`, `de/js/data.js` (alle Spieltexte), `de/css/de.css`, `de/zettel.html`, `de/manifest.webmanifest`. Eigener Spielstand (`pp_de_save_v1`), getrennt vom französischen.
 - `de/js/game.js` wird nicht von Hand geändert: `node tools/build_de.js` erzeugt es aus `js/game.js` und übersetzt die festen Texte. Nach Änderungen an `js/game.js` das Skript erneut ausführen; passt ein Ersatz nicht mehr, nennt es die Stelle. Neue Spieltexte in `js/data.js` müssen von Hand in `de/js/data.js` übernommen werden.
 - `node tools/build_de.js --zip pain-perdu_deutsch_offline.zip` baut ein Offline-Paket (ein Ordner, `index.html` öffnen). Test: `node tools/playthrough_de.js`.
+- Die deutsche Fassung hat nur Teil 1, ohne Auswahl im Startmenü und ohne Schlüsselwort. Der Code dafür kommt beim Erzeugen zwar mit nach `de/js/game.js`, bleibt dort aber ohne Wirkung, weil `G.part2` in `de/js/data.js` fehlt. Eine deutsche Fassung von Teil 2 gibt es nicht.
 
 ## Texte ändern
 
@@ -150,7 +165,7 @@ Zweiter Fall, unabhängig von Teil 1 spielbar: Vor Notre-Dame kassiert ein falsc
 | `guide-fantome/js/game.js` | Engine, abgeleitet von `js/game.js`, mit den neuen Bausteinen |
 | `guide-fantome/css/guide.css` | Ergänzungen zu `css/style.css` (Bildlupe, Karte mit Aufkleber, Lino-Farbe) |
 
-Eigener Spielstand (`pg_save_v1`, Ergebnisse `pg_results_v1`), getrennt von Teil 1. Lehrkraft-Ansicht mit demselben Code: `guide-fantome/?mode=prof`.
+Eigener Spielstand (`pg_save_v1`, Ergebnisse `pg_results_v1`), getrennt von Teil 1. Teil 2 startet aus dem gemeinsamen Startmenü (siehe [Zwei Teile und Schlüsselwort](#zwei-teile-und-schlüsselwort)); das eigene Startmenü in `guide-fantome/index.html` erscheint nur noch in der Lehrkraft-Ansicht und mit `?test=1`. Lehrkraft-Ansicht mit demselben Code: `guide-fantome/?mode=prof`.
 
 **Neue Bausteine:** Bildlupe (`loupe`: zoomen mit + und −, Mausrad oder zwei Fingern, verschieben, Details antippen; die Karte « Visite exclusive » hat einen Aufkleber, den man an der Ecke abzieht, und eine Rückseite), Beobachtung (`observe`: vier Bilder in Schleife, drei Auffälligkeiten finden, das Telefon klingelt erst zum Schluss), Fragen an die Verkäuferin (`ask`: Ja-Nein-Fragen bekommen nur « Oui. », nach der dritten eine Minute Pause), Spalten (`cols`), Ketten mit Lücken (`chain`), Beweise (`proofs`) sowie Inhaltsprüfungen für eigene Fragen, die Nachricht an M. Nowak, die Warnung und den Rapport (imparfait, passé composé, Verneinung, Zeitangabe). Alle Bremsen aus Teil 1 gelten weiter; neu ist die Tempobremse (drei Fehlversuche hintereinander in weniger als zwei Sekunden: « Doucement. Lis d'abord. », 20 Sekunden; in Bildlupe und Beobachtung nach acht Fehlklicks). Die Abfragen R1 bis R5 sind Tore: Eine Station gilt erst als erledigt, wenn ihre Abfrage gelöst ist; wer sie aufschiebt, wird im leeren Dialogfeld daran erinnert.
 
@@ -160,4 +175,4 @@ Eigener Spielstand (`pg_save_v1`, Ergebnisse `pg_results_v1`), getrennt von Teil
 
 **Stand der Bilder:** Eingesetzt sind `bg_parvis`, `bg_lafayette`, `bg_eiffel`, `bg_quai`, `bg_retours`, `cut_beaumont`, `doc_photo_groupe` und die Inventar-Symbole (`it_*.png`, aus einem 3 × 3-Sammelbild geschnitten); zehn Porträts sind aus den Szenenbildern geschnitten und danach in einem 4 × 3-Raster im Stil der Teil-1-Porträts neu gezeichnet (`pt_nowak`, `pt_beaumont`, `pt_lucien`, `pt_vendeuse`, `pt_joueur`, `pt_spectateur`, `pt_spectatrice`, `pt_bouquiniste`, `pt_agent`, `pt_policiere`); die Fundpunkte und Hotspots sind auf diese Bilder eingestellt. Die drei Hörtexte sind aufgenommen und eingesetzt. Die vier Bilder des Hütchenspiels (`obs_bonneteau_1` bis `obs_bonneteau_4`) sind eingesetzt. Das Selfie (`doc_selfie`) und die Zwischenbilder `cut_compte` und `cut_parapluie` sind eingesetzt, damit hat kein Bild mehr einen Platzhalter. `pt_touriste` ist ein eigenes Porträt.
 
-**Noch offen (Schritt 2):** deutsche Fassung, Offline-Pakete.
+**Offline:** Teil 2 liegt im französischen Offline-Paket mit drin und startet dort aus `index.html` wie online. Eine deutsche Fassung von Teil 2 ist nicht vorgesehen.
