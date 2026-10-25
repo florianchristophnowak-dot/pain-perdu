@@ -26,6 +26,30 @@ h1, h2, h3 { font-family: var(--serif); margin: 0 0 .5rem; }
 .start-card fieldset { border: 1px solid var(--line); border-radius: 8px; margin: .8rem 0; padding: .5rem .8rem; }
 .start-card .radio { display: inline-block; margin: 0 1rem 0 0; font-weight: 500; }
 .tiny { font-size: .8rem; color: var(--muted); }
+/* Startmenü: Teil 1 oder Teil 2 (gesperrt bis zum Schlüsselwort) */
+.parts { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin: 0 0 .9rem; }
+.part { display: flex; flex-direction: column; align-items: flex-start; gap: .15rem; text-align: left; padding: .5rem .75rem .6rem; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; color: var(--ink); font: inherit; line-height: 1.15; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.part .part-n { display: flex; align-items: center; gap: .3rem; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.part .part-t { font-family: var(--display); font-size: 1.05rem; }
+.part.on { background: var(--paper); border-color: var(--accent); box-shadow: 0 0 0 2px rgba(180,83,42,.22); }
+.part.on .part-n { color: var(--accent); }
+.part .lock { display: none; width: 14px; height: 14px; }
+.part.locked { background: transparent; border-style: dashed; }
+.part.locked .part-t { color: var(--muted); opacity: .65; }
+.part.locked .lock { display: block; }
+.keyrow { margin: -.35rem 0 .9rem; padding: .6rem .75rem; background: var(--paper); border: 1px dashed var(--accent); border-radius: 10px; }
+.keyrow p { margin: 0 0 .45rem; font-size: .9rem; }
+.keyin { display: flex; gap: .4rem; }
+.start-card .keyin input[type=text] { flex: 1; min-width: 0; width: 0; margin: 0; padding: .45rem .6rem; }   /* width 0: das Feld macht die Karte auf dem Handy nicht breiter */
+.start-card .keyin input.bad { border-color: var(--no); background: #fdf0f0; }
+.keyrow .keymsg { margin: .4rem 0 0; color: var(--no); font-size: .85rem; }
+.keymsg:empty { display: none; }
+.start.p2 .p1only { display: none; }
+/* Ende von Teil 1: das Schlüsselwort für Teil 2 */
+.keybox { margin: .8rem 0; padding: .8rem 1rem .9rem; text-align: center; background: #2a2521; color: #f6ead3; border-radius: 12px; }
+.keybox .kt { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #f1c27d; }
+.keybox .kw { font-family: var(--display); font-size: clamp(1.9rem, 6vw, 2.7rem); line-height: 1.15; color: #f1c27d; text-shadow: 0 2px 0 #6b3d14; margin: .15rem 0 .1rem; }
+.keybox p { margin: .2rem auto .7rem; max-width: 34rem; font-size: .92rem; }
 
 /* Buttons */
 .btn { background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); border-radius: 9px; padding: .5rem .9rem; transition: background .15s, transform .05s; }

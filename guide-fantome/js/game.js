@@ -13,6 +13,10 @@
   const TOUCH = window.matchMedia && matchMedia("(pointer: coarse)").matches;   // Handy oder Tablet
   const SAVE_KEY = "pg_save_v1", RESULTS_KEY = "pg_results_v1";   // eigener Spielstand, getrennt von Teil 1 (pp_…)
   const IMG = "assets/img/", PH = "assets/ph/", AUD = "assets/audio/";
+  /* Teil 2 startet aus dem gemeinsamen Startmenü von Teil 1 (../index.html): ?go=new&p1=…&p2=… oder ?go=resume, dazu
+     home = Adresse dieses Startmenüs. „Menu“ und „Nouvelle partie“ führen dorthin zurück (?menu=2). Das eigene Startmenü
+     gibt es nur noch in der Lehrkraft-Ansicht und für die automatischen Tests. */
+  const HUB = !PROF && !TEST;
 
   /* ---------- Zustand ---------- */
   let S = null;
@@ -1299,7 +1303,7 @@
     const ex = el("button", "btn primary", esc(G.ui.btn.exporter)); ex.addEventListener("click", exportAll); bar.appendChild(ex);
     const ca = el("button", "btn", esc(G.ui.btn.carnet)); ca.addEventListener("click", () => openCarnet()); bar.appendChild(ca);
     const mn = el("button", "btn", esc(G.ui.btn.menu)); mn.addEventListener("click", goMenu); bar.appendChild(mn);
-    const nw = el("button", "btn", esc(G.ui.btn.nouvelle)); nw.addEventListener("click", () => { if (confirm(G.ui.confirmNew)) { archiveRun(); localStorage.removeItem(SAVE_KEY); location.reload(); } }); bar.appendChild(nw);
+    const nw = el("button", "btn", esc(G.ui.btn.nouvelle)); nw.addEventListener("click", () => { if (confirm(G.ui.confirmNew)) { archiveRun(); localStorage.removeItem(SAVE_KEY); if (HUB) location.href = hubUrl("menu=2"); else location.reload(); } }); bar.appendChild(nw);
     body.appendChild(bar);
     archiveRun();
   }
@@ -1575,6 +1579,15 @@
   }
 
   /* ---------- Start ---------- */
+  function hubUrl(q) {
+    let h = null; try { h = sessionStorage.getItem("pg_home"); } catch (e) { /* privat */ }
+    return (h || "../index.html") + "?" + q;
+  }
+  /* nur Adressen auf derselben Seite (auch file:// beim Offline-Paket) */
+  function sameSite(h) {
+    try { const u = new URL(h, location.href); if (u.protocol === location.protocol && u.host === location.host) return u.href.split(/[?#]/)[0]; } catch (e) { /* ungültig */ }
+    return null;
+  }
   function startNew() {
     if (S && S.diag && S.diag.length) archiveRun();   // alte Partie bleibt in den Ergebnissen auf diesem Gerät
     S = freshState();
@@ -1591,6 +1604,7 @@
     $("#p1").value = S.players[0] || ""; $("#p2").value = S.players[1] || "";
   }
   function goMenu() {
+    if (HUB) { save(); location.href = hubUrl("menu=2"); return; }   // gemeinsames Startmenü, Teil 2 gewählt
     closeModal(); $$(".verbs").forEach(v => v.remove()); $("#gltip").hidden = true;
     dlg.innerHTML = ""; dlg.classList.remove("active", "pending");
     save(); refreshResume();
@@ -1657,6 +1671,13 @@
   function init() {
     const saved = loadSave();
     if (saved && saved.v === 1) { S = saved; refreshResume(); }
+    if (HUB) {
+      const home = QS.get("home") && sameSite(QS.get("home"));
+      if (home) try { sessionStorage.setItem("pg_home", home); } catch (e) { /* privat */ }
+      if (QS.has("go")) try { history.replaceState(null, "", location.pathname); } catch (e) { /* egal */ }
+      // ohne Auftrag und ohne Spielstand (etwa ein alter Link): ins Startmenü, dort ist Teil 2 bis zum Schlüsselwort gesperrt
+      if (QS.get("go") !== "new" && !S) { $("#start").hidden = true; location.replace(hubUrl("part=2")); return; }
+    }
     $("#btn-resume").addEventListener("click", () => { if (S) resumeGame(); });
     $("#btn-menu").addEventListener("click", goMenu);
     $("#btn-start").addEventListener("click", () => { if (!$("#p1").value.trim()) { $("#p1").focus(); $("#p1").classList.add("bad"); return; } if (S && S.diag && S.diag.length && !confirm(G.ui.confirmReplace)) return; startNew(); });
@@ -1673,6 +1694,10 @@
     if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#title").textContent = G.ui.title; $("#subtitle").textContent = G.ui.subtitle;
     $("#ver").textContent = "v" + G.version + (PROF ? " · prof" : "");
+    if (HUB) {   // Neue Partie mit den Namen aus dem Startmenü, sonst weiterspielen (auch nach Neuladen)
+      if (QS.get("go") === "new") { $("#p1").value = QS.get("p1") || ""; $("#p2").value = QS.get("p2") || ""; startNew(); }
+      else resumeGame();
+    }
   }
   if (PROF || TEST) window.PP = { get S() { return S; }, goNode, enterScene, openMap, openCarnet, exportAll, flag, save, PROF, goMenu, setFlag };
   init();
