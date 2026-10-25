@@ -98,6 +98,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   expect((await S()).flags.prix_vu, 'N04a Preis im Buch (Zoom) gefunden');
   await cont();
   await loupeTap(73.5, 48); await loupeTap(95, 81);
+  { const st = await page.locator('#modal-body .lstatus').innerText(); expect(/Beaumont : 2 sur 2/.test(st) && !/visage/.test(st), 'N04b Selfie: Moustache und Uhr als Details zu M. Beaumont, nicht « visage »: ' + st); }
   await cont();
   log('  N05:', await txt());
   await cont();
@@ -122,7 +123,13 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   expect(/Juste : 4 sur 5/.test(await feedback()), 'N07a Zählung bei einem Fehler');
   await page.locator('#modal-body .gaptext select').nth(0).selectOption({ label: 'était' });
   await btn('Valider'); await cont(1);
-  await write('Il parlait lentement. Il était très poli. Il avait une moustache grise.'); await cont(1);
+  await write('moustache manteau grand gris vite vieux gentil poli'); expect((await feedback()).includes('pas seulement des mots'), 'N07b Wortliste ohne Verb abgelehnt');
+  await write("Comment est-ce qu'il parlait ? Vite, lentement, poliment ?"); expect((await feedback()).includes('des questions'), 'N07b abgetippte Hilfe (Fragen) abgelehnt');
+  await write('Il parlait langsam und höflich. Er war sehr nett und alt.'); expect((await feedback()).includes('En français'), 'N07b deutsch abgelehnt');
+  /* Satzanfänge antippen und fortsetzen: Die eigenen Wörter « vite » und « gentil » reichen (früher fehlte « parl » aus dem Satzanfang) */
+  await page.fill('#modal-body textarea', '');
+  for (const [c, t] of [['Il parlait', 'vite. '], ['Il était très', 'gentil.']]) { await page.locator('#modal-body .chips button', { hasText: c }).first().click(); await page.keyboard.type(t); }
+  await btn('Valider'); expect((await feedback()).includes("c'est ça"), 'N07b « Il parlait vite. Il était très gentil. » mit Satzanfängen angenommen'); await cont(1);
   await write('Il parlait très lentement et poliment. Il était grand et il avait un manteau beige.'); await cont(1);
   for (const [l, c] of [['parapluie rouge', 'facilement'], ['moustache grise', 'difficile'], ['manteau beige', 'facilement'], ['sa voix', 'difficile'], ['le badge', 'facilement'], ['sa taille', 'difficile']]) await selectRow('.crow', l, c === 'facilement' ? 'Il peut le changer facilement' : "C'est plus difficile");
   await btn('Valider'); await cont();
@@ -220,7 +227,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await btn('Valider'); await cont();
   const rows = page.locator('#modal-body .prow');
   const proof = async (i, item, sent) => { await rows.nth(i).locator('select').nth(0).selectOption({ label: item }); await rows.nth(i).locator('select').nth(1).selectOption({ label: sent }); };
-  await proof(0, 'la fiche de signalement', 'Il parle très bien français.'); await proof(1, 'la photo du badge', 'Le 31 février n\'existe pas.'); await proof(2, 'le selfie de Lino', 'On voit son visage : la même moustache, la même montre.');
+  await proof(0, 'la fiche de signalement', 'Il parle très bien français.'); await proof(1, 'la photo du badge', 'Le 31 février n\'existe pas.'); await proof(2, 'le selfie de Lino', 'On le reconnaît : la même moustache, la même montre.');
   await btn('Valider'); expect(/Juste : 2 sur 3/.test(await feedback()) && (await feedback()).includes('écrite nous-mêmes'), 'F05 Zählung und Falle « fiche »');
   await proof(0, 'une carte « Visite exclusive »', "Ce n'est pas un billet. C'est un bon de réduction du magasin.");
   await btn('Valider'); await cont();

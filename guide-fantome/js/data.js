@@ -98,6 +98,7 @@ window.GAME = (function () {
     write: {
       count: "{n} mots (minimum {min})",
       more: "Encore {n} mots, au moins.",
+      more1: "Encore un mot, au moins.",
       finish: "Termine la phrase « {s} ».",
       dots: "Il reste des « ... » dans « {s} ». Remplace-les par tes mots.",
       junk: "Ça, ce ne sont pas des mots : « {w} ». Écris de vraies phrases.",
@@ -302,8 +303,8 @@ window.GAME = (function () {
       material: [{ x: 78, y: 30, w: 21, h: 46 }] },
     next: "N04b" };
   N.N04b = { type: "task", title: "Le selfie de Lino", help: "N04b", diag: "D_N04b",
-    task: { kind: "loupe", img: "doc_selfie", ar: 1.3333, status: "Détails sur son visage : {n} sur {m}",
-      intro: "Sur le selfie de Lino, on voit le visage de M. Beaumont. Trouve deux détails.",
+    task: { kind: "loupe", img: "doc_selfie", ar: 1.3333, status: "Détails sur M. Beaumont : {n} sur {m}",
+      intro: "Sur le selfie de Lino, M. Beaumont n'a pas de parapluie. Trouve deux détails pour le reconnaître.",
       points: [
         { id: "moustache", need: true, chip: "la moustache", x: 67.5, y: 44.5, w: 12.5, h: 7.5, line: marie("Une moustache grise.") },
         { id: "montre", need: true, chip: "la montre", x: 90.5, y: 76, w: 9, h: 10, line: marie("Une montre dorée. Elle brille.") },
@@ -350,10 +351,24 @@ window.GAME = (function () {
       wrong: lino("C'est le décor ou l'action ?") },
     next: "N07b" };
   N.N07b = { type: "task", title: "La fiche de signalement", perPlayer: true, help: "N07b", diag: "D_N07b",
-    task: { kind: "write", min: 12, rows: 4, intro: "Ajoute deux phrases. Comment est-ce qu'il parlait ? Comment est-ce qu'il était ?",
+    task: { kind: "write", min: 7, rows: 4, check: "portrait",
+      intro: "Ajoute deux phrases. Comment est-ce qu'il parlait ? Comment est-ce qu'il était ? (au moins 7 mots)",
       starters: ["Il parlait...", "Il était très...", "Il avait les cheveux..."],
-      topic: ["moustache", "manteau", "poli", "parl", "lent", "cheveu", "grand"], topicMin: 2,
-      topicMsg: "Parle de M. Beaumont : comment il parlait, comment il était.",
+      /* Wörter, die ihn beschreiben (ohne Akzente, Wortanfänge; bis drei Buchstaben nur das ganze Wort). Nur die eigenen Wörter zählen,
+         nicht die Satzanfänge; deshalb steht « parl » nicht mehr in der Liste. Zwei verschiedene Treffer genügen. */
+      topic: [
+        "lent", "vite", "rapid", "douc", "doux", "fort", "poli", "courtois", "calm", "tranquil", "genti", "aimabl", "sympa", "charm", "agreabl",
+        "amical", "chaleureu", "elega", "bien", "mal", "beaucoup", "accent", "voix", "clair", "articul", "souri", "riait", "drole", "serieu",
+        "nerveu", "bavard", "francais", "anglais", "allemand", "parfait", "excellent", "professionnel", "assur", "confian", "histoire", "racont",
+        "expliqu", "guide", "formule", "plaisir", "excus", "bas", "haut",
+        "grand", "petit", "mince", "gros", "maigre", "vieux", "vieil", "age", "ans", "jeune", "moustache", "cheveu", "gris", "blanc", "brun",
+        "noir", "chatain", "court", "long", "frise", "boucl", "ondul", "chauve", "barbe", "lunette", "manteau", "montre", "dore", "beige",
+        "parapluie", "rouge", "cravate", "costume", "veste", "chemise", "chaussure", "chapeau", "badge", "sac", "livre", "chic", "beau", "bel",
+        "joli", "content", "heureu", "gai", "mysteri", "bizarre", "etrange", "menteur", "voleur", "faux", "malin", "intelligent", "ruse",
+        "amusant", "genereu", "honnete", "riche", "presse", "visage", "yeux", "nez", "distingu"
+      ], topicMin: 2,
+      topicMsg: "Parle de M. Beaumont : comment est-ce qu'il parlait ? Comment est-ce qu'il était ?",
+      msgs: { question: "Ça, ce sont des questions. Réponds avec des phrases : Il parlait… Il était…", verb: "Écris des phrases, pas seulement des mots : Il parlait… Il était…" },
       matImgs: ["doc_selfie"] },
     next: "N07c" };
   N.N07c = { type: "task", title: "La fiche de signalement", help: "N07c", diag: "D_N07c",
@@ -751,7 +766,7 @@ window.GAME = (function () {
         { id: "s_carte", label: "Ce n'est pas un billet. C'est un bon de réduction du magasin." },
         { id: "s_badge", label: "Le 31 février n'existe pas." },
         { id: "s_photo", label: "Ce matin, il portait ce manteau, avec l'étiquette." },
-        { id: "s_selfie", label: "On voit son visage : la même moustache, la même montre." },
+        { id: "s_selfie", label: "On le reconnaît : la même moustache, la même montre." },
         { id: "s_livre", label: "Ses histoires viennent d'un vieux livre." },
         { id: "s_trap", label: "Il parle très bien français.", trap: lino("Ça, ce n'est pas une preuve. C'est un compliment.") }
       ],
@@ -932,7 +947,7 @@ window.GAME = (function () {
     N05: ["Lis tout, même les petits chiffres.", { fr: "Regarde la dernière ligne.", action: "material" }, "Combien de jours est-ce qu'il y a en février ?", "Le 31 février n'existe pas. Le badge est faux."],
     N06: ["Une carte a deux côtés. Et ce coin est bizarre.", { fr: "Regarde le coin en haut à droite.", action: "material" }, "Tire sur le coin de l'autocollant. Après, retourne la carte.", "Sous l'autocollant, il y a une réduction. Derrière, il y a un rendez-vous : 13 heures, tour Eiffel."],
     N07a: ["C'est le décor ou l'action ?", "Le décor, c'est comment il était. L'action, c'est ce qu'il a fait.", "Le décor répond à : comment c'était ? L'action répond à : qu'est-ce qui s'est passé ?", "Comment il était, ce qu'il avait, ce qu'il portait : c'est le décor, alors l'imparfait. Ce qu'il a fait une fois, à midi moins le quart : c'est l'action, alors le passé composé."],
-    N07b: ["Comment est-ce qu'il parlait ? Vite, lentement, poliment ?", { fr: "Regarde le selfie : ses cheveux, sa moustache.", action: "material" }, "Tu peux écrire : Il parlait lentement.", "Deux phrases : comment il parlait, et comment il était. Par exemple : Il parlait lentement. Il était très poli."],
+    N07b: ["Comment est-ce qu'il parlait ? Vite, lentement, poliment ?", { fr: "Regarde le selfie : ses cheveux, sa moustache.", action: "material" }, "Tu peux écrire : Il parlait lentement.", "Deux phrases, au moins sept mots : comment il parlait (lentement, vite, poliment…) et comment il était (grand, poli, avec une moustache…)."],
     N07c: ["Qu'est-ce qu'on peut enlever, fermer ou rendre ?", { fr: "Regarde encore la photo et le selfie.", action: "material" }, "Un parapluie, on le ferme. Une moustache, on la garde.", "Pour chaque chose, demande-toi : est-ce qu'il peut l'enlever, la fermer ou la rendre en une minute ? Si oui, il peut la changer facilement."],
     N08: ["Pour chaque indice : où est-ce qu'on peut le trouver ?", { fr: "Regarde encore le sac et la carte.", action: "material" }, "Le sac et l'étiquette viennent du même magasin.", "Lis ce qui est écrit sur chaque indice. Le sac et l'étiquette viennent d'un magasin, la carte donne un lieu de rendez-vous. Et les vieux livres ? Tu es de Paris : tu sais qu'on les vend sur les quais, chez les bouquinistes."],
     G01: ["Il a acheté un manteau d'homme.", { fr: "Regarde bien chaque étage.", action: "material" }, "Cherche le mot manteaux sur le plan.", "Mode homme, manteaux : c'est au 2e étage."],
@@ -1010,7 +1025,7 @@ window.GAME = (function () {
     ["l'étiquette (f)", "das Etikett"], ["la manche", "der Ärmel"], ["le manteau", "der Mantel"], ["le gilet", "die Weste"], ["la moustache", "der Schnurrbart"],
     ["la montre", "die Armbanduhr", { after: ["la", "une", "sa", "ma", "ta", "cette", "même", "les", "des", "ses", "mes", "tes", "ces", "notre", "votre", "leur", "nos", "vos", "leurs"] }],
     ["montrer, il montre, vous montrez", "zeigen"],
-    ["doré, dorée", "golden"], ["l'appareil dentaire (m)", "die Zahnspange"], ["le badge", "der Ausweis"], ["valable", "gültig"], ["l'autocollant (m)", "der Aufkleber"],
+    ["doré, dorée", "golden"], ["reconnaître, reconnaît", "wiedererkennen"], ["l'appareil dentaire (m)", "die Zahnspange"], ["le badge", "der Ausweis"], ["valable", "gültig"], ["l'autocollant (m)", "der Aufkleber"],
     ["le coin", "die Ecke"], ["se décoller, se décolle", "sich ablösen"], ["le pilier", "der Pfeiler"], ["la fiche de signalement", "die Personenbeschreibung"],
     ["la taille", "die Körpergröße; beim Mantel: die Größe"], ["la voix", "die Stimme"], ["l'indice (m)", "der Hinweis"], ["la piste", "die Spur"],
     ["la coupole", "die Kuppel"], ["le grand magasin", "das Kaufhaus"], ["le rez-de-chaussée", "das Erdgeschoss"], ["l'étage (m)", "das Stockwerk"], ["le service des retours", "die Warenrückgabe"],

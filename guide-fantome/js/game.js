@@ -886,6 +886,14 @@
       used.forEach(s => s.split("...").map(x => x.trim()).filter(x => x.length > 2).forEach(x => { text = text.replace(x, " "); }));
       return tokens(text).filter(realWord).map(normAns).join(" ").split(" ").filter(Boolean);
     }
+    /* Wortanfang aus task.topic; bis drei Buchstaben nur das ganze Wort (« age » nicht in « agent ») */
+    function topicHit(x, k) { return k.length <= 3 ? x === k || x === k + "s" : x.startsWith(k); }
+    /* Verschiedene Treffer: je Wort zählt nur der längste passende Anfang (« beaucoup » nicht auch als « beau ») */
+    function topicCount(own) {
+      const hits = new Set();
+      own.forEach(x => { const m = T.topic.filter(k => topicHit(x, k)); if (m.length) hits.add(m.reduce((a, b) => b.length > a.length ? b : a)); });
+      return hits.size;
+    }
     function problem(text) {
       const marks = [];
       used.forEach(s => { const ins = s.replace(/\.\.\.$/, "").trim(), i = text.indexOf(ins); if (i >= 0) marks.push({ s, ins, i, end: i + ins.length }); });
@@ -899,14 +907,15 @@
       if (junk.length >= 3) return fmtTpl(W.junk, { w: junk.slice(0, 6).join(" ") });
       const own = ownWords(text);
       if (LANG) {
-        const mine = own.filter(x => LANG.own.has(x)).length, other = own.filter(x => LANG.foreign.has(x)).length;
+        /* französisch: häufige Wörter und die Wörter zum Thema (sonst scheitert « Il était très… grand, élégant, charmant. ») */
+        const mine = own.filter(x => LANG.own.has(x) || (T.topic || []).some(k => topicHit(x, k))).length, other = own.filter(x => LANG.foreign.has(x)).length;
         if ((other >= 3 && other >= own.length * 0.1) || (own.length >= 8 && mine < own.length * LANG.share)) return W.lang;
       }
       const real = toks.filter(realWord).map(t => t.toLowerCase());
       if (real.length >= 15 && new Set(real).size < real.length * 0.4) return W.repeat;
       const w = real.length;
-      if (w < T.min) return fmtTpl(W.more, { n: T.min - w });
-      if (T.topic && T.topic.filter(k => own.some(x => x.startsWith(k))).length < (T.topicMin || 2)) return T.topicMsg || W.topic;
+      if (w < T.min) return T.min - w === 1 && W.more1 ? W.more1 : fmtTpl(W.more, { n: T.min - w });
+      if (T.topic && topicCount(own) < (T.topicMin || 2)) return T.topicMsg || W.topic;
       if (T.check) return CHECKS[T.check](text, T);
       return null;
     }
@@ -924,6 +933,7 @@
   const SKIP = new Set(["pas", "jamais", "rien", "plus", "bien", "déjà", "tout", "toujours", "encore", "vite", "aussi"]);
   const PART = new Set(["pris", "mis", "fait", "dit", "vu", "eu", "été", "venu", "venue", "parti", "partie", "partis", "revenu", "revenue", "devenu", "tenu", "compris", "appris", "ouvert", "écrit", "lu", "pu", "voulu", "su", "rendu", "perdu", "attendu", "entendu", "vendu", "répondu", "couru", "reçu", "cru", "bu", "dû", "suivi", "fini", "choisi", "réussi", "sorti", "dormi", "servi", "menti", "découvert", "offert", "mort", "né"]);
   const NOT_IMPARF = new Set(["mais", "jamais", "fait", "refait", "parfait", "satisfait", "français", "anglais", "palais", "frais", "plait", "plaît", "lait", "souhait", "trait", "portrait", "extrait", "retrait", "distrait", "abstrait", "désormais", "biais", "épais", "marais", "dais"]);
+  const VERBS = new Set(["est", "a", "sont", "ont", "parle", "porte", "semble", "ressemble", "sourit", "fait", "dit", "raconte", "explique", "connait", "connaît"]);
   function frWords(text) { return (text.toLowerCase().replace(/[’']/g, "' ").match(/[a-zàâäçéèêëîïôöùûüÿœæ]+'?/g) || []); }
   function hasNeg(ws) { return ws.some(w => w === "ne" || w === "n'") && ws.some(w => ["pas", "rien", "jamais", "plus", "personne"].includes(w)); }
   function hasImparfait(ws) { return ws.some(w => (["étions", "étiez", "avions", "aviez"].includes(w)) || (w.length >= 4 && /(ais|ait|aient)$/.test(w) && !NOT_IMPARF.has(w))); }
@@ -966,6 +976,12 @@
       if (!hasNeg(ws)) return T.msgs.neg;
       if (!hasTime(text)) return T.msgs.time;
       return null;
+    },
+    /* N07b: Antworten statt Fragen (etwa die abgetippte Hilfe) und Sätze statt Wortliste, also mindestens ein Verb (il parlait, il était, il a …) */
+    portrait(text, T) {
+      if (/\?/.test(text)) return T.msgs.question;
+      const ws = frWords(text);
+      return hasImparfait(ws) || hasPasseCompose(ws) || ws.some(w => VERBS.has(w)) ? null : T.msgs.verb;
     },
     /* Z01: Warnung mit Verneinung, zum Thema, an eine Dame mit vous */
     warn(text, T) {
