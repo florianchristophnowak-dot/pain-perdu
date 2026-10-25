@@ -508,22 +508,22 @@ window.GAME = (function () {
     task: { kind: "observe", intro: "Trouve trois choses bizarres. Pas sur les gobelets.",
       frames: ["obs_bonneteau_1", "obs_bonneteau_2", "obs_bonneteau_3", "obs_bonneteau_4"], dur: 3000, grace: 1000, ar: 1.7778,
       captions: [
-        { fr: "Regardez bien !", x: 36, y: 6 },
-        { fr: "Elle est où, la petite balle ?", x: 36, y: 6 },
-        { fr: "Là ! À gauche !", x: 14, y: 8 },
-        { fr: "Gagné ! Cinquante euros !", x: 36, y: 6 }
+        { fr: "Regardez bien !", x: 40, y: 3 },
+        { fr: "Elle est où, la petite balle ?", x: 40, y: 3 },
+        { fr: "Là ! À gauche !", x: 3, y: 4 },
+        { fr: "Gagné ! Cinquante euros !", x: 40, y: 3 }
       ],
       points: [
-        { id: "gobelets", cups: true, x: 43, y: 56, w: 14, h: 10 },
-        { id: "gagnants", need: true, chip: "les gagnants", frames: [3], rects: [{ x: 26, y: 25, w: 10, h: 60 }, { x: 64, y: 25, w: 10, h: 60 }], line: marie("Les deux gagnants se connaissent. Ils travaillent avec lui.") },
-        { id: "gens", neutral: true, frames: [1, 2, 4], rects: [{ x: 26, y: 25, w: 10, h: 60 }, { x: 64, y: 25, w: 10, h: 60 }], line: lino("Ils regardent les gobelets. Ou pas ?") },
-        { id: "sac", need: true, chip: "le sac", x: 77, y: 76, w: 14, h: 20, line: marie("Des cartes. Les mêmes que les nôtres : Visite exclusive, numéro 42.") },
-        { id: "telephone", need: true, ring: true, chip: "le téléphone", after: ["gagnants", "sac"], x: 52, y: 46, w: 6, h: 9, line: marie("Son téléphone sonne. Écoute.") },
-        { id: "joueur", neutral: true, x: 40, y: 12, w: 20, h: 44, line: lino("Il parle vite. Très vite.") }
+        { id: "gobelets", cups: true, x: 40, y: 57, w: 21, h: 15 },
+        { id: "gagnants", need: true, chip: "les gagnants", frames: [3], rects: [{ x: 12, y: 3, w: 24, h: 95 }, { x: 68, y: 12, w: 22, h: 88 }], line: marie("Les deux gagnants se connaissent. Ils travaillent avec lui.") },
+        { id: "gens", neutral: true, frames: [1, 2, 4], rects: [{ x: 12, y: 3, w: 24, h: 95 }, { x: 68, y: 12, w: 22, h: 88 }], line: lino("Ils regardent les gobelets. Ou pas ?") },
+        { id: "sac", need: true, chip: "le sac", x: 61, y: 83, w: 19, h: 17, line: marie("Des cartes. Les mêmes que les nôtres : Visite exclusive, numéro 42.") },
+        { id: "telephone", need: true, ring: true, chip: "le téléphone", after: ["gagnants", "sac"], x: 54, y: 39.5, w: 5.5, h: 8, line: marie("Son téléphone sonne. Écoute.") },
+        { id: "joueur", neutral: true, x: 37, y: 14, w: 28, h: 43, line: lino("Il parle vite. Très vite.") }
       ],
       cupsLines: [lino("À gauche… non, à droite… non…")],
       loopHint: { point: "gagnants", line: lino("Regarde aussi la personne à côté.") },
-      material: [{ x: 26, y: 25, w: 10, h: 60 }, { x: 64, y: 25, w: 10, h: 60 }, { x: 77, y: 76, w: 14, h: 20 }] },
+      material: [{ x: 12, y: 3, w: 24, h: 95 }, { x: 68, y: 12, w: 22, h: 88 }, { x: 61, y: 83, w: 19, h: 17 }] },
     next: "E03" };
   N.E03 = { type: "audio", audio: "au_telephone", title: "Le téléphone", intro: "Le joueur se tourne un peu. Il parle au téléphone. Tu peux écouter deux fois.", maxPlays: 2, transcriptHelp: "E04", effects: { flag: "E03_done" }, next: "E04" };
   N.E04 = { type: "task", title: "Dit, déduit, utile", audio: "au_telephone", noReplay: true, listenFirst: true, help: "E04", diag: "D_E04",
