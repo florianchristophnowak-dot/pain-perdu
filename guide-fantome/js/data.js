@@ -238,12 +238,13 @@ window.GAME = (function () {
   const lino = fr => L("lino", fr), marie = fr => L("marie", fr);
 
   /* ===== 2 Auftakt an Notre-Dame ===== */
-  N.N00 = { type: "cut", bg: "cut_beaumont", lines: [
+  /* Erst das Zählen der Klasse (bg_parvis), dann wechselt das Bild, wenn M. Beaumont mit dem roten Schirm dazukommt (cut_beaumont) */
+  N.N00 = { type: "cut", bg: "bg_parvis", lines: [
     L("narrateur", "Paris, le deuxième jour. Il est onze heures moins cinq. La classe 10b d'Ohrdruf attend sur le parvis de Notre-Dame. Marie, la correspondante de Lino, est avec eux."),
     L("nowak", "… dix-neuf, vingt, vingt et un… Il manque quelqu'un ?"),
     marie("Il y a toujours beaucoup de monde ici. Et beaucoup de guides.")
   ], next: "N01" };
-  N.N01 = { type: "lines", lines: [
+  N.N01 = { type: "cut", bg: "cut_beaumont", lines: [
     L("beaumont", "Vingt-deux, monsieur. Avec la jeune fille, là."),
     L("nowak", "Ah… merci."),
     L("beaumont", "Excusez-moi de vous déranger. Je m'appelle Beaumont, je suis guide officiel."),
