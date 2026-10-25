@@ -203,7 +203,7 @@ window.GAME = (function () {
     { who: "marie", fr: "Hier in Montmartre ist immer viel los. Pass gut auf Bernd auf!" }
   ], next: "M00" };
 
-  N.M00 = { type: "doc", title: "Der Rucksack Bernd", icon: "sac", doc: "Herr Nowak: „Lino, du nimmst Bernd. Da drin sind die Zugfahrkarten für heute Abend. Mein roter Umschlag liegt unter den Fahrkarten: Verlier ihn nicht! Und Kevins blaue Dose ist in der Vordertasche. Mach sie nicht auf. Treffpunkt um 17 Uhr im Innenhof des Louvre!“",
+  N.M00 = { type: "doc", title: "Der Rucksack Bernd", icon: "sac", doc: "Herr Nowak: „Lino, du nimmst Bernd. Da drin sind die Zugfahrkarten für die Rückfahrt. Mein roter Umschlag liegt unter den Fahrkarten: Verlier ihn nicht! Und Kevins blaue Dose ist in der Vordertasche. Mach sie nicht auf. Treffpunkt um 17 Uhr im Innenhof des Louvre!“",
     lines: [{ who: "lino", fr: "Die Fahrkarten, Kevins Dose, Nowaks Umschlag. Alles da. Noch." }],
     effects: { flag: "M00_done" }, next: "M00c" };
 
