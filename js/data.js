@@ -41,7 +41,7 @@ window.GAME = (function () {
       cards: "Nos cartes", mission: "Mission",
       hint: "Le carnet ne note rien pour toi. Les noms, les lieux, les heures : tu les retiens, ou tu les écris sur ta feuille."
     },
-    recall: { check: "Vérifier", later: "Revenir plus tard", pause: "Là, vous devinez. Allez vérifier, et revenez dans une minute.", paused: "Pas maintenant. Vérifiez d'abord, puis revenez dans {s} secondes.", wrong: "Non, ce n'est pas ça.", unknown: "Tu ne sais plus ? Va revoir sur place, puis reviens.", intro: "Réponds de mémoire ou avec ta feuille." },
+    recall: { check: "Vérifier", later: "Revenir plus tard", pause: "Là, vous devinez. Allez vérifier, puis revenez après la pause.", paused: "Pas maintenant. Vérifiez d'abord, puis revenez dans {s} secondes.", wrong: "Non, ce n'est pas ça.", unknown: "Tu ne sais plus ? Va revoir sur place, puis reviens.", intro: "Réponds de mémoire ou avec ta feuille." },
     inv: { title: "Inventaire", empty: "Rien.", show: "Montrer", showTo: "Montrer à", hint: "Clique sur un objet pour le regarder de près.", nothing: { who: "lino", fr: "Non. Ça ne marche pas.", de: "Nein. Das bringt nichts." } },
     partner: "Changement ! {p2} prend la souris, {p1} prend le carnet.",
     solo: "Cette question, chacun répond seul. D'abord {p1}, puis {p2}.",
@@ -49,13 +49,26 @@ window.GAME = (function () {
     travel: { who: "lino", fr: "Encore le métro. Je connais Paris par en dessous.", de: "Schon wieder Métro. Ich kenne Paris von unten." },
     end: "Bravo ! L'affaire est résolue.",
     mouse: "Souris :",
+    /* gegen Raten: Pause nach jedem dritten Fehlversuch, Rückmeldung „wie viele richtig“ */
+    guess: {
+      pause: "Là, tu devines. Prends ton temps : relis, réécoute ou demande-moi de l'aide. Après la pause, tu peux réessayer.",
+      paused: "Pas encore. Pendant la pause, relis ou réécoute. Encore {s} secondes.",
+      wait: "⏳ Encore {s} s",
+      count: "Juste : {n} sur {m}.",
+      all: "Choisis d'abord une réponse partout.",
+      choose: "Choisis {n} réponses."
+    },
+    listen: "Écoute jusqu'au bout : après, tu peux continuer.",
     write: {
       count: "{n} mots (minimum {min})",
       more: "Encore {n} mots, au moins.",
       finish: "Termine la phrase « {s} ».",
       dots: "Il reste des « ... » dans « {s} ». Remplace-les par tes mots.",
       junk: "Ça, ce ne sont pas des mots : « {w} ». Écris de vraies phrases.",
-      repeat: "Tu répètes toujours les mêmes mots. Raconte avec des phrases différentes."
+      repeat: "Tu répètes toujours les mêmes mots. Raconte avec des phrases différentes.",
+      lang: "En français, s'il te plaît ! Écris tes phrases en français.",
+      topic: "Je ne comprends pas : de quoi tu parles ? Raconte l'affaire avec tes mots : le sac, le mime, les lieux.",
+      paste: "Pas de copier-coller : écris avec tes mots."
     },
     full: {
       label: "Plein écran", exit: "Quitter le plein écran", exitShort: "Écran normal", title: "Plein écran",
@@ -75,6 +88,14 @@ window.GAME = (function () {
     mapQuestion: "Question sur place :",
     locked: "fermé",
     done: "fait"
+  };
+
+  /* ---------- Freie Texte: häufige Wörter der Spielsprache (own) und typische Wörter anderer Sprachen (foreign),
+     klein und ohne Akzente. Die eigenen Wörter eines Textes brauchen mindestens 20 % own; ab drei foreign lehnt Marie ab. ---------- */
+  G.writeLang = {
+    own: "le la les l un une des du de d et est a au aux il elle on nous vous ils elles je j tu ne n pas que qu qui dans sur sous avec pour par en son sa ses notre nos mon ma mes ce cet cette ces c s se y etait etaient avait avaient avons ont sont ai as va vont allons fait puis mais alors donc tres apres avant pendant chez aussi tout tous plus leur leurs lui moi toi comme quand parce ou",
+    foreign: "der die das den dem und ist sind war waren hat haben hatte hatten nicht ich wir ihr sie er ein eine einen einem einer mit auf zum zur im ins von vom bei nach aus wo was wie aber auch dann noch schon weil dass oder mein meine unser unsere unseren wurde the and is of to with my we he she they it this that have has had in at our",
+    share: 0.2
   };
 
   /* ---------- Fragen: "réglé", sobald die passende Abfrage im Spiel bestanden ist ---------- */
@@ -377,7 +398,8 @@ window.GAME = (function () {
   N.B06 = { type: "task", diag: "D_B06", help: "B06", title: "Message à M. Nowak",
     task: { kind: "write", intro: "Écris à monsieur Nowak : qu'est-ce qui s'est passé ? Où allez-vous ? (au moins 25 mots)", min: 25,
       starters: ["Le mime avait...", "Il a pris...", "On va à..."],
-      model: "Le mime avait un sac brun, comme nous. Il a pris notre sac par erreur et il a trouvé nos affaires. On va à la librairie Les Mots retrouvés pour lire son message. Marie est avec moi." },
+      model: "Le mime avait un sac brun, comme nous. Il a pris notre sac par erreur et il a trouvé nos affaires. On va à la librairie Les Mots retrouvés pour lire son message. Marie est avec moi.",
+      topicMin: 2, topic: ["sac", "mime", "marcel", "bernd", "librairie", "mots", "erreur", "pris", "prend", "message", "nora", "boulangerie", "affaires", "programme", "chloe", "kevin", "montmartre", "photo", "louvre", "vol", "trouv", "retrouv", "escalier", "metro", "lenoir"] },
     effects: { flag: "B06_done" },
     after: [{ who: "nowak", fr: "Merci, Lino. 17 heures au Louvre, n'oubliez pas ! Je compte... encore une fois." }],
     next: "SCENE_marais" };
@@ -407,6 +429,15 @@ window.GAME = (function () {
         { id: "B", text: "Marcel Duval — Le Pain perdu — aujourd'hui, 17 h — cour de la librairie. Version corrigée.", ok: false, reply: { who: "lenoir", fr: "Duval ? Mais vous cherchez Blanchard, non ?" } },
         { id: "C", text: "Marcel Blanchard — Le Pain perdu — aujourd'hui, 17 h — cour du Louvre. Version corrigée. Ce programme remplace l'ancien programme.", ok: true }
       ],
+      /* Begründen wie im Konzept: den aktuellen Aushang mit zwei Belegen */
+      proof: { who: "lenoir", n: 2, ask: "Celle-ci ? Pourquoi ? Donnez-moi deux preuves.",
+        options: [
+          { id: "nom", label: "Le nom : c'est Marcel Blanchard.", ok: true },
+          { id: "version", label: "La version : elle est corrigée.", ok: true },
+          { id: "heure", label: "L'heure : c'est à 17 h.", reply: "17 h ? Les trois affiches disent 17 h. Ça ne prouve rien." },
+          { id: "titre", label: "Le titre : c'est Le Pain perdu.", reply: "Le Pain perdu, c'est sur les trois affiches. Ça ne prouve rien." },
+          { id: "lieu", label: "Le lieu : c'est dans une cour.", reply: "Une cour ? L'affiche B parle aussi d'une cour : la cour de la librairie." }
+        ] },
       success: { who: "lenoir", fr: "Bien lu ! Les livres restent, les programmes changent." } },
     effects: { flags: ["L02_C", "L02_done"] },
     after: [{ who: "lino", fr: "Le Louvre, 17 heures ? Comme le rendez-vous de Nowak. Paris est petit.", de: "Louvre, 17 Uhr? Wie Nowaks Treffpunkt. Paris ist klein." }],
@@ -537,7 +568,8 @@ window.GAME = (function () {
   N.V05 = { type: "task", diag: "D_V05", help: "V05", perPlayer: true, title: "Rapport final",
     task: { kind: "write", intro: "Raconte l'affaire en 6 à 8 phrases : Où étiez-vous ? Qu'est-ce que le mime a fait ? Quel indice a changé votre idée ? Comment avez-vous récupéré le sac ?", min: 50,
       starters: ["On était à Montmartre.", "Lino tenait...", "Pendant que..., le mime a pris...", "Au Père-Lachaise, on a appris...", "Marcel avait déjà...", "Il croyait que...", "À la fin, on a échangé..."],
-      model: "On était à Montmartre pour une photo. Lino tenait le sac Bernd. Pendant que nous regardions la photo, le mime a pris notre sac. Au Père-Lachaise, on a appris son nom : Marcel Blanchard. Sur une photo, Marcel avait déjà son sac brun. Donc ce n'était pas un vol. Il croyait que notre sac était son sac. À la librairie, on a trouvé le bon programme. À la fin, on a échangé les sacs au Louvre." },
+      model: "On était à Montmartre pour une photo. Lino tenait le sac Bernd. Pendant que nous regardions la photo, le mime a pris notre sac. Au Père-Lachaise, on a appris son nom : Marcel Blanchard. Sur une photo, Marcel avait déjà son sac brun. Donc ce n'était pas un vol. Il croyait que notre sac était son sac. À la librairie, on a trouvé le bon programme. À la fin, on a échangé les sacs au Louvre.",
+      topicMin: 3, topic: ["sac", "mime", "marcel", "blanchard", "bernd", "montmartre", "pere", "lachaise", "cimetiere", "gardien", "chloe", "photo", "nora", "boulangerie", "marais", "librairie", "lenoir", "programme", "affiche", "louvre", "erreur", "vol", "echang", "pris", "prend", "trouv", "retrouv", "kevin", "nowak", "boite", "enveloppe", "billets", "escalier", "metro", "indice", "preuve"] },
     effects: { flag: "V05_done" },
     next: "V06" };
 
@@ -633,11 +665,11 @@ window.GAME = (function () {
 
   /* ---------- Maries Hilfestufen ---------- */
   G.help = {
-    M03: ["Tu veux parler de maintenant, de plus tard ou de tout à l'heure ?", { fr: "Regarde les verbes : avez vu, cherchez, allez voir.", action: "material" }, "« Vous avez vu », c'est le passé. C'est ce qu'on veut savoir.", "Wir wollen wissen, ob sie ihn gesehen hat: eine Frage in der Vergangenheit."],
-    M04: ["Elle parle de trois moments : ce matin, cet après-midi, ce soir.", { fr: "Écoute encore. Je te repasse la dame du kiosque.", action: "replay" }, { fr: "Voici la transcription. Regarde les moments.", action: "transcript" }, "Heute Morgen Père-Lachaise, heute Nachmittag Marais, heute Abend unbekannt."],
+    M03: ["Tu veux parler de maintenant, de plus tard ou de tout à l'heure ?", { fr: "Regarde les verbes : avez vu, cherchez, allez voir.", action: "material" }, "On veut savoir si elle l'a vu tout à l'heure : choisis la question au passé.", "Wir wollen wissen, ob sie ihn gesehen hat: eine Frage in der Vergangenheit."],
+    M04: ["Elle parle de trois moments : ce matin, cet après-midi, ce soir.", { fr: "Écoute encore. Je te repasse la dame du kiosque.", action: "replay" }, { fr: "Voici la transcription. Regarde les moments.", action: "transcript" }, "Such im Transkript die drei Zeitangaben: ce matin (heute Morgen), cet après-midi (heute Nachmittag), ce soir (heute Abend). Im selben Satz steht jeweils der Ort, oder dass sie es nicht weiß."],
     M04b: ["C'est le décor ou l'action ?", { fr: "Écoute encore la dame du kiosque.", action: "replay" }, "Le décor, c'est l'imparfait : il portait. L'action, c'est le passé composé : il a pris.", "Hintergrund und Zustand: imparfait. Ereignis: passé composé."],
     P02: ["Montre-lui la photo.", { fr: "Dans l'inventaire : la photo de groupe.", action: "material" }, "Tu peux dire : Vous avez vu ce mime ?", "Zeig ihm das Gruppenfoto und frag, ob er den Pantomimen gesehen hat."],
-    P04: ["Tout droit, puis... à gauche ou à droite ? Écoute encore.", { fr: "Écoute encore le gardien.", action: "replay" }, { fr: "Voici la transcription : tout droit, à gauche, ne prenez pas.", action: "transcript" }, "Geradeaus bis zur Kreuzung, dann links. Nicht den Weg, der bergab führt."],
+    P04: ["Tout droit, puis... à gauche ou à droite ? Écoute encore.", { fr: "Écoute encore le gardien.", action: "replay" }, { fr: "Voici la transcription : tout droit, à gauche, ne prenez pas.", action: "transcript" }, "Der Wärter nennt zwei Schritte: zuerst bis zum carrefour (Kreuzung), dann eine Richtung. à gauche = links, à droite = rechts. Und « ne prenez pas » heißt: Diesen Weg nicht nehmen."],
     P06: ["Regarde bien le sac sur la photo. Qu'est-ce que tu vois ?", { fr: "Zoom sur le sac : la fermeture et l'autocollant.", action: "material" }, "Regarde aussi le sac brun dans l'inventaire : la fermeture, l'autocollant.", "Reißverschluss und Aufkleber: auf dem Foto und an der Tasche im Inventar."],
     B02: ["Lino, on ne cherche pas un dessert. Qu'est-ce qu'on cherche ?", { fr: "Regarde le flyer : Le Pain perdu, c'est un spectacle.", action: "material" }, "Dis-lui : Je cherche un sac... ou Je cherche le spectacle...", "Sag ihr, was ihr sucht: die Tasche oder die Aufführung, nicht das Gericht."],
     B04: ["Écoute encore. Qu'est-ce qu'il dit vraiment ?", { fr: "Écoute encore le message de Marcel.", action: "replay" }, { fr: "Voici la transcription. Cherche : « ce n'est pas à moi », « je crois que », « le programme a changé ».", action: "transcript" }, "Sicher ist nur, was er wörtlich sagt. Was er will oder wo er ist, sagt er nicht."],
