@@ -711,7 +711,7 @@ window.GAME = (function () {
     ["Les Mots retrouvés", "Name der Buchhandlung: „Die wiedergefundenen Wörter“."],
     ["Baguette", "Langes, dünnes französisches Weißbrot."],
     ["Croissant", "Französisches Hörnchen aus Blätterteig, typisch zum Frühstück."],
-    ["Pantomime, Pantomimen", "Künstler, der ohne Worte spielt, nur mit Gesten. Oft mit weiß geschminktem Gesicht."],
+    ["Pantomime, Pantomimen", "Künstler, der ohne Worte spielt, nur mit Gesten. Oft mit weiß geschminktem Gesicht. Auch die Kunst selbst heißt so: die Pantomime."],
     ["Baskenmütze", "Flache, runde Mütze, typisch für Frankreich (auf Französisch „le béret“)."],
     ["Ohrdruf", "Kleine Stadt in Thüringen. Dort ist die Schule der Klasse 10b."],
     ["Vita Cola, Viba", "Zwei Marken aus Thüringen: eine Cola und Nougat-Süßigkeiten."]

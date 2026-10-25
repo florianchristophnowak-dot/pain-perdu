@@ -716,25 +716,25 @@ window.GAME = (function () {
 
   /* ---------- Glossar ---------- */
   G.glossary = [
-    ["le sac", "die Tasche, der Rucksack"], ["le correspondant, la correspondante", "der Austauschpartner, die Austauschpartnerin"], ["le mime", "der Pantomime"], ["le kiosque", "der Kiosk"], ["l'escalier (m)", "die Treppe"],
+    ["le sac", "die Tasche, der Rucksack"], ["le correspondant, la correspondante", "der Austauschpartner, die Austauschpartnerin"], ["le mime", "der Pantomime; auch: die Pantomime (Spiel ohne Worte)"], ["le kiosque", "der Kiosk"], ["l'escalier (m)", "die Treppe"],
     ["le ticket de caisse", "der Kassenbon"], ["la boulangerie, la boulangère", "die Bäckerei, die Bäckerin"], ["le spectacle", "die Aufführung, die Show"],
     ["le programme", "das Programm"], ["corrigé, corrigée", "korrigiert"], ["ancien, ancienne", "alt, früher"], ["la première version", "die erste Fassung"],
     ["l'affiche (f)", "das Plakat, der Aushang"], ["le tampon", "der Stempel"], ["annulé", "abgesagt"], ["la modification", "die Änderung"],
-    ["le lieu, avoir lieu", "der Ort, stattfinden"], ["remplacer", "ersetzen"], ["la fermeture (éclair)", "der Reißverschluss"], ["l'autocollant (m)", "der Aufkleber"],
+    ["le lieu, avoir lieu", "der Ort, stattfinden"], ["remplacer, remplace", "ersetzen"], ["la fermeture (éclair)", "der Reißverschluss"], ["l'autocollant (m)", "der Aufkleber"],
     ["la poche de devant", "die Vordertasche"], ["l'enveloppe (f)", "der Umschlag"], ["la boîte", "die Dose, die Schachtel"], ["l'appareil dentaire (m)", "die Zahnspange"],
     ["les billets de train", "die Zugfahrkarten"], ["le gardien", "der Wärter, der Aufseher"], ["le cimetière", "der Friedhof"], ["la tombe", "das Grab"],
-    ["le carrefour", "die Kreuzung"], ["le banc", "die Bank (zum Sitzen)"], ["le chemin", "der Weg"], ["la sortie", "der Ausgang"], ["descendre", "hinuntergehen"],
-    ["tout droit", "geradeaus"], ["tourner à gauche", "links abbiegen"], ["le témoin", "der Zeuge, die Zeugin"], ["le rapport", "der Bericht"], ["l'indice (m)", "der Hinweis"],
+    ["le carrefour", "die Kreuzung"], ["le banc", "die Bank (zum Sitzen)"], ["le chemin", "der Weg"], ["la sortie", "der Ausgang"], ["descendre, descend", "hinuntergehen; beim Weg: bergab führen"],
+    ["tout droit", "geradeaus"], ["tourner à gauche, tournez à gauche", "links abbiegen"], ["le témoin", "der Zeuge, die Zeugin"], ["le rapport", "der Bericht"], ["l'indice (m)", "der Hinweis"],
     ["la preuve", "der Beweis"], ["le voleur, voler", "der Dieb, stehlen"], ["l'erreur (f), par erreur", "der Irrtum, aus Versehen"], ["le mauvais sac", "die falsche Tasche"],
-    ["pressé, pressée", "in Eile"], ["échanger", "tauschen"], ["la compagnie", "die Theatergruppe"], ["la répétition, répéter", "die Probe, proben"], ["le décor", "die Kulisse"],
-    ["le crâne", "der Schädel"], ["en carton", "aus Pappe"], ["le panneau", "das Schild"], ["le pain perdu", "Arme Ritter (Süßspeise)"], ["mouillé", "nass"], ["le gant", "der Handschuh"],
-    ["rayé", "gestreift"], ["le béret", "die Baskenmütze"], ["tenir", "halten"], ["apporter", "mitbringen"], ["laisser un message", "eine Nachricht hinterlassen"],
-    ["les affaires (f)", "die Sachen"], ["dedans", "darin, drinnen"], ["là-bas", "dort"], ["ressembler à", "aussehen wie"], ["la cour", "der Hof"], ["l'entrée (f)", "der Eingang"],
-    ["le rendez-vous", "das Treffen, die Verabredung"], ["avoir l'air inquiet", "besorgt aussehen"], ["le numéro", "die Nummer (der Auftritt)"], ["le public", "das Publikum"],
-    ["l'ombre (f)", "der Schatten"], ["allumer", "anschalten"], ["le miroir", "der Spiegel"],
-    ["le casque", "das Headset, der Kopfhörer"], ["là-dessous", "da unten"], ["par là", "dort entlang"], ["non attribué", "nicht vergeben (Telefonnummer)"],
+    ["pressé, pressée", "in Eile"], ["échanger, échange, échangé", "tauschen"], ["la compagnie", "die Theatergruppe"], ["la répétition, répéter", "die Probe, proben"], ["le décor", "die Kulisse"],
+    ["le crâne", "der Schädel"], ["en carton", "aus Pappe"], ["le panneau", "das Schild; auch: die Tafel (für Aushänge)"], ["le pain perdu", "Arme Ritter (Süßspeise)"], ["mouillé", "nass"], ["le gant", "der Handschuh"],
+    ["rayé", "gestreift"], ["le béret", "die Baskenmütze"], ["tenir, tient, tenait", "halten"], ["apporter, apporté", "bringen, mitbringen"], ["laisser un message", "eine Nachricht hinterlassen"],
+    ["les affaires (f)", "die Sachen"], ["dedans", "darin, drinnen"], ["là-bas", "dort, dorthin"], ["ressembler à, ressemble à", "aussehen wie"], ["la cour", "der Hof"], ["l'entrée (f)", "der Eingang"],
+    ["le rendez-vous", "das Treffen, die Verabredung"], ["avoir l'air inquiet, avait l'air inquiet", "besorgt aussehen"], ["le numéro", "die Nummer: der Auftritt; auch: die Telefonnummer"], ["le public", "das Publikum"],
+    ["l'ombre (f)", "der Schatten"], ["allumer, allume", "anschalten"], ["le miroir", "der Spiegel"],
+    ["le casque", "das Headset, der Kopfhörer"], ["là-dessous", "da unten"], ["par là", "dort entlang"], ["attribué, non attribué", "vergeben, nicht vergeben (Telefonnummer)"],
     ["la part", "das Stück (Kuchen, Dessert)"], ["volé, voler", "gestohlen, stehlen"], ["d'habitude", "normalerweise"], ["durer", "dauern"],
-    ["se retourner", "sich umdrehen"], ["sourire, Souriez !", "lächeln, Bitte lächeln!"], ["le journal", "die Zeitung"], ["raconter", "erzählen"], ["la balade littéraire", "der literarische Spaziergang"],
+    ["se retourner, se retourne", "sich umdrehen"], ["sourire, Souriez !", "lächeln, Bitte lächeln!"], ["le journal", "die Zeitung"], ["raconter, raconte, racontez", "erzählen"], ["la balade littéraire, les balades littéraires", "der literarische Spaziergang, die literarischen Spaziergänge"],
     ["l'agenda (m)", "der Terminkalender"], ["à la main", "in der Hand"], ["la scène", "die Bühne"], ["pareil", "gleich"], ["ça m'étonne", "das wundert mich"]
   ];
 
