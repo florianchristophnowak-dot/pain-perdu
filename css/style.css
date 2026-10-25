@@ -133,6 +133,9 @@ h1, h2, h3 { font-family: var(--serif); margin: 0 0 .5rem; }
 .tools { display: flex; gap: .5rem; flex-wrap: wrap; margin: .5rem 0; }
 .area { margin: .6rem 0; }
 .feedback { margin-top: .5rem; }
+.feedback .countdown { margin-top: .4rem; font-weight: 700; color: var(--muted); }
+.proof { margin-top: .8rem; }
+.proof .line { margin-bottom: .4rem; }
 .feedback.ok .line { background: #dcefe3; border-radius: 8px; padding: .5rem; }
 .feedback.no .line { background: #f8dcdc; border-radius: 8px; padding: .5rem; }
 .audio-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin: .6rem 0; }

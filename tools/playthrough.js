@@ -165,6 +165,10 @@ const URL = process.env.URL || 'http://127.0.0.1:8765/index.html?intro=0&test=1'
   await page.locator('.poster', { hasText: 'place des Vosges' }).locator('button').click();
   log('L02 fb:', (await page.locator('.feedback').innerText()).slice(0, 60));
   await page.locator('.poster', { hasText: 'cour du Louvre' }).locator('button').click();
+  log('L02 proof:', (await page.locator('.proof').innerText()).replace(/\s+/g, ' ').slice(0, 80));
+  await btn("Le nom : c'est Marcel Blanchard"); await btn("L'heure"); await btn('Valider');
+  log('L02 proof fb:', (await page.locator('.feedback').innerText()).slice(0, 80));
+  await btn("L'heure"); await btn('La version'); await btn('Valider');
   await page.screenshot({ path: SHOT + '09_posters.png' });
   log('L02 success:', (await page.locator('.feedback').innerText()).slice(0, 80));
   await cont(1); log('L02 after:', await dlgText()); await cont(1);

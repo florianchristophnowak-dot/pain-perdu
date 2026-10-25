@@ -23,7 +23,7 @@ const PATCHES = [
   [R`    body.appendChild(el("h2", "", esc(G.chars[a.who].name)));
     const row = el("div", "audio-row"); row.appendChild(portrait(a.who));
     const play = el("button", "btn play", "▶ " + G.ui.verbs.ecouter);
-    const start = onBlocked => { play.textContent = "▶ " + G.ui.btn.rejouer; playAudio(n.audio, play, onBlocked); };
+    const start = onBlocked => { play.textContent = "▶ " + G.ui.btn.rejouer; playAudio(n.audio, play, onBlocked, heard); };
     play.addEventListener("click", () => start());
     row.appendChild(play);
     const tr = el("button", "btn", G.ui.btn.transcription);
@@ -40,6 +40,7 @@ const PATCHES = [
   [R`    bar.appendChild(b); body.appendChild(bar);
     setTimeout(() => start(() => { play.textContent = "▶ " + G.ui.verbs.ecouter; }), 300);
   }`, R`    bar.appendChild(b); body.appendChild(bar);
+    if (b.disabled) setTimeout(() => { if (b.isConnected) heard(); }, Math.max(3000, a.text.length * 40));   // statt „ganz anhören“: weiter nach einer Mindest-Lesezeit
   }`],
   [R`      const play = el("button", "btn play", "▶ " + G.ui.btn.rejouer);
       play.addEventListener("click", () => playAudio(n.audio, play));
@@ -56,7 +57,6 @@ const PATCHES = [
       tools.appendChild(tr);
       st.showTranscript = () => { if (trBox.hidden) tr.click(); };`],
   [R`(who ? "<b>" + esc(who) + " :</b> " : "")`, R`(who ? "<b>" + esc(who) + ":</b> " : "")`],
-  [R`api.feedback({ who: "marie", fr: "Choisis " + T.n + " réponses." }, false)`, R`api.feedback({ who: "marie", fr: "Wähle " + T.n + " Antworten." }, false)`],
   [R`fill="#555">le banc rouge</text>`, R`fill="#555">die rote Bank</text>`],
   [R`fill="#555">sortie</text>`, R`fill="#555">Ausgang</text>`, 2],
   [R`fill="#555">carrefour</text>`, R`fill="#555">Kreuzung</text>`],
@@ -78,13 +78,15 @@ const PATCHES = [
   [R`el("button", "btn", "Tout débloquer")`, R`el("button", "btn", "Alles freischalten")`],
   [R`    const pq = el("a", "btn", "Quiz + Lösungen (Druck)"); pq.href = "quiz.html?prof=1"; pq.target = "_blank"; bar.appendChild(pq);
 `, R``],
-  [R`      "<b>M03</b> Vous avez vu cet homme ?", "<b>M04</b> ce matin = Père-Lachaise · cet après-midi = le Marais · ce soir = on ne sait pas",
-      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> A (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune",
-      "<b>B02</b> B oder C (A = Reparatur)", "<b>B02b</b> A", "<b>B04</b> a, c, e", "<b>L02</b> C", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
-      "<b>V03</b> Schritt 1: A/B · Schritt 2: A/B", "<b>C03</b> les vieux panneaux · en carton · son sac brun", "<b>V02b</b> à droite · derrière · éteinte · allumée"`, R`      "<b>M03</b> Haben Sie diesen Mann gesehen?", "<b>M04</b> heute Morgen = Père-Lachaise · heute Nachmittag = Le Marais · heute Abend = weiß man nicht",
-      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> A (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber",
-      "<b>B02</b> B oder C (A = Umweg)", "<b>B02b</b> A", "<b>B04</b> a, c, e", "<b>L02</b> C", "<b>L04</b> ÄNDERUNG auf C (Zusatz: ALTES PROGRAMM auf A)",
-      "<b>V03</b> Schritt 1: A/B · Schritt 2: A/B", "<b>C03</b> die alten Schilder · aus Pappe · seine braune Tasche", "<b>V02b</b> rechts · hinter · aus · an"`],
+  [R`      "<i>Die Antworten stehen im Spiel jedes Mal in anderer Reihenfolge.</i>",
+      "<b>M03</b> Vous avez vu cet homme ?", "<b>M04</b> ce matin = Père-Lachaise · cet après-midi = le Marais · ce soir = on ne sait pas",
+      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> Non, on cherche un homme. Vous avez vu ce mime ? (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune",
+      "<b>B02</b> Je cherche un sac… oder Je cherche le spectacle… (Je voudrais du pain perdu = Reparatur)", "<b>B02b</b> Brun, grand, avec un visage de pain.", "<b>B04</b> affaires qui ne sont pas à lui · le mauvais sac · le programme a changé", "<b>L02</b> C, Belege: le nom + la version", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
+      "<b>V03</b> Schritt 1: Excusez-moi, je crois qu'on a échangé… / Excusez-moi, vous avez notre sac. · Schritt 2: Pendant qu'on regardait la photo… / À Montmartre, vous avez pris notre sac.", "<b>C03</b> les vieux panneaux · en carton · son sac brun", "<b>V02b</b> à droite · derrière · éteinte · allumée"`, R`      "<i>Die Antworten stehen im Spiel jedes Mal in anderer Reihenfolge.</i>",
+      "<b>M03</b> Haben Sie diesen Mann gesehen?", "<b>M04</b> heute Morgen = Père-Lachaise · heute Nachmittag = Le Marais · heute Abend = weiß man nicht",
+      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> Nein, wir suchen einen Mann. Haben Sie diesen Pantomimen gesehen? (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber",
+      "<b>B02</b> Ich suche einen Rucksack … oder Ich suche die Show … (Pain perdu bestellen = Umweg)", "<b>B02b</b> Braun, groß, mit einem Brotgesicht.", "<b>B04</b> Sachen, die ihm nicht gehören · die falsche Tasche · das Programm hat sich geändert", "<b>L02</b> C, Belege: Name + Fassung", "<b>L04</b> ÄNDERUNG auf C (Zusatz: ALTES PROGRAMM auf A)",
+      "<b>V03</b> Schritt 1: Entschuldigung, ich glaube, wir haben … vertauscht / Entschuldigung, Sie haben unseren Rucksack. · Schritt 2: Während wir das Foto angeschaut haben … / In Montmartre haben Sie unseren Rucksack genommen.", "<b>C03</b> die alten Schilder · aus Pappe · seine braune Tasche", "<b>V02b</b> rechts · hinter · aus · an"`],
   [R`body.appendChild(el("h3", "", "Transkripte"));`, R`body.appendChild(el("h3", "", "Lesetexte (statt Hörtexte)"));`],
   [R`"<b>" + k + ".mp3 · " + esc(G.chars[G.audio[k].who].name)`, R`"<b>" + k + " · " + esc(G.chars[G.audio[k].who].name)`],
   [R`<tr><th>Datum</th><th>Joueur</th>`, R`<tr><th>Datum</th><th>Spieler</th>`],

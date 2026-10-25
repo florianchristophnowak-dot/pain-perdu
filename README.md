@@ -37,13 +37,13 @@ Die Hotspot-Positionen stehen in `js/data.js` (`scenes`, Angaben in Prozent des 
 - `?mode=prof` fragt einmal pro Browser-Tab nach dem Code der Lehrkraft und zeigt dann Sprungmarken zu jedem Knoten, Lösungen, Transkripte, „Tout débloquer“ und die Ergebnisse auf diesem Gerät. Ohne Code startet das normale Spiel. Der Code steht nicht im Repository, nur seine Prüfsumme in `js/prof.js`; einen neuen Code setzt man, indem man in der Browser-Konsole `ppProf.hash("neuer code")` eingibt und das Ergebnis dort bei `HASH` einträgt.
 - Die Lernenden exportieren am Ende (oder jederzeit aus dem Carnet) zwei Dateien: JSON (alles) und CSV (eine Zeile je Aufgabe und Person: Ergebnis, Versuche, Hilfestufe, Wiederholungen, Transkript, Dauer, Text).
 - Der Spielstand liegt im `localStorage` des Browsers; „Continuer la partie“ nimmt ihn wieder auf. Der Knopf „Menu“ oben links (Haus-Symbol, auch auf dem Endbildschirm) führt zurück zum Startmenü, der Stand bleibt dabei gespeichert. Wer dort eine neue Partie beginnt, behält die alte in den Ergebnissen auf diesem Gerät.
-- Der Testzugang `window.PP` (Sprünge, Flags) existiert nur in der Lehrkraft-Ansicht oder mit `?test=1` für die automatischen Tests.
+- Der Testzugang `window.PP` (Sprünge, Flags) existiert nur in der Lehrkraft-Ansicht oder mit `?test=1` für die automatischen Tests; `?test=1` wirkt nur auf dem eigenen Rechner (localhost), nicht auf der veröffentlichten Seite.
 
 ## Merken statt notieren: Abfragen im Spiel
 
-Das Spiel gibt keine Notier-Hinweise und speichert keine Hinweise für die Schüler. Was wichtig ist, merken sie sich oder schreiben es auf ein Blatt (`zettel.html`, Modell zum Ausdrucken, auch als `druck/Fiche_enquete.pdf`). An sechs späteren Stellen fragt das Spiel die Informationen ab; die Antworten werden getippt (Knotentyp `task`, `kind: "recall"`, Felder `fields` oder Lücken `parts`, Prüfung ohne Groß-/Kleinschreibung und Akzente, `answers`, `keywords`, `number` oder `digits`). Wer es nicht weiß, kann „Revenir plus tard“ wählen und nachsehen; nach dem zweiten Fehlversuch nennt die Figur den Ort, an dem die Information steht. Nach drei falschen Versuchen ist die Abfrage eine Minute gesperrt (auch nach „Revenir plus tard“), damit Raten nicht schneller ist als Nachsehen. Ein einzelner Tippfehler in Wörtern ab fünf Buchstaben ohne Ziffern zählt als richtig; Lesefallen wie „Duval“ bleiben falsch.
+Das Spiel gibt keine Notier-Hinweise und speichert keine Hinweise für die Schüler. Was wichtig ist, merken sie sich oder schreiben es auf ein Blatt (`zettel.html`, Modell zum Ausdrucken, auch als `druck/Fiche_enquete.pdf`). An sechs späteren Stellen fragt das Spiel die Informationen ab; die Antworten werden getippt (Knotentyp `task`, `kind: "recall"`, Felder `fields` oder Lücken `parts`, Prüfung ohne Groß-/Kleinschreibung und Akzente, `answers`, `keywords`, `number` oder `digits`). Wer es nicht weiß, kann „Revenir plus tard“ wählen und nachsehen; nach dem zweiten Fehlversuch nennt die Figur den Ort, an dem die Information steht. Nach drei falschen Versuchen ist die Abfrage eine Minute gesperrt, ab der zweiten Sperre zwei Minuten (auch nach „Revenir plus tard“ und nach Neuladen), damit Raten nicht schneller ist als Nachsehen. Dieselbe Sperre gilt für alle Aufgaben (siehe „Gegen Raten und Durchklicken“). Ein einzelner Tippfehler in Wörtern ab fünf Buchstaben ohne Ziffern zählt als richtig; Lesefallen wie „Duval“ bleiben falsch.
 
-Die freien Texte (`kind: "write"`: Nachricht an M. Nowak `B06`, Abschlussbericht `V05`) zählen nur echte Wörter: mindestens ein Vokal, kein Buchstabe dreimal hintereinander, einzelne Buchstaben nur à/a/y (Zahlen, Uhrzeiten wie 17 h, M. und Abkürzungen wie SMS zählen). Ein Satzanfang mit „...“ muss mit eigenen Wörtern weitergeführt werden, „...“ mitten im Satzanfang muss ersetzt sein. Ab drei Nicht-Wörtern oder bei ständig denselben Wörtern lehnt Marie den Text ab. Die Rückmeldungen stehen in `G.ui.write`.
+Die freien Texte (`kind: "write"`: Nachricht an M. Nowak `B06`, Abschlussbericht `V05`) zählen nur echte Wörter: mindestens ein Vokal, kein Buchstabe dreimal hintereinander, einzelne Buchstaben nur à/a/y (Zahlen, Uhrzeiten wie 17 h, M. und Abkürzungen wie SMS zählen). Ein Satzanfang mit „...“ muss mit eigenen Wörtern weitergeführt werden, „...“ mitten im Satzanfang muss ersetzt sein. Ab drei Nicht-Wörtern oder bei ständig denselben Wörtern lehnt Marie den Text ab. Die eigenen Wörter (ohne die eingefügten Satzanfänge) müssen außerdem französisch sein und von der Geschichte erzählen; Einfügen ist gesperrt (siehe „Gegen Raten und Durchklicken“). Die Rückmeldungen stehen in `G.ui.write`.
 
 | Stelle | Wer fragt | Abgefragt | Quelle im Spiel |
 |---|---|---|---|
@@ -83,6 +83,21 @@ Auf GitHub „Code → Download ZIP“ wählen, entpacken und `index.html` im Br
 
 Die früheren Kennungen `D_M02`, `D_P03` und `D_B05` (Zuordnungsaufgaben) gibt es nicht mehr. Der Abspann steht in `G.credits`.
 
+## Gegen Raten und Durchklicken
+
+Wer kein Französisch kann und nur klickt, soll nicht durchkommen. Auswahlaufgaben lassen sich nie ganz gegen Raten schützen; das Spiel sorgt deshalb dafür, dass Raten langsamer ist als Lesen und Zuhören, und dass die Stellen, an denen es weitergeht, Französisch verlangen:
+
+- **Gemischte Antworten:** Dialogantworten mit einer falschen Option (z. B. `M03`, `P05`, `B02`, Finale `V03`) und die Optionen in Auswahl-, Zuordnungs-, Lücken- und Wegaufgaben stehen jedes Mal in neuer Reihenfolge. Die richtige Antwort steht also nicht mehr meist oben.
+- **Pause nach Fehlversuchen:** In jeder Aufgabe (Zuordnen, Lücken, Auswahl, Weg, Aushang, Stempel, Abfrage) sperrt jeder dritte Fehlversuch die Aufgabe für eine Minute, danach für zwei. Marie sagt: „Là, tu devines.“ Hören, Transkript und Hilfe bleiben in der Pause nutzbar, die Sperre übersteht Neuladen. Leere Lücken zählen nicht als Versuch. Konstanten: `GUESS_TRIES`, `GUESS_PAUSE` in `js/game.js`, Texte in `G.ui.guess`.
+- **Nur die Anzahl:** Bei Lücken und Zuordnungen (`M04`, `M04b`, `C03`, `V02b`) sagt das Spiel nach einem Fehlversuch nur noch „Juste : 2 sur 4.“ und markiert keine einzelne Lücke mehr. Sonst wäre Durchprobieren in zwei Klicks erledigt.
+- **Aushang begründen:** Nach dem richtigen Aushang (`L02`) fragt Lenoir nach zwei Belegen (Name und Fassung, `task.proof`), wie im Konzept vorgesehen („den aktuellen Eintrag mit zwei Belegen begründen“). „17 h“, der Titel und „eine Cour“ zählen nicht, weil sie auf mehreren Aushängen stehen.
+- **Freie Texte:** Die eigenen Wörter müssen französisch sein (`G.writeLang`: mindestens 20 % häufige französische Wörter, ab drei deutschen oder englischen Wörtern lehnt Marie ab) und mindestens zwei (`B06`) bzw. drei (`V05`) Wörter zur Geschichte enthalten (`task.topic`, Wortanfänge). Einfügen (etwa aus einem Übersetzer) ist gesperrt.
+- **Hörtexte nicht wegklicken:** Beim ersten Mal geht „Continuer“ erst, wenn die Aufnahme ganz gelaufen ist (`S.heard`). In der deutschen Fassung gilt stattdessen eine Mindest-Lesezeit, und die freien Texte müssen deutsch sein.
+- **Hilfe ohne fertige Lösung:** Die deutsche Stufe 4 erklärt bei `M04` und `P04`, worauf man im Transkript achten muss, statt die Zuordnung zu verraten; Stufe 3 bei `M03` zitiert die richtige Frage nicht mehr.
+- **Keine Abkürzungen:** Fenster, nach denen es weitergeht (z. B. Kevins SMS vor der Nachricht an Nowak), haben kein ×, und Carnet, Karte, Inventar und Glossar öffnen sich nicht, solange eine Aufgabe offen ist (auch nicht per Tastatur).
+
+Was bleibt: Wer die Lösungen von Mitschülern oder aus der deutschen Testfassung kennt, kann Namen und Orte übertragen; die deutsche Fassung deshalb nicht an Lernende weitergeben. Die Ergebnisse zeigen Raten trotzdem: Spalte „Versuche“ im Export, im JSON zusätzlich `pauses` (wie oft eine Aufgabe gesperrt war).
+
 ## Reihenfolge und Sperren
 
 Damit niemand Stationen überspringt, geht jede erst auf, wenn die Information dafür im Spiel gefallen ist:
@@ -100,7 +115,7 @@ Die Nebenwege aus Abschnitt 10 des Drehbuchs sind eingebaut und freiwillig: die 
 
 ## Test
 
-`tools/playthrough.js` spielt beide Phasen automatisch durch (Playwright, Chromium) und meldet am Ende die Diagnosezeilen. Vorher `npm i -D playwright` und einen lokalen Server starten (`npx http-server -p 8765 .`), dann `node tools/playthrough.js` (öffnet `index.html?intro=0&test=1`). Nach Änderungen an Texten oder Code zeigt ein fehlgeschlagener Durchlauf schnell, wo etwas klemmt.
+`tools/playthrough.js` spielt beide Phasen automatisch durch (Playwright, Chromium) und meldet am Ende die Diagnosezeilen. Vorher `npm i -D playwright` und einen lokalen Server starten (`npx http-server -p 8765 .`), dann `node tools/playthrough.js` (öffnet `index.html?intro=0&test=1`). Nach Änderungen an Texten oder Code zeigt ein fehlgeschlagener Durchlauf schnell, wo etwas klemmt. `node tools/raten.js` (bzw. `node tools/raten.js de`) spielt wie jemand, der nur rät, und prüft die Bremsen aus „Gegen Raten und Durchklicken“.
 
 ## Schrift
 

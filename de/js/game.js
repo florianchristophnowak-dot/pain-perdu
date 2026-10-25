@@ -7,7 +7,7 @@
   const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
   const QS = new URLSearchParams(location.search);
   const PROF = QS.get("mode") === "prof" && !!(window.ppProf && window.ppProf.ask("Lehrkraft-Ansicht: Code eingeben"));
-  const TEST = QS.get("test") === "1";   // nur für die automatischen Testdurchläufe (tools/playthrough.js)
+  const TEST = QS.get("test") === "1" && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);   // nur für die automatischen Testdurchläufe (tools/playthrough.js), nur auf dem eigenen Rechner
   const TOUCH = window.matchMedia && matchMedia("(pointer: coarse)").matches;   // Handy oder Tablet
   const SAVE_KEY = "pp_de_save_v1", RESULTS_KEY = "pp_de_results_v1";
 
@@ -17,7 +17,7 @@
     return {
       v: 1, players: ["", ""], linoLang: "fr", mouse: 0, scene: null, resume: "S02",
       flags: {}, inv: Object.keys(G.items).filter(k => G.items[k].start), mission: "",
-      diag: [], helpUsed: {}, replays: {}, transcripts: {}, travel: 0, started: Date.now(), visited: [], cards: {}, finished: false
+      diag: [], helpUsed: {}, replays: {}, transcripts: {}, heard: {}, tries: {}, pause: {}, pauses: {}, travel: 0, started: Date.now(), visited: [], cards: {}, finished: false
     };
   }
   function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { /* privat */ } }
@@ -36,6 +36,8 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
   function fmtTpl(t, map) { return t.replace(/\{(\w+)\}/g, (m, k) => map[k] !== undefined ? map[k] : m); }
+  /* Antworten in neuer Reihenfolge: wer rät, kann sich nicht „immer die erste“ merken */
+  function shuffled(a) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
   /* Freitext: Wörter zerlegen (auch l’ vom iPhone und œ) und nur echte Wörter zählen, kein Tastengeklimper */
   function tokens(t) {
     t = t.replace(/(\d)\s*h\b/gi, "$1h").replace(/\bM\./g, "Monsieur").replace(/-t-/gi, " ")   // 17 h, M. Nowak, a-t-il
@@ -110,23 +112,25 @@
   function pickVoice() { const vs = speechSynthesis.getVoices(); frVoice = vs.find(v => /^de[-_]DE/i.test(v.lang)) || vs.find(v => /^de/i.test(v.lang)) || null; }
   if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
   function stopAudio() { if (currentAudio) { currentAudio.pause(); currentAudio = null; } if ("speechSynthesis" in window) speechSynthesis.cancel(); $$(".playing").forEach(e => e.classList.remove("playing")); }
-  function playAudio(id, btn, onBlocked) {
+  /* onEnded: die Aufnahme ist einmal ganz gelaufen (oder kann gar nicht laufen) */
+  function playAudio(id, btn, onBlocked, onEnded) {
     stopAudio();
     const a = G.audio[id];
     if (!a) return;
     S.replays[id] = (S.replays[id] || 0) + 1; save();
     if (btn) btn.classList.add("playing");
     const done = () => { if (btn) btn.classList.remove("playing"); };
+    const ended = () => { done(); if (onEnded) onEnded(); };
     const tts = () => {
-      if (!("speechSynthesis" in window)) { done(); return; }
+      if (!("speechSynthesis" in window)) { ended(); return; }
       const u = new SpeechSynthesisUtterance(a.text);
       u.lang = "de-DE"; u.rate = 0.88; if (frVoice) u.voice = frVoice;
-      u.onend = done; u.onerror = done;
+      u.onend = ended; u.onerror = e => { if (e && (e.error === "interrupted" || e.error === "canceled")) done(); else ended(); };
       speechSynthesis.speak(u);
     };
     const au = new Audio("../assets/audio/" + id + ".mp3");
     currentAudio = au;
-    au.onended = done;
+    au.onended = ended;
     au.onerror = () => { if (currentAudio === au) { currentAudio = null; tts(); } };
     au.play().catch(err => {
       if (currentAudio !== au) return;
@@ -282,7 +286,7 @@
     showLines(n.lines, () => { applyEffects(n.effects, id); finish(); const nx = resolve(n.next); if (nx) goNode(nx); });
   }
   function runDoc(id, n, finish) {
-    const body = openModal("doc");
+    const body = openModal("doc" + (n.next || n.choices ? " nocl" : ""));   // geht es danach weiter (z. B. Kevins SMS → Nachricht an Nowak), nur über „Continuer“
     applyEffects(n.effects, id);
     if (n.diag && n.count) record({ id: n.diag, result: "gelesen", count: true });
     body.appendChild(el("h2", "", esc(n.title)));
@@ -315,7 +319,8 @@
           hc = helpCtl(n.help, { wrongs: () => st.wrongs, after: helpAfter, material: () => { $$(".choice", dlg).forEach(b => b.classList.add("hl")); } });
           extra = el("div", "help-row"); extra.appendChild(hc.btn); dlg.appendChild(hc.bubble); hc.update();
         }
-        const choices = n.choices.filter(ch => !ch.unless || !flag(ch.unless) || ch.replyIf);
+        const avail = n.choices.filter(ch => !ch.unless || !flag(ch.unless) || ch.replyIf);
+        const choices = avail.some(ch => ch.kind !== "ok") ? shuffled(avail) : avail;   // gibt es eine falsche Antwort, jedes Mal neu gemischt
         renderChoices(dlg, choices, ch => {
           if (st.first === null) st.first = ch.fr;
           if (ch.effects) applyEffects(ch.effects, id + ":" + ch.fr);
@@ -349,7 +354,13 @@
     body.appendChild(el("p", "hint", "Lies genau: Diese Infos brauchst du gleich."));
     const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.btn.continuer);
     b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(n.next); });
+    /* Nicht wegklicken: „Continuer“ erst, wenn die Aufnahme einmal ganz gelaufen ist */
+    S.heard = S.heard || {};
+    const wait = el("p", "hint wait", esc(G.ui.listen));
+    function heard() { S.heard[n.audio] = true; save(); b.disabled = false; wait.remove(); }
+    if (!S.heard[n.audio] && !PROF && !(TEST && QS.get("listen") !== "1")) { b.disabled = true; body.appendChild(wait); }
     bar.appendChild(b); body.appendChild(bar);
+    if (b.disabled) setTimeout(() => { if (b.isConnected) heard(); }, Math.max(3000, a.text.length * 40));   // statt „ganz anhören“: weiter nach einer Mindest-Lesezeit
   }
 
   /* ---------- Aufgaben ---------- */
@@ -402,16 +413,46 @@
     body.appendChild(trBox);
     const area = el("div", "area"); body.appendChild(area);
     const fb = el("div", "feedback"); body.appendChild(fb);
+    function lineEl(line) { const row = el("div", "line"); row.appendChild(portrait(line.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[line.who].name) + '</div><div class="text">' + gl(line.fr) + "</div>")); return row; }
     function feedback(line, ok) {
       fb.innerHTML = ""; fb.className = "feedback " + (ok ? "ok" : "no");
-      if (!line) return;
-      const row = el("div", "line"); row.appendChild(portrait(line.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[line.who].name) + '</div><div class="text">' + gl(line.fr) + "</div>")); fb.appendChild(row);
+      if (line) fb.appendChild(lineEl(line));
     }
-    function note(line) { const row = el("div", "line"); row.appendChild(portrait(line.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[line.who].name) + '</div><div class="text">' + gl(line.fr) + "</div>")); fb.appendChild(row); }
-    function wrong(line) { st.wrongs++; feedback(line || T.wrong, false); if (hc) hc.update(); }
+    function note(line) { fb.appendChild(lineEl(line)); }
+    /* Gegen Raten: Jeder dritte Fehlversuch sperrt die Aufgabe (erst eine, dann zwei Minuten). Hilfe, Hören und Transkript
+       bleiben in der Pause nutzbar; die Sperre übersteht auch Neuladen und „Revenir plus tard“. */
+    S.tries = S.tries || {}; S.pause = S.pause || {}; S.pauses = S.pauses || {};
+    const left = () => Math.max(0, Math.ceil(((S.pause[id] || 0) - Date.now()) / 1000));
+    let timer = null;
+    function lock(msg) {
+      const frozen = $$("button,select,input,textarea", area).filter(x => !x.disabled && !x.classList.contains("keep"));
+      frozen.forEach(x => { x.disabled = true; });
+      if (msg) note({ who: "marie", fr: msg });
+      const cd = el("div", "countdown"); fb.appendChild(cd);
+      clearInterval(timer);
+      const tick = () => {
+        if (!area.isConnected) { clearInterval(timer); return; }
+        const s = left();
+        if (s > 0) { cd.textContent = fmtTpl(G.ui.guess.wait, { s }); return; }
+        clearInterval(timer); cd.remove(); frozen.forEach(x => { x.disabled = false; });
+      };
+      tick(); timer = setInterval(tick, 1000);
+    }
+    function wrong(line) {
+      st.wrongs++; feedback(line || T.wrong, false); if (hc) hc.update();
+      S.tries[id] = (S.tries[id] || 0) + 1;
+      if (S.tries[id] % GUESS_TRIES === 0) {
+        const k = S.pauses[id] = (S.pauses[id] || 0) + 1;
+        S.pause[id] = Date.now() + GUESS_PAUSE[Math.min(k, GUESS_PAUSE.length) - 1];
+        lock(T.kind === "recall" ? G.ui.recall.pause : G.ui.guess.pause);
+      }
+      save();
+    }
     function complete(extra, line) {
+      clearInterval(timer);
       const help = hc ? hc.level() : 0;
-      const res = Object.assign({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, replays: n.audio ? (S.replays[n.audio] || 0) - replays0 : undefined, transcript: n.audio ? st.transcript : undefined, duration: Math.round((Date.now() - st.t0) / 1000), playerIdx }, extra || {});
+      const res = Object.assign({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, replays: n.audio ? (S.replays[n.audio] || 0) - replays0 : undefined, transcript: n.audio ? st.transcript : undefined, duration: Math.round((Date.now() - st.t0) / 1000), pauses: S.pauses[id] || undefined, playerIdx }, extra || {});
+      delete S.tries[id]; delete S.pause[id]; delete S.pauses[id]; save();
       if (n.diag) record(res);
       feedback(line || { who: "marie", fr: help > 0 ? G.ui.marie.afterHelp : G.ui.marie.ok }, true);
       const b = el("button", "btn primary", G.ui.btn.continuer); b.addEventListener("click", () => done(Object.assign({ player: pname(playerIdx) }, extra || {})));
@@ -419,24 +460,30 @@
       $$("button", area).forEach(x => x.disabled = true); $$("select,textarea", area).forEach(x => x.disabled = true);
     }
     const K = TASKS[T.kind];
-    K(T, area, { wrong, complete, feedback, note, st, id, n, body });
+    K(T, area, { wrong, complete, feedback, note, lineEl, locked: () => left() > 0, st, id, n, body });
+    if (left() > 0) { feedback({ who: "marie", fr: fmtTpl(T.kind === "recall" ? G.ui.recall.paused : G.ui.guess.paused, { s: left() }) }, false); lock(); }
   }
 
+  const GUESS_TRIES = 3, GUESS_PAUSE = [60000, 120000];
   const TASKS = {};
+  /* Rückmeldung bei Lücken und Zuordnungen: nur wie viele stimmen, nicht welche (sonst ist Durchprobieren schneller als Zuhören) */
+  function withCount(line, k, m) { return { who: line.who, fr: line.fr + " " + fmtTpl(G.ui.guess.count, { n: k, m }) }; }
   const QIDS = ["Q1", "Q2", "Q3", "Q4"];
 
   TASKS.sort = function (T, area, api) {
-    const sels = {};
+    const sels = {}, opts = shuffled(T.options);
     T.slots.forEach(s => {
       const row = el("div", "slot"); row.appendChild(el("label", "", esc(s.label)));
       const sel = el("select"); sel.appendChild(el("option", "", "…")); $$("option", sel)[0].value = "";
-      T.options.forEach(o => { const op = el("option", "", esc(o.label)); op.value = o.id; sel.appendChild(op); });
+      opts.forEach(o => { const op = el("option", "", esc(o.label)); op.value = o.id; sel.appendChild(op); });
       sels[s.id] = sel; row.appendChild(sel); area.appendChild(row);
     });
     const b = el("button", "btn primary", G.ui.btn.valider);
     b.addEventListener("click", () => {
-      let ok = true; T.slots.forEach(s => { const good = sels[s.id].value === s.answer; sels[s.id].classList.toggle("bad", !good); if (!good) ok = false; });
-      if (ok) api.complete(); else api.wrong();
+      if (api.locked()) return;
+      if (T.slots.some(s => !sels[s.id].value)) { api.feedback({ who: "marie", fr: G.ui.guess.all }, false); return; }
+      const k = T.slots.filter(s => sels[s.id].value === s.answer).length;
+      if (k === T.slots.length) { T.slots.forEach(s => sels[s.id].classList.add("good")); api.complete(); } else api.wrong(withCount(T.wrong, k, T.slots.length));
     });
     area.appendChild(b);
   };
@@ -445,15 +492,18 @@
     const p = el("p", "gaptext"); const sels = [];
     T.parts.forEach(part => {
       if (typeof part === "string") p.appendChild(document.createTextNode(part));
-      else { const sel = el("select"); sel.appendChild(el("option", "", "…")); $$("option", sel)[0].value = ""; part.opts.forEach(o => { const op = el("option", "", o); op.value = o; sel.appendChild(op); }); sel.dataset.answer = part.answer; sel.dataset.id = part.id; sels.push(sel); p.appendChild(sel); }
+      else { const sel = el("select"); sel.appendChild(el("option", "", "…")); $$("option", sel)[0].value = ""; shuffled(part.opts).forEach(o => { const op = el("option", "", o); op.value = o; sel.appendChild(op); }); sel.dataset.answer = part.answer; sel.dataset.id = part.id; sels.push(sel); p.appendChild(sel); }
     });
     area.appendChild(p);
     const perGap = {};
     const b = el("button", "btn primary", G.ui.btn.valider);
     b.addEventListener("click", () => {
-      let ok = true;
-      sels.forEach(s => { const good = s.value === s.dataset.answer; if (perGap[s.dataset.id] === undefined && s.value) perGap[s.dataset.id] = good; s.classList.toggle("bad", !good); s.classList.toggle("good", good); if (!good) ok = false; });
-      if (ok) api.complete({ text: Object.keys(perGap).map(k => k + ":" + (perGap[k] ? "✓" : "✗")).join(" ") }); else api.wrong();
+      if (api.locked()) return;
+      if (sels.some(s => !s.value)) { api.feedback({ who: "marie", fr: G.ui.guess.all }, false); return; }
+      let k = 0;
+      sels.forEach(s => { const good = s.value === s.dataset.answer; if (perGap[s.dataset.id] === undefined) perGap[s.dataset.id] = good; if (good) k++; });
+      if (k === sels.length) { sels.forEach(s => s.classList.add("good")); api.complete({ text: Object.keys(perGap).map(g => g + ":" + (perGap[g] ? "✓" : "✗")).join(" ") }); }
+      else api.wrong(withCount(T.wrong, k, sels.length));
     });
     area.appendChild(b);
   };
@@ -462,7 +512,7 @@
     if (T.question) area.appendChild(el("p", "q", gl(T.question)));
     const sel = new Set();
     const list = el("div", "picklist");
-    T.options.forEach(o => {
+    shuffled(T.options).forEach(o => {
       const b = el("button", "btn opt", gl(o.label));
       b.addEventListener("click", () => {
         if (sel.has(o.id)) { sel.delete(o.id); b.classList.remove("on"); }
@@ -473,7 +523,8 @@
     area.appendChild(list);
     const b = el("button", "btn primary", G.ui.btn.valider);
     b.addEventListener("click", () => {
-      if (sel.size < T.n) { api.feedback({ who: "marie", fr: "Wähle " + T.n + " Antworten." }, false); return; }
+      if (api.locked()) return;
+      if (sel.size < T.n) { api.feedback({ who: "marie", fr: fmtTpl(G.ui.guess.choose, { n: T.n }) }, false); return; }
       const ok = T.options.every(o => o.ok === sel.has(o.id));
       if (ok) api.complete(); else api.wrong();
     });
@@ -490,6 +541,14 @@
     const W = G.ui.write;
     function count() { const w = words(ta.value); cnt.textContent = fmtTpl(W.count, { n: w, min: T.min }); cnt.classList.toggle("ok", w >= T.min); }
     ta.addEventListener("input", count); count();
+    /* Selbst schreiben: kein Einfügen (etwa aus einem Übersetzer) */
+    ["paste", "drop"].forEach(ev => ta.addEventListener(ev, e => { e.preventDefault(); api.feedback({ who: "marie", fr: W.paste }, false); }));
+    /* Die eigenen Wörter (ohne eingefügte Satzanfänge) müssen in der Sprache des Spiels sein und von der Geschichte erzählen */
+    const LANG = G.writeLang && { own: new Set(G.writeLang.own.split(" ")), foreign: new Set(G.writeLang.foreign.split(" ")), share: G.writeLang.share };
+    function ownWords(text) {
+      used.forEach(s => s.split("...").map(x => x.trim()).filter(x => x.length > 2).forEach(x => { text = text.replace(x, " "); }));
+      return tokens(text).filter(realWord).map(normAns).join(" ").split(" ").filter(Boolean);
+    }
     /* Was fehlt noch? Satzanfänge mit „...“ brauchen eigene Wörter dahinter, Punkte im Satzanfang müssen ersetzt sein */
     function problem(text) {
       const marks = [];
@@ -502,10 +561,16 @@
       }
       const toks = tokens(text), junk = toks.filter(t => !realWord(t));
       if (junk.length >= 3) return fmtTpl(W.junk, { w: junk.slice(0, 6).join(" ") });
+      const own = ownWords(text);
+      if (LANG) {
+        const mine = own.filter(x => LANG.own.has(x)).length, other = own.filter(x => LANG.foreign.has(x)).length;
+        if ((other >= 3 && other >= own.length * 0.1) || (own.length >= 8 && mine < own.length * LANG.share)) return W.lang;
+      }
       const real = toks.filter(realWord).map(t => t.toLowerCase());
       if (real.length >= 15 && new Set(real).size < real.length * 0.4) return W.repeat;
       const w = real.length;
       if (w < T.min) return fmtTpl(W.more, { n: T.min - w });
+      if (T.topic && T.topic.filter(k => own.some(x => x.startsWith(k))).length < (T.topicMin || 2)) return W.topic;
       return null;
     }
     const b = el("button", "btn primary", G.ui.btn.valider);
@@ -539,9 +604,10 @@
     const posFor = { droit: [200, 150], gauche: [70, 150] };
     function render() {
       const s = T.steps[step]; prompt.textContent = s.prompt; btns.innerHTML = "";
-      s.opts.forEach(o => {
+      shuffled(s.opts).forEach(o => {
         const b = el("button", "btn opt", esc(o.label));
         const click = () => {
+          if (api.locked() || b.disabled) return;
           if (o.ok) {
             walked.push(o.id); const p = $("#p_" + o.id, svg); if (p) p.setAttribute("stroke", "#2c6fad");
             const pos = posFor[o.id]; if (pos) { $("#pos", svg).setAttribute("cx", pos[0]); $("#pos", svg).setAttribute("cy", pos[1]); }
@@ -565,12 +631,35 @@
       card.appendChild(el("div", "ptext", gl(p.text)));
       const b = el("button", "btn small", "Dieser hier");
       b.addEventListener("click", () => {
-        if (p.ok) { card.classList.add("on"); wall.querySelectorAll("button").forEach(x => x.disabled = true); api.complete({ text: p.id }, T.success); }
+        if (api.locked()) return;
+        if (p.ok) { card.classList.add("on"); wall.querySelectorAll("button").forEach(x => x.disabled = true); if (T.proof) proof(p); else api.complete({ text: p.id }, T.success); }
         else { if (p.flag) setFlag(p.flag); api.wrong(p.reply); }
       });
       card.appendChild(b); wall.appendChild(card);
     });
     area.appendChild(wall);
+    /* Begründen: Welche zwei Angaben zeigen, dass dieser Aushang stimmt? Ein Klick allein kann geraten sein. */
+    function proof(p) {
+      const P = T.proof, box = el("div", "proof");
+      api.feedback(null, true);
+      box.appendChild(api.lineEl({ who: P.who, fr: P.ask }));
+      const sel = new Set(), list = el("div", "picklist");
+      shuffled(P.options).forEach(o => {
+        const b = el("button", "btn opt", gl(o.label));
+        b.addEventListener("click", () => { if (sel.has(o.id)) { sel.delete(o.id); b.classList.remove("on"); } else if (sel.size < P.n) { sel.add(o.id); b.classList.add("on"); } });
+        list.appendChild(b);
+      });
+      box.appendChild(list);
+      const v = el("button", "btn primary", G.ui.btn.valider);
+      v.addEventListener("click", () => {
+        if (api.locked()) return;
+        if (sel.size < P.n) { api.feedback({ who: "marie", fr: fmtTpl(G.ui.guess.choose, { n: P.n }) }, false); return; }
+        const bad = shuffled(P.options).find(o => !o.ok && sel.has(o.id));
+        if (bad) api.wrong({ who: P.who, fr: bad.reply });
+        else api.complete({ text: p.id + " · " + Array.from(sel).join("+") }, T.success);
+      });
+      box.appendChild(v); area.appendChild(box);
+    }
   };
 
   /* Abfrage: Antworten tippen (aus dem Gedächtnis oder vom eigenen Blatt) */
@@ -596,11 +685,8 @@
     if (f.keywords) return f.keywords.some(g => g.every(k => v.includes(normAns(k))));
     return false;
   }
-  const RECALL_TRIES = 3, RECALL_PAUSE = 60000;
   TASKS.recall = function (T, area, api) {
     const inputs = [];
-    const pid = api.id;
-    S.recallTries = S.recallTries || {}; S.recallPause = S.recallPause || {};
     const mk = f => {
       const inp = el("input", "rin"); inp.type = "text"; inp.autocomplete = "off"; inp.spellcheck = false; inp.size = f.size || 14; inp.placeholder = f.placeholder || "…"; inp.dataset.id = f.id;
       inp.setAttribute("autocorrect", "off"); inp.setAttribute("autocapitalize", "none"); if (f.digits) inp.inputMode = "tel";
@@ -611,21 +697,8 @@
     area.appendChild(el("p", "hint", esc(G.ui.recall.intro)));
     const bar = el("div", "bar");
     const b = el("button", "btn primary", G.ui.recall.check);
-    let timer = null;
-    const left = () => Math.max(0, Math.ceil(((S.recallPause[pid] || 0) - Date.now()) / 1000));
-    function lock() {
-      inputs.forEach(x => x.inp.disabled = true); b.disabled = true;
-      clearInterval(timer);
-      const tick = () => {
-        if (!b.isConnected) { clearInterval(timer); return; }
-        const s = left();
-        if (s > 0) { b.textContent = G.ui.recall.check + " (" + s + " s)"; return; }
-        clearInterval(timer); b.textContent = G.ui.recall.check; b.disabled = false; inputs.forEach(x => { x.inp.disabled = false; });
-      };
-      tick(); timer = setInterval(tick, 1000);
-    }
     b.addEventListener("click", () => {
-      if (left() > 0) return;
+      if (api.locked()) return;
       let ok = true; const hints = []; let trap = null;
       inputs.forEach(x => {
         const good = answerOk(x.f, x.inp.value); x.inp.classList.toggle("bad", !good); x.inp.classList.toggle("good", good);
@@ -635,22 +708,18 @@
           if (x.wrongs >= 2 && x.f.where && !hints.includes(x.f.where)) hints.push(x.f.where);
         }
       });
-      if (ok) { delete S.recallTries[pid]; delete S.recallPause[pid]; save(); inputs.forEach(x => x.inp.disabled = true); b.disabled = true; api.complete({ text: inputs.map(x => x.inp.value.trim()).join(" | ") }, T.success); return; }
+      if (ok) { inputs.forEach(x => x.inp.disabled = true); b.disabled = true; api.complete({ text: inputs.map(x => x.inp.value.trim()).join(" | ") }, T.success); return; }
       api.wrong({ who: (trap && trap.who) || T.who || "marie", fr: (trap ? trap.fr : (T.wrongText || G.ui.recall.wrong)) + (hints.length ? " " + hints.join(" ") : "") });
-      S.recallTries[pid] = (S.recallTries[pid] || 0) + 1;
-      if (S.recallTries[pid] % RECALL_TRIES === 0) { S.recallPause[pid] = Date.now() + RECALL_PAUSE; api.note({ who: "marie", fr: G.ui.recall.pause }); lock(); }
-      save();
     });
     bar.appendChild(b);
     if (T.leave !== false) {
-      const l = el("button", "btn", G.ui.recall.later);
-      l.addEventListener("click", () => { clearInterval(timer); closeModal(); S.resume = null; save(); showLines(T.leaveLines || [{ who: T.who || "marie", fr: G.ui.recall.unknown }]); });
+      const l = el("button", "btn keep", G.ui.recall.later);   // „keep“: bleibt auch in der Pause nutzbar, zum Nachsehen
+      l.addEventListener("click", () => { closeModal(); S.resume = null; save(); showLines(T.leaveLines || [{ who: T.who || "marie", fr: G.ui.recall.unknown }]); });
       bar.appendChild(l);
     }
     area.appendChild(bar);
     inputs.forEach(x => x.inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); b.click(); } }));
-    if (left() > 0) { api.feedback({ who: "marie", fr: fmtTpl(G.ui.recall.paused, { s: left() }) }, false); lock(); }
-    else if (!TOUCH) setTimeout(() => inputs[0] && inputs[0].inp.focus(), 50);   // auf dem Handy würde die Tastatur die Frage verdecken
+    if (!TOUCH) setTimeout(() => inputs[0] && !inputs[0].inp.disabled && inputs[0].inp.focus(), 50);   // auf dem Handy würde die Tastatur die Frage verdecken
   };
 
   TASKS.stamp = function (T, area, api) {
@@ -688,7 +757,7 @@
         if (!hc) hc = helpCtl(n.help, { wrongs: () => st.wrongs, material: () => { $$(".choice", dlg).forEach(b => b.classList.add("hl")); } });
         const extra = el("div", "help-row"); extra.appendChild(hc.btn);
         const picked = new Set();
-        renderChoices(dlg, step.choices, (ch, i, b) => {
+        renderChoices(dlg, shuffled(step.choices), (ch, i, b) => {
           st.picks.push((si + 1) + ":" + ch.fr.slice(0, 30));
           if (ch.flag) setFlag(ch.flag);
           if (ch.kind === "ok") {
@@ -965,10 +1034,11 @@
     body.appendChild(el("h3", "", "Lösungen"));
     const sol = el("div", "paper small");
     sol.innerHTML = [
+      "<i>Die Antworten stehen im Spiel jedes Mal in anderer Reihenfolge.</i>",
       "<b>M03</b> Haben Sie diesen Mann gesehen?", "<b>M04</b> heute Morgen = Père-Lachaise · heute Nachmittag = Le Marais · heute Abend = weiß man nicht",
-      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> A (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber",
-      "<b>B02</b> B oder C (A = Umweg)", "<b>B02b</b> A", "<b>B04</b> a, c, e", "<b>L02</b> C", "<b>L04</b> ÄNDERUNG auf C (Zusatz: ALTES PROGRAMM auf A)",
-      "<b>V03</b> Schritt 1: A/B · Schritt 2: A/B", "<b>C03</b> die alten Schilder · aus Pappe · seine braune Tasche", "<b>V02b</b> rechts · hinter · aus · an"
+      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> Nein, wir suchen einen Mann. Haben Sie diesen Pantomimen gesehen? (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber",
+      "<b>B02</b> Ich suche einen Rucksack … oder Ich suche die Show … (Pain perdu bestellen = Umweg)", "<b>B02b</b> Braun, groß, mit einem Brotgesicht.", "<b>B04</b> Sachen, die ihm nicht gehören · die falsche Tasche · das Programm hat sich geändert", "<b>L02</b> C, Belege: Name + Fassung", "<b>L04</b> ÄNDERUNG auf C (Zusatz: ALTES PROGRAMM auf A)",
+      "<b>V03</b> Schritt 1: Entschuldigung, ich glaube, wir haben … vertauscht / Entschuldigung, Sie haben unseren Rucksack. · Schritt 2: Während wir das Foto angeschaut haben … / In Montmartre haben Sie unseren Rucksack genommen.", "<b>C03</b> die alten Schilder · aus Pappe · seine braune Tasche", "<b>V02b</b> rechts · hinter · aus · an"
     ].join("<br>");
     body.appendChild(sol);
     body.appendChild(el("h3", "", "Abfragen im Spiel (Frage → erwartete Antwort · wo nachsehen)"));
@@ -1120,10 +1190,12 @@
     $("#btn-resume").addEventListener("click", () => { if (S) resumeGame(); });
     $("#btn-menu").addEventListener("click", goMenu);
     $("#btn-start").addEventListener("click", () => { if (!$("#p1").value.trim()) { $("#p1").focus(); $("#p1").classList.add("bad"); return; } if (S && S.diag && S.diag.length && !confirm("Neues Spiel? Das alte Spiel wird ersetzt.")) return; startNew(); });
-    $("#btn-carnet").addEventListener("click", () => openCarnet());
-    $("#btn-map").addEventListener("click", () => openMap());
-    $("#btn-inv").addEventListener("click", () => openInventory());
-    $("#btn-gloss").addEventListener("click", openGlossary);
+    /* Solange eine Aufgabe, Zwischensequenz oder Fahrt offen ist, führt kein Knopf daran vorbei (auch nicht per Tastatur) */
+    const busy = () => !modal.hidden && modal.classList.contains("nocl");
+    $("#btn-carnet").addEventListener("click", () => { if (!busy()) openCarnet(); });
+    $("#btn-map").addEventListener("click", () => { if (!busy()) openMap(); });
+    $("#btn-inv").addEventListener("click", () => { if (!busy()) openInventory(); });
+    $("#btn-gloss").addEventListener("click", () => { if (!busy()) openGlossary(); });
     $("#btn-lang").addEventListener("click", () => { S.linoLang = S.linoLang === "fr" ? "de" : "fr"; save(); toast("Lino : " + (S.linoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });
     setupMobile();
     $("#btn-intro").addEventListener("click", e => { e.preventDefault(); playIntro(() => {}); });

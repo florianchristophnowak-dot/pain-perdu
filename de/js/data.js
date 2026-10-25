@@ -41,7 +41,7 @@ window.GAME = (function () {
       cards: "Unsere Texte", mission: "Auftrag",
       hint: "Die Fallakte merkt sich nichts für dich. Namen, Orte, Uhrzeiten: Die merkst du dir, oder du schreibst sie auf dein Blatt."
     },
-    recall: { check: "Prüfen", later: "Später wiederkommen", pause: "Jetzt ratet ihr nur. Seht nach und kommt in einer Minute wieder.", paused: "Jetzt nicht. Seht erst nach und kommt in {s} Sekunden wieder.", wrong: "Nein, das stimmt nicht.", unknown: "Du weißt es nicht mehr? Sieh noch mal nach und komm dann wieder.", intro: "Antworte aus dem Gedächtnis oder mit deinem Blatt." },
+    recall: { check: "Prüfen", later: "Später wiederkommen", pause: "Jetzt ratet ihr nur. Seht nach und kommt nach der Pause wieder.", paused: "Jetzt nicht. Seht erst nach und kommt in {s} Sekunden wieder.", wrong: "Nein, das stimmt nicht.", unknown: "Du weißt es nicht mehr? Sieh noch mal nach und komm dann wieder.", intro: "Antworte aus dem Gedächtnis oder mit deinem Blatt." },
     inv: { title: "Inventar", empty: "Nichts.", show: "Zeigen", showTo: "Was zeigst du {to}?", hint: "Klicke auf einen Gegenstand, um ihn genau anzusehen.", nothing: { who: "lino", fr: "Nein. Das bringt nichts." } },
     partner: "Wechsel! {p2} übernimmt die Maus, {p1} die Fallakte.",
     solo: "Diese Frage beantwortet jeder allein. Zuerst {p1}, dann {p2}.",
@@ -49,13 +49,26 @@ window.GAME = (function () {
     travel: { who: "lino", fr: "Schon wieder Métro. Ich kenne Paris von unten." },
     end: "Bravo! Der Fall ist gelöst.",
     mouse: "Maus:",
+    /* gegen Raten: Pause nach jedem dritten Fehlversuch, Rückmeldung „wie viele richtig“ */
+    guess: {
+      pause: "Jetzt rätst du nur. Lass dir Zeit: Lies noch mal nach oder hol dir Hilfe bei mir. Nach der Pause kannst du es wieder versuchen.",
+      paused: "Noch nicht. Lies in der Pause noch mal nach. Noch {s} Sekunden.",
+      wait: "⏳ Noch {s} s",
+      count: "Richtig: {n} von {m}.",
+      all: "Wähle zuerst überall eine Antwort.",
+      choose: "Wähle {n} Antworten."
+    },
+    listen: "Lies den Text in Ruhe. Gleich geht es weiter.",
     write: {
       count: "{n} Wörter (mindestens {min})",
       more: "Noch mindestens {n} Wörter.",
       finish: "Schreib den Satz „{s}“ zu Ende.",
       dots: "In „{s}“ stehen noch „...“. Ersetze sie durch deine Wörter.",
       junk: "Das sind keine Wörter: „{w}“. Schreib echte Sätze.",
-      repeat: "Du wiederholst immer dieselben Wörter. Erzähl mit verschiedenen Sätzen."
+      repeat: "Du wiederholst immer dieselben Wörter. Erzähl mit verschiedenen Sätzen.",
+      lang: "Bitte auf Deutsch! Schreib deine Sätze auf Deutsch.",
+      topic: "Worum geht es? Erzähl vom Fall, mit deinen Worten: vom Rucksack, vom Pantomimen, von den Orten.",
+      paste: "Kein Kopieren und Einfügen: Schreib mit deinen eigenen Worten."
     },
     full: {
       label: "Vollbild", exit: "Vollbild beenden", exitShort: "Vollbild aus", title: "Vollbild",
@@ -75,6 +88,14 @@ window.GAME = (function () {
     mapQuestion: "Frage vor Ort:",
     locked: "noch zu",
     done: "erledigt"
+  };
+
+  /* ---------- Freie Texte: häufige Wörter der Spielsprache (own) und typische Wörter anderer Sprachen (foreign),
+     klein und ohne Umlaute/Akzente. Die eigenen Wörter eines Textes brauchen mindestens 20 % own; ab drei foreign lehnt Marie ab. ---------- */
+  G.writeLang = {
+    own: "der die das den dem des und ist sind war waren hat haben hatte hatten nicht ich du wir ihr sie er es ein eine einen einem einer mit auf zu zum zur im in ins von vom bei nach aus wo was wie aber auch dann noch schon weil dass oder mein meine unser unsere unseren uns wurde am an als so da hier dort sein seine seinen ihm ihn",
+    foreign: "le la les un une et est il elle nous vous je tu pas que qui dans sur sous avec pour par son sa ses notre nos mon ma ce cette etait avait ont sont puis mais alors donc tres the and is of to with my we he she they it this that have has had our",
+    share: 0.2
   };
 
   /* ---------- Fragen: "geklärt", sobald die passende Abfrage im Spiel bestanden ist ---------- */
@@ -377,7 +398,8 @@ window.GAME = (function () {
   N.B06 = { type: "task", diag: "D_B06", help: "B06", title: "Nachricht an Herrn Nowak",
     task: { kind: "write", intro: "Schreib Herrn Nowak: Was ist passiert? Wohin geht ihr? (mindestens 25 Wörter)", min: 25,
       starters: ["Der Pantomime hatte...", "Er hat aus Versehen...", "Wir gehen jetzt zu..."],
-      model: "Der Pantomime hatte eine braune Tasche, genau wie wir. Er hat unseren Rucksack aus Versehen genommen und unsere Sachen gefunden. Wir gehen jetzt zur Buchhandlung „Les Mots retrouvés“, um seine Nachricht zu lesen. Marie ist bei mir." },
+      model: "Der Pantomime hatte eine braune Tasche, genau wie wir. Er hat unseren Rucksack aus Versehen genommen und unsere Sachen gefunden. Wir gehen jetzt zur Buchhandlung „Les Mots retrouvés“, um seine Nachricht zu lesen. Marie ist bei mir.",
+      topicMin: 2, topic: ["rucksack", "tasche", "pantomim", "marcel", "bernd", "buchhandlung", "mots", "versehen", "irrtum", "genommen", "nimmt", "nachricht", "nora", "backerei", "sachen", "programm", "chloe", "kevin", "montmartre", "foto", "louvre", "dieb", "gestohlen", "gefunden", "treppe", "metro", "lenoir"] },
     effects: { flag: "B06_done" },
     after: [{ who: "nowak", fr: "Danke, Lino. 17 Uhr am Louvre, vergesst das nicht! Ich zähle ... noch mal." }],
     next: "SCENE_marais" };
@@ -407,6 +429,15 @@ window.GAME = (function () {
         { id: "B", text: "Marcel Duval — Le Pain perdu — heute, 17 Uhr — Hof der Buchhandlung. Korrigierte Fassung.", ok: false, reply: { who: "lenoir", fr: "Duval? Aber ihr sucht doch Blanchard, oder?" } },
         { id: "C", text: "Marcel Blanchard — Le Pain perdu — heute, 17 Uhr — Innenhof des Louvre. Korrigierte Fassung. Dieses Programm ersetzt das alte Programm.", ok: true }
       ],
+      /* Begründen wie im Konzept: den aktuellen Aushang mit zwei Belegen */
+      proof: { who: "lenoir", n: 2, ask: "Der da? Warum? Nennt mir zwei Belege.",
+        options: [
+          { id: "nom", label: "Der Name: Es ist Marcel Blanchard.", ok: true },
+          { id: "version", label: "Die Fassung: Sie ist korrigiert.", ok: true },
+          { id: "heure", label: "Die Uhrzeit: Es ist um 17 Uhr.", reply: "17 Uhr? Das steht auf allen drei Aushängen. Das beweist gar nichts." },
+          { id: "titre", label: "Der Titel: Es ist Le Pain perdu.", reply: "Le Pain perdu steht auf allen drei Aushängen. Das beweist gar nichts." },
+          { id: "lieu", label: "Der Ort: Es ist in einem Hof.", reply: "Ein Hof? Aushang B nennt auch einen Hof: den Hof der Buchhandlung." }
+        ] },
       success: { who: "lenoir", fr: "Gut gelesen! Die Bücher bleiben, die Programme ändern sich." } },
     effects: { flags: ["L02_C", "L02_done"] },
     after: [{ who: "lino", fr: "Louvre, 17 Uhr? Wie Nowaks Treffpunkt. Paris ist klein." }],
@@ -537,7 +568,8 @@ window.GAME = (function () {
   N.V05 = { type: "task", diag: "D_V05", help: "V05", perPlayer: true, title: "Abschlussbericht",
     task: { kind: "write", intro: "Erzähl den Fall in 6 bis 8 Sätzen: Wo wart ihr? Was hat der Pantomime gemacht? Welcher Hinweis hat eure Meinung geändert? Wie habt ihr den Rucksack zurückbekommen?", min: 50,
       starters: ["Wir waren in Montmartre.", "Lino hatte...", "Während wir..., hat der Pantomime...", "Auf dem Père-Lachaise haben wir erfahren...", "Marcel hatte schon...", "Er dachte, dass...", "Am Ende haben wir..."],
-      model: "Wir waren in Montmartre für ein Foto. Lino hatte den Rucksack Bernd. Während wir das Foto angeschaut haben, hat der Pantomime unseren Rucksack genommen. Auf dem Père-Lachaise haben wir seinen Namen erfahren: Marcel Blanchard. Auf einem Foto hatte Marcel schon seine braune Tasche. Es war also kein Diebstahl. Er dachte, unser Rucksack wäre seine Tasche. In der Buchhandlung haben wir das richtige Programm gefunden. Am Ende haben wir am Louvre die Taschen getauscht." },
+      model: "Wir waren in Montmartre für ein Foto. Lino hatte den Rucksack Bernd. Während wir das Foto angeschaut haben, hat der Pantomime unseren Rucksack genommen. Auf dem Père-Lachaise haben wir seinen Namen erfahren: Marcel Blanchard. Auf einem Foto hatte Marcel schon seine braune Tasche. Es war also kein Diebstahl. Er dachte, unser Rucksack wäre seine Tasche. In der Buchhandlung haben wir das richtige Programm gefunden. Am Ende haben wir am Louvre die Taschen getauscht.",
+      topicMin: 3, topic: ["rucksack", "tasche", "pantomim", "marcel", "blanchard", "bernd", "montmartre", "pere", "lachaise", "friedhof", "warter", "chloe", "foto", "nora", "backerei", "marais", "buchhandlung", "lenoir", "programm", "aushang", "louvre", "irrtum", "versehen", "dieb", "gestohlen", "getauscht", "tausch", "genommen", "gefunden", "kevin", "nowak", "dose", "umschlag", "fahrkarte", "treppe", "metro", "hinweis", "beweis"] },
     effects: { flag: "V05_done" },
     next: "V06" };
 
@@ -633,11 +665,11 @@ window.GAME = (function () {
 
   /* ---------- Maries Hilfestufen ---------- */
   G.help = {
-    M03: ["Willst du über jetzt, über später oder über vorhin sprechen?", { fr: "Schau dir die Verben an: gesehen, suchen, treffen.", action: "material" }, "„Haben Sie ... gesehen?“ fragt nach etwas, das schon passiert ist. Genau das wollen wir wissen.", "Wir wollen wissen, ob sie ihn gesehen hat: „Haben Sie diesen Mann gesehen?“"],
-    M04: ["Sie spricht von drei Tageszeiten: heute Morgen, heute Nachmittag, heute Abend.", { fr: "Lies noch mal, was die Kioskfrau gesagt hat. Hier ist ihr Text.", action: "transcript" }, "Such im Text: „Heute Morgen ...“, „Heute Nachmittag ...“, „Aber heute Abend?“", "Heute Morgen Père-Lachaise, heute Nachmittag Marais, heute Abend weiß man nicht."],
-    M04b: ["Was hat die Kioskfrau genau gesagt?", { fr: "Lies noch mal, was die Kioskfrau gesagt hat. Hier ist ihr Text.", action: "transcript" }, "Achte auf die Kleidung, auf das Foto, auf die Treppe und auf die Métro.", "Gestreifter Pullover, ihr habt das Foto angeschaut, die Tasche an der Treppe, dann zur Métro."],
+    M03: ["Willst du über jetzt, über später oder über vorhin sprechen?", { fr: "Schau dir die Verben an: gesehen, suchen, treffen.", action: "material" }, "„Haben Sie ... gesehen?“ fragt nach etwas, das schon passiert ist. Genau das wollen wir wissen.", "Wir wollen wissen, ob sie ihn vorhin gesehen hat. Welche Frage fragt genau das?"],
+    M04: ["Sie spricht von drei Tageszeiten: heute Morgen, heute Nachmittag, heute Abend.", { fr: "Lies noch mal, was die Kioskfrau gesagt hat. Hier ist ihr Text.", action: "transcript" }, "Such im Text: „Heute Morgen ...“, „Heute Nachmittag ...“, „Aber heute Abend?“", "Lies die drei Sätze mit den Tageszeiten genau. Im selben Satz steht jeweils der Ort, oder dass sie es nicht weiß."],
+    M04b: ["Was hat die Kioskfrau genau gesagt?", { fr: "Lies noch mal, was die Kioskfrau gesagt hat. Hier ist ihr Text.", action: "transcript" }, "Achte auf die Kleidung, auf das Foto, auf die Treppe und auf die Métro.", "Jede Lücke steht fast wörtlich im Text der Kioskfrau. Such die Stelle und vergleiche Wort für Wort."],
     P02: ["Zeig ihm das Foto.", { fr: "Im Inventar: das Gruppenfoto.", action: "material" }, "Du kannst sagen: Haben Sie diesen Pantomimen gesehen?", "Zeig ihm das Gruppenfoto und frag, ob er den Pantomimen gesehen hat."],
-    P04: ["Geradeaus, dann ... links oder rechts? Lies noch mal nach.", { fr: "Hier ist noch mal, was der Wärter gesagt hat.", action: "transcript" }, "Im Text stehen drei Hinweise: geradeaus, links, nicht bergab.", "Geradeaus bis zur Kreuzung, dann links. Nicht den Weg, der bergab führt."],
+    P04: ["Geradeaus, dann ... links oder rechts? Lies noch mal nach.", { fr: "Hier ist noch mal, was der Wärter gesagt hat.", action: "transcript" }, "Im Text stehen drei Hinweise: geradeaus, links, nicht bergab.", "Der Wärter nennt zwei Schritte: erst bis zur Kreuzung, dann eine Richtung. Lies genau, welche, und welchen Weg ihr nicht nehmen sollt."],
     P06: ["Schau dir die Tasche auf dem Foto genau an. Was siehst du?", { fr: "Achte auf den Reißverschluss und den Aufkleber.", action: "material" }, "Schau dir auch die braune Tasche im Inventar an: den Reißverschluss, den Aufkleber.", "Reißverschluss und Aufkleber: auf dem Foto und an der Tasche im Inventar."],
     B02: ["Lino, wir suchen keinen Nachtisch. Was suchen wir?", { fr: "Schau dir den Flyer an: „Le Pain perdu“ ist eine Show.", action: "material" }, "Sag ihr: Ich suche einen Rucksack ... oder: Ich suche die Show ...", "Sag ihr, was ihr sucht: den Rucksack oder die Show, nicht den Nachtisch."],
     B04: ["Lies noch mal genau. Was sagt er wirklich?", { fr: "Hier ist noch mal Marcels Nachricht.", action: "transcript" }, "Such im Text: „Das gehört nicht mir“, „Ich glaube“, „das Programm hat sich geändert“.", "Sicher ist nur, was er wörtlich sagt. Was er will oder wo er ist, sagt er nicht."],
