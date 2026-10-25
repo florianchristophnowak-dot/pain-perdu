@@ -25,11 +25,11 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
-      # Website ohne Lösungsblatt und ohne Werkzeuge (das Lösungs-PDF liegt nur im Repository)
+      # Website ohne Lösungsblatt, ohne Werkzeuge und ohne Claude-Einstellungen (das Lösungs-PDF liegt nur im Repository)
       - name: Build site folder
         run: |
           mkdir -p _site
-          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude 'druck/Quiz_mit_Loesungen.pdf' ./ _site/
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude '.claude' --exclude 'CLAUDE.md' --exclude 'druck/Quiz_mit_Loesungen.pdf' ./ _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
