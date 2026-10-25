@@ -195,7 +195,8 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   for (const [l, o] of [['p. 12', 'le parvis de Notre-Dame'], ['p. 27', 'la rue Chanoinesse'], ['p. 41', 'le quai aux Fleurs']]) await selectRow('.slot', l, o);
   await btn('Valider'); await cont();
   await recall('tour Eiffel'); expect((await feedback()).includes('son ami'), 'R4 Falle « tour Eiffel »');
-  await recall('devant Notre-Dame'); await cont();
+  await recall('devant Notre-Dame'); expect((await feedback()).includes('quelle page'), 'R4 Falle « Notre-Dame »');
+  await recall('page 12'); await cont();
   await choose('Aux Galeries Lafayette'); await cont();
   expect((await S()).flags.B_done, 'Bouquinisten erledigt');
 

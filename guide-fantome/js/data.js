@@ -43,7 +43,7 @@ window.GAME = (function () {
     },
     recall: {
       check: "Vérifier", later: "Revenir plus tard",
-      pause: "Là, vous devinez. Allez vérifier, et revenez dans une minute.",
+      pause: "Là, vous devinez. Allez vérifier, puis revenez après la pause.",
       paused: "Pas maintenant. Vérifiez d'abord, puis revenez dans {s} secondes.",
       wrong: "Non, ce n'est pas ça.", unknown: "Tu ne sais plus ? Va revoir, puis reviens.",
       intro: "Réponds de mémoire ou avec ta feuille.", empty: "Écris d'abord une réponse."
@@ -65,6 +65,7 @@ window.GAME = (function () {
     lino: {
       ok: "Oui, c'est ça !",
       locked: "Pas encore. On ne sait pas encore où aller.",
+      finale: "Pas maintenant ! D'abord, on finit l'enquête.",
       afterHelp: "Bien. La prochaine fois, sans moi !",
       helpLater: "Essaie encore une fois. Après, je t'aide."
     },
@@ -133,6 +134,7 @@ window.GAME = (function () {
     Q4: { title: "Comment est-ce qu'on peut le prouver ?", done: "F05_done", answer: "Avec trois preuves : {proofs}." }
   };
   G.openAfter = "N08_done";   // Carnet und Karte öffnen sich nach dem Auftakt
+  G.mapLock = ["R5_done", "!finished"];   // im Finale und im Nachspiel keine Fahrt mehr (Lucien steht am Schalter)
 
   /* ---------- Höflichkeitsformeln von M. Beaumont (antippbar in N01 und N04) ---------- */
   G.formules = ["Excusez-moi de vous déranger", "Je vous propose", "Avec plaisir", "s'il vous plaît", "Merci beaucoup"];
@@ -193,7 +195,7 @@ window.GAME = (function () {
       ]
     },
     bouquinistes: {
-      name: "Les bouquinistes · quai de Montebello", bg: "bg_quai", enter: [{ if: "B06_done", node: "Br" }, { node: "B00" }],
+      name: "Les bouquinistes · quai de Montebello", bg: "bg_quai", enter: [{ if: "B06_done", node: "Br" }, { if: "R4_done", node: "B06" }, { if: "B05_done", node: "R4" }, { node: "B00" }],
       hotspots: [
         { id: "bouquiniste", label: "la bouquiniste", x: 27, y: 30, w: 15, h: 36, actions: { parler: "Br" }, showIf: "B06_done" },
         { id: "boites", label: "les boîtes vertes", x: 0, y: 66, w: 58, h: 32, actions: { regarder: "Bb" }, showIf: "B06_done" }
@@ -213,9 +215,9 @@ window.GAME = (function () {
   G.map = {
     places: [
       { id: "notredame", label: "Notre-Dame · le parvis", short: "Notre-Dame", q: "Le départ de la visite", x: 50, y: 50, unlock: "always", done: ["R1_done"] },
-      { id: "lafayette", label: "Galeries Lafayette", short: "Lafayette", q: "D'où vient le manteau ?", x: 47, y: 20, labelAbove: true, unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R2_done"] },
-      { id: "eiffel", label: "Tour Eiffel · pilier nord", short: "Tour Eiffel", q: "Rendez-vous à 13 h", x: 18, y: 50, unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R3b_done"] },
-      { id: "bouquinistes", label: "Les bouquinistes · quai de Montebello", short: "Bouquinistes", q: "Le vieux livre", x: 57, y: 60, unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R4_done", "B06_done"], optional: true },
+      { id: "lafayette", label: "Galeries Lafayette", short: "Lafayette", q: "D'où vient le manteau ?", x: 47, y: 20, labelAbove: true, pick: "way_lafayette", unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R2_done"] },
+      { id: "eiffel", label: "Tour Eiffel · pilier nord", short: "Tour Eiffel", q: "Rendez-vous à 13 h", x: 18, y: 50, pick: "way_eiffel", unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R3b_done"] },
+      { id: "bouquinistes", label: "Les bouquinistes · quai de Montebello", short: "Bouquinistes", q: "Le vieux livre", x: 69, y: 60, pick: "way_bouquinistes", unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R4_done", "B06_done"], optional: true },
       { id: "retours", label: "Galeries Lafayette · service des retours", short: "Service des retours", q: "Il rend le manteau", x: 60, y: 26, unlock: ["R2_done", "R3b_done"], lockedMsg: "Pas encore. On ne sait pas quand il revient.", done: ["F05_done"] }
     ]
   };
@@ -499,10 +501,10 @@ window.GAME = (function () {
   ], next: "E01" };
   N.E01 = { type: "lines", lines: [
     L("joueur", "Regardez bien ! Elle est où, la petite balle ?"),
-    L("spectateur", "Là ! À gauche !"),
+    L("spectateur", "Là ! À droite !"),
     L("joueur", "Gagné ! Cinquante euros pour monsieur ! Et vous, madame ?"),
     L("spectatrice", "Au milieu ! … Gagné !"),
-    lino("Facile ! Elle est à gauche. Je peux essayer ?"),
+    lino("Facile ! Elle est à droite. Je peux essayer ?"),
     marie("Non. Ne regarde pas les mains. Regarde autour.")
   ], next: "E02" };
   N.E02 = { type: "task", title: "Les mains, les gens, le sac", help: "E02", diag: "D_E02",
@@ -511,7 +513,7 @@ window.GAME = (function () {
       captions: [
         { fr: "Regardez bien !", x: 40, y: 3 },
         { fr: "Elle est où, la petite balle ?", x: 40, y: 3 },
-        { fr: "Là ! À gauche !", x: 3, y: 4 },
+        { fr: "Là ! À droite !", x: 3, y: 4 },
         { fr: "Gagné ! Cinquante euros !", x: 40, y: 3 }
       ],
       points: [
@@ -618,7 +620,7 @@ window.GAME = (function () {
       matText: "Sous l'image de la page 27 : « Entrée de livraison ».",
       wrong: lino("Pas encore. Compare avec la page 27."), success: lino("Une porte secrète pour les livraisons. Très secret.") },
     effects: { item: "page_guide", flag: "B04_done" }, next: "B05" };
-  N.B05 = { type: "task", title: "Le papier", help: "B05", diag: "D_B05",
+  N.B05 = { type: "task", title: "Le papier", help: "B05", diag: "D_B05", doneAt: true,
     task: { kind: "sort", who: "bouquiniste", intro: "Ah, et il a oublié ça sur ma boîte.",
       docs: [
         { label: "Le papier de M. Beaumont", text: "1. p. 12 – 2. p. 27 – 3. p. 41 – photo – 15 h : p. 12", cls: "hand" },
@@ -637,7 +639,7 @@ window.GAME = (function () {
         { id: "eiffel", label: "la tour Eiffel", reply: lino("La tour Eiffel ? Elle n'est pas dans le sommaire.") }
       ],
       wrong: lino("Pas encore. Cherche chaque page dans le sommaire.") },
-    after: [marie("À 15 heures, page 12. Il recommence au début.")],
+    after: [marie("Regarde la fin du papier. Il y a une heure : 15 heures.")],
     effects: { item: "papier", flag: "B05_done" }, next: "R4" };
   N.B06 = { type: "choice", who: "marie", diag: "D_B06", store: true, doneAt: true,
     prompt: marie("Il y a deux possibilités. Où est-ce qu'on l'attend ?"),
@@ -660,7 +662,7 @@ window.GAME = (function () {
     L("narrateur", "Métro ligne 7, de Pont Neuf à Chaussée d'Antin–La Fayette.", { from: ["notredame", "bouquinistes"] }),
     L("narrateur", "Quatorze heures. Rez-de-chaussée, porte 5 : le service des retours."),
     lino("Beaucoup de gens rendent des choses, ici."),
-    marie("Et un monsieur va rendre un costume."),
+    marie("Et un monsieur va rendre son manteau."),
     L("vendeuse", "Encore vous ? L'après-midi, je travaille aux retours.")
   ], next: "F01" };
   N.F01 = { type: "task", title: "Quatre hommes", help: "F01", diag: "D_F01",
@@ -735,7 +737,7 @@ window.GAME = (function () {
     task: { kind: "proofs", n: 3, intro: "Montre trois preuves. Pour chaque preuve, dis ce qu'elle montre.",
       distinct: "Trois preuves différentes, s'il te plaît.",
       items: [
-        { id: "carte", sentence: "s_carte", reply: [L("vendeuse", "Oui. Un de nos bons. Je l'ai dit ce matin.")] },
+        { id: "carte", sentence: "s_carte", reply: [L("vendeuse", "Oui. Un de nos bons. Je l'ai dit tout à l'heure.")] },
         { id: "badge", sentence: "s_badge", reply: [L("agent", "Le 31 février ?"), L("lucien", "Une petite erreur d'impression."), lino("Trois jours d'erreur. C'est beaucoup, pour un guide.")] },
         { id: "photo_groupe", sentence: "s_photo", reply: [L("vendeuse", "Avec l'étiquette… Il l'a porté toute la matinée.")] },
         { id: "selfie", sentence: "s_selfie", reply: [L("agent", "C'est bien vous, monsieur."), lino("Je suis un très bon photographe.")] },
@@ -780,7 +782,7 @@ window.GAME = (function () {
     L("lino", "Ça, c'est sa phrase à lui !", { onlyIf: "formules_5" })
   ], next: "F08" };
   N.F08 = { type: "cut", bg: "cut_compte", lines: [
-    L("narrateur", "Quatorze heures trente. M. Nowak arrive avec la classe et une policière. Dans la poche de la veste de Lucien, il y a une enveloppe."),
+    L("narrateur", "Quatorze heures trente. M. Nowak arrive avec la classe et une policière. Dans la poche du gilet de Lucien, il y a une enveloppe."),
     L("nowak", "C'est mon enveloppe. Regardez : classe 10b. C'est mon écriture."),
     L("nowak", "Deux cents… deux cent dix… deux cent vingt. Le compte est bon."),
     lino("D'habitude, il compte les élèves."),
@@ -788,9 +790,9 @@ window.GAME = (function () {
     marie("Nous deux."),
     L("vendeuse", "(Elle prend le manteau.) Il est comme neuf."),
     lino("Finalement, elle nous a aidés."),
-    marie("Elle a surtout refusé d'aider tout le monde de la même façon.")
+    marie("Elle n'a aidé personne. Pas nous, pas lui.")
   ], next: [{ if: "B_done", node: "Z00" }, { node: "F09" }] };
-  N.F09 = { type: "task", title: "Le rapport de Marie", perPlayer: true, help: "F09", diag: "D_F09",
+  N.F09 = { type: "task", title: "Le rapport de Marie", perPlayer: true, help: "F09", diag: "D_F09", doneAt: true,
     task: { kind: "write", min: 50, rows: 10, check: "rapport",
       intro: "Pour le journal de ton lycée, raconte l'affaire en 6 à 8 phrases. Comment était le faux guide ? Qu'est-ce qu'il a fait ? Comment est-ce que vous l'avez trouvé ?",
       starters: ["Ce matin, devant Notre-Dame, il y avait...", "Il portait...", "À midi moins le quart, il...", "Aux Galeries Lafayette, on a appris que...", "À la tour Eiffel, ...", "Ce n'était pas...", "Finalement, ..."],
@@ -889,18 +891,20 @@ window.GAME = (function () {
       success: marie("Il rapporte le manteau. Et nous, on va là-bas.") },
     effects: { flag: "R3b_done" }, next: "MAP" };
   N.R4 = { type: "task", gate: true, title: "À quinze heures", diag: "D_R4",
-    task: { kind: "recall", who: "lino", intro: "Et à quinze heures ? Où commence sa prochaine visite ?",
-      fields: [{ id: "ou", label: "Où :", size: 22,
-        answers: ["Notre-Dame", "à Notre-Dame", "devant Notre-Dame", "le parvis", "le parvis de Notre-Dame"],
-        keywords: [["notre", "dame"], ["parvis"]],
+    task: { kind: "recall", who: "lino", intro: "À quinze heures, il recommence une visite. À quelle page de son livre ?",
+      /* times: nur die Ziffern zählen (12, p. 12, page 12) */
+      fields: [{ id: "page", label: "Page :", size: 12,
+        answers: ["douze", "page douze", "la page douze", "à la page douze"], times: ["12"],
+        keywords: [["douze"]],
         traps: [
+          { keywords: [["notre", "dame"], ["parvis"]], who: "lino", fr: "Ça, c'est le lieu. Mais à quelle page ?" },
           { keywords: [["eiffel"]], who: "lino", fr: "Là, il y a son ami. Pas lui." },
-          { keywords: [["chanoinesse"]], who: "lino", fr: "Ça, c'est la page 27. Il commence à la page 12." },
-          { keywords: [["fleurs"]], who: "lino", fr: "Page 41. C'est la fin de la visite." }
+          { times: ["27"], keywords: [["vingt", "sept"], ["chanoinesse"]], who: "lino", fr: "Page 27, c'est la deuxième étape. À quinze heures, il recommence au début." },
+          { times: ["41"], keywords: [["quarante"], ["fleurs"]], who: "lino", fr: "Page 41. C'est la fin de la visite." }
         ],
-        where: "Regarde le papier et le sommaire du livre." }],
-      wrongText: "Ce lieu n'est pas sur son papier.",
-      success: marie("Page 12, le parvis. Il recommence au début.") },
+        where: "Regarde le papier de M. Beaumont." }],
+      wrongText: "Cette page n'est pas sur son papier.",
+      success: marie("Page 12 : le parvis de Notre-Dame. À quinze heures, il recommence au début.") },
     effects: { flag: "R4_done" }, next: "B06" };
   N.R5 = { type: "task", gate: true, title: "Avant d'entrer", diag: "D_R5",
     task: { kind: "recall", who: "lino", intro: "Avant d'entrer : en vrai, qu'est-ce que c'est, la carte ?",
@@ -920,12 +924,12 @@ window.GAME = (function () {
 
   /* ---------- Linos Hilfestufen (alles auf Französisch). Stufe 2 und 3 können eine Aktion auslösen. ---------- */
   G.help = {
-    N03: ["On ne cherche pas ce qui est vrai. On cherche ce qu'il a dit.", { fr: "Écoute encore M. Beaumont.", action: "replay" }, { fr: "Voici ce qu'il a dit. Cherche les mots porte, rois et boulanger.", action: "transcript" }, "Prends chaque phrase et cherche-la dans le transcript. Tu ne la trouves pas ? Alors, il ne l'a pas dite."],
-    N04a: ["Regarde M. Beaumont de la tête aux pieds.", { fr: "Regarde surtout ses mains et ses bras.", action: "material" }, "Il y a quelque chose devant son visage, sur sa manche, dans sa main et sous son bras.", "Le parapluie devant le visage, l'étiquette sur la manche, le sac à la main, le livre sous le bras."],
+    N03: ["On ne cherche pas ce qui est vrai. On cherche ce qu'il a dit.", { fr: "Écoute encore M. Beaumont.", action: "replay" }, { fr: "Voici ce qu'il a dit. Cherche les mots porte, rois et boulanger.", action: "transcript" }, "Prends chaque phrase et cherche-la dans la transcription. Tu ne la trouves pas ? Alors, il ne l'a pas dite."],
+    N04a: ["Regarde M. Beaumont de la tête aux pieds.", { fr: "Regarde surtout ses mains et ses bras.", action: "material" }, "Il y a quelque chose devant son visage, sur sa manche, dans sa main et à son bras.", "Le parapluie devant le visage, l'étiquette sur la manche, le livre à la main, le sac au bras."],
     N04b: ["Regarde son visage et ses mains.", { fr: "Zoome sur M. Beaumont, à côté de Kevin.", action: "material" }, "Il y a quelque chose sous son nez et à son poignet.", "Une moustache grise et une montre dorée."],
     N05: ["Lis tout, même les petits chiffres.", { fr: "Regarde la dernière ligne.", action: "material" }, "Combien de jours est-ce qu'il y a en février ?", "Le 31 février n'existe pas. Le badge est faux."],
     N06: ["Une carte a deux côtés. Et ce coin est bizarre.", { fr: "Regarde le coin en haut à droite.", action: "material" }, "Tire sur le coin de l'autocollant. Après, retourne la carte.", "Sous l'autocollant, il y a une réduction. Derrière, il y a un rendez-vous : 13 heures, tour Eiffel."],
-    N07a: ["C'est le décor ou l'action ?", "Le décor, c'est comment il était. L'action, c'est ce qu'il a fait.", "Il était, il avait, il portait : c'est le décor. Il est parti : c'est l'action.", "Comment il était, ce qu'il avait, ce qu'il portait : c'est le décor, alors l'imparfait. Ce qu'il a fait une fois, à midi moins le quart : c'est l'action, alors le passé composé."],
+    N07a: ["C'est le décor ou l'action ?", "Le décor, c'est comment il était. L'action, c'est ce qu'il a fait.", "Le décor répond à : comment c'était ? L'action répond à : qu'est-ce qui s'est passé ?", "Comment il était, ce qu'il avait, ce qu'il portait : c'est le décor, alors l'imparfait. Ce qu'il a fait une fois, à midi moins le quart : c'est l'action, alors le passé composé."],
     N07b: ["Comment est-ce qu'il parlait ? Vite, lentement, poliment ?", { fr: "Regarde le selfie : ses cheveux, sa moustache.", action: "material" }, "Tu peux écrire : Il parlait lentement.", "Deux phrases : comment il parlait, et comment il était. Par exemple : Il parlait lentement. Il était très poli."],
     N07c: ["Qu'est-ce qu'on peut enlever, fermer ou rendre ?", { fr: "Regarde encore la photo et le selfie.", action: "material" }, "Un parapluie, on le ferme. Une moustache, on la garde.", "Pour chaque chose, demande-toi : est-ce qu'il peut l'enlever, la fermer ou la rendre en une minute ? Si oui, il peut la changer facilement."],
     N08: ["Pour chaque indice : où est-ce qu'on peut le trouver ?", { fr: "Regarde encore le sac et la carte.", action: "material" }, "Le sac et l'étiquette viennent du même magasin.", "Lis ce qui est écrit sur chaque indice. Le sac et l'étiquette viennent d'un magasin, la carte donne un lieu de rendez-vous. Et les vieux livres, on les vend sur les quais."],
@@ -935,16 +939,16 @@ window.GAME = (function () {
     G04: ["Elle répond seulement à ta question. Essaie avec quand, quoi ou comment.", { fr: "Regarde la liste. Quels mots commencent une question ?", action: "material" }, "Par exemple : Quelles questions est-ce qu'il a posées ?", "Elle dit seulement oui ou non. Alors, on demande : Quand ? Quelles questions ? Comment ? Jusqu'à quelle heure ?"],
     G04b: ["Commence par un mot interrogatif : quand, où, comment, pourquoi…", "Après le mot interrogatif, tu peux écrire est-ce que.", "Par exemple : Pourquoi est-ce qu'il…", "Un mot interrogatif au début, au moins quatre mots, et un point d'interrogation à la fin."],
     E02: ["Ne regarde pas seulement les gobelets. Regarde les gens.", { fr: "Regarde les deux gagnants et le sac par terre.", action: "material" }, "Les gagnants se regardent. Et dans le sac, il y a des cartes.", "Le clin d'œil des gagnants, les cartes dans le sac, et après, le téléphone."],
-    E04: ["Qui a dit ça ? Ou est-ce que c'est une idée à nous ?", { fr: "Écoute encore le téléphone.", action: "replay" }, { fr: "Voici les mots du joueur. Tout le reste, c'est nous qui le pensons.", action: "transcript" }, "Dit : seulement les mots exacts du joueur, compare avec le transcript. Déduit : ce qu'on comprend grâce à ces mots. Utile : ce qu'on fait maintenant. Faux : ce que les mots ne disent pas. Attention : au téléphone, il pose une question."],
+    E04: ["Qui a dit ça ? Ou est-ce que c'est une idée à nous ?", { fr: "Écoute encore le téléphone.", action: "replay" }, { fr: "Voici les mots du joueur. Tout le reste, c'est nous qui le pensons.", action: "transcript" }, "Dit : seulement les mots exacts du joueur, compare avec la transcription. Déduit : ce qu'on comprend grâce à ces mots. Utile : ce qu'on fait maintenant. Faux : ce que les mots ne disent pas. Attention : au téléphone, il pose une question."],
     B01: ["On ne cherche pas un livre. On cherche quelqu'un.", { fr: "Dans l'inventaire : la photo de groupe.", action: "material" }, "Tu peux dire : Vous avez vu ce monsieur ?", "Montre la photo et demande si elle a vu le monsieur."],
-    B02: ["Elle dit : il avait déjà son manteau. Qu'est-ce que ça veut dire ?", { fr: "Écoute encore la bouquiniste.", action: "replay" }, { fr: "Déjà, ça veut dire : avant. Le manteau, c'était avant le livre.", action: "transcript" }, "Cherche les heures dans le transcript : dix heures et demie, puis la visite à onze heures. Et déjà veut dire : avant ce moment."],
+    B02: ["Elle dit : il avait déjà son manteau. Qu'est-ce que ça veut dire ?", { fr: "Écoute encore la bouquiniste.", action: "replay" }, { fr: "Déjà, ça veut dire : avant. Le manteau, c'était avant le livre.", action: "transcript" }, "Cherche les heures dans la transcription : dix heures et demie, puis la visite à onze heures. Et déjà veut dire : avant ce moment."],
     B03: ["Lis le livre, puis écoute encore M. Beaumont. C'est pareil ou pas ?", { fr: "Écoute encore la visite.", action: "replay" }, "Cherche les mots porte, rois et boulanger dans le livre.", "Mets chaque phrase à côté du livre. Les mêmes mots : mot pour mot. Un mot différent : changé. Rien dans le livre : pas dans le livre."],
-    B04: ["Regarde l'image. Qu'est-ce qui est écrit sous la porte ?", { fr: "Regarde la page 27.", action: "material" }, "Dans le livre, ce ne sont pas des rois. Et ce n'est pas une porte secrète.", "Lis la page 27 et la visite, mot à mot. Deux choses ne sont pas les mêmes. Les autres sont dans le livre."],
+    B04: ["Regarde l'image. Qu'est-ce qui est écrit sous la porte ?", { fr: "Regarde la page 27.", action: "material" }, "Une différence parle de personnes. L'autre parle de la porte.", "Lis la page 27 et la visite, mot à mot. Deux choses ne sont pas les mêmes. Les autres sont dans le livre."],
     B05: ["Les chiffres sur le papier, ce sont des pages.", { fr: "Regarde le sommaire du livre.", action: "material" }, "La page 12, c'est le début de la visite.", "Trouve chaque numéro dans le sommaire. Le lieu est écrit à côté du numéro."],
     F01: ["Moi, je regarde ce qu'il ne peut pas changer.", { fr: "Regarde ta fiche de signalement et le selfie.", action: "material" }, "Le parapluie et le manteau, il peut les changer. La moustache grise et la montre, non.", "C'est l'homme avec la moustache grise et la montre dorée. Son manteau est dans le sac."],
     F01b: ["Qu'est-ce qu'on voit sur le selfie et sur lui maintenant ?", { fr: "Regarde encore le selfie.", action: "material" }, "Une chose est sous son nez. Une chose est à son poignet.", "Il n'a plus de parapluie, plus de manteau, plus de badge. Choisis ce qu'on voit sur le selfie et encore sur lui maintenant."],
     F03: ["Quand est-ce qu'il était notre guide ?", { fr: "La visite, c'était à onze heures. Regarde bien les mots de temps.", action: "material" }, "La visite, c'était aujourd'hui, avant midi.", "Ce matin, c'était notre guide."],
-    F04: ["Moi, je cherche d'abord les heures : ce matin, à onze heures, à midi moins le quart, maintenant.", { fr: "Voici les heures en couleur.", action: "material" }, "Les cartes ne sont pas des billets. Il n'est jamais revenu. Il n'a rien payé.", "Suis les heures : ce matin, à onze heures, à midi moins le quart, maintenant. La phrase sans heure parle de l'argent et des cartes : c'est après la visite et avant le départ."],
+    F04: ["Moi, je cherche d'abord les heures.", { fr: "Voici les heures en couleur.", action: "material" }, "Cherche ne… pas, ne… jamais, ne… rien.", "Suis les heures : ce matin, à onze heures, à midi moins le quart, maintenant. La phrase sans heure parle de l'argent et des cartes : c'est après la visite et avant le départ."],
     F05: ["Moi, je prends seulement ce qu'il ne peut pas expliquer.", { fr: "Regarde l'inventaire.", action: "material" }, "La carte, le badge, la photo et le selfie : chaque objet montre une chose. Notre fiche, on l'a écrite nous-mêmes.", "Lis encore la description de chaque objet. La phrase doit dire la même chose que l'objet."],
     F06: ["Il doit savoir trois choses : où, où exactement, quand.", "Le magasin, l'endroit dans le magasin, et le moment.", "Tu peux commencer : Nous sommes aux Galeries Lafayette…", "Écris le magasin, le service des retours et quand il doit venir : tout de suite, maintenant…"],
     Z01: ["Qu'est-ce qu'elle ne doit pas faire ?", "Avec ne… pas, ne… rien ou il n'y a pas.", "Tu peux commencer : Ne payez…", "Dis-lui avec vous : ne payez pas, ou il n'y a pas de visite."],
@@ -958,7 +962,7 @@ window.GAME = (function () {
     D_N08: "Hinweise zu Orten", D_N08w: "Erster Weg (Begründung)", D_R1: "Abfrage: Uhrzeit des Verschwindens",
     D_G01: "Kaufhausplan", D_G02: "Missverständnis geklärt", D_G03: "Passendes Bild gezeigt", D_G04: "W-Fragen statt Ja-Nein-Fragen", D_G04b: "Eigene W-Frage", D_G06: "Karte gezeigt", D_R2: "Abfrage: Rückgabe am selben Tag",
     D_E02: "Aufmerksamkeit verteilt (Beobachtung)", D_E04: "Aussage und Schluss getrennt", D_R3: "Abfrage: Vorname", D_R3b: "Abfrage: was Lucien vorhat",
-    D_B01: "Frage an die Bouquiniste", D_B02: "Reihenfolge aus imparfait und déjà", D_B03: "Wörtlich, verändert, erfunden", D_B04: "Zwei Änderungen", D_B05: "Seiten und Orte", D_R4: "Abfrage: Ort um 15 Uhr", D_B06: "Wo warten (Begründung)",
+    D_B01: "Frage an die Bouquiniste", D_B02: "Reihenfolge aus imparfait und déjà", D_B03: "Wörtlich, verändert, erfunden", D_B04: "Zwei Änderungen", D_B05: "Seiten und Orte", D_R4: "Abfrage: Seite um 15 Uhr", D_B06: "Wo warten (Begründung)",
     D_R5: "Abfrage: was die Karte ist", D_F01: "Lucien ohne Mantel erkannt", D_F01b: "Feste Merkmale begründet", D_F03: "Zeitangabe passend", D_F04: "Erklärungskette mit Verneinung",
     D_F05: "Beweise passend begründet", D_F06: "Nachricht an Nowak", D_Z01: "Warnung mit Verneinung", D_F09: "Rapport"
   };
@@ -1000,7 +1004,7 @@ window.GAME = (function () {
     ["exclusif, exclusive", "exklusiv"], ["la visite", "die Führung, die Besichtigung"], ["avec plaisir", "gern"], ["le parapluie", "der Regenschirm"],
     ["le Moyen Âge", "das Mittelalter"], ["le roi, les rois", "der König, die Könige"], ["le boulanger, la boulangerie", "der Bäcker, die Bäckerei"], ["léger, légère", "leicht"],
     ["plein, pleine", "voll"], ["l'acompte (m)", "die Anzahlung"], ["l'enveloppe (f)", "der Umschlag"], ["tout de suite", "sofort"], ["moins le quart, et quart", "Viertel vor, Viertel nach"],
-    ["l'étiquette (f)", "das Etikett"], ["la manche", "der Ärmel"], ["le manteau", "der Mantel"], ["la moustache", "der Schnurrbart"], ["la montre", "die Armbanduhr"],
+    ["l'étiquette (f)", "das Etikett"], ["la manche", "der Ärmel"], ["le manteau", "der Mantel"], ["le gilet", "die Weste"], ["la moustache", "der Schnurrbart"], ["la montre", "die Armbanduhr"],
     ["doré, dorée", "golden"], ["l'appareil dentaire (m)", "die Zahnspange"], ["le badge", "der Ausweis"], ["valable", "gültig"], ["l'autocollant (m)", "der Aufkleber"],
     ["le coin", "die Ecke"], ["se décoller, se décolle", "sich ablösen"], ["le pilier", "der Pfeiler"], ["la fiche de signalement", "die Personenbeschreibung"],
     ["la taille", "die Körpergröße; beim Mantel: die Größe"], ["la voix", "die Stimme"], ["l'indice (m)", "der Hinweis"], ["la piste", "die Spur"],
