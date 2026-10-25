@@ -783,6 +783,12 @@
     const helps = Object.values(S.helpUsed).reduce((a, b) => a + b, 0);
     body.appendChild(el("div", "paper", "<b>" + esc(pname(0)) + (twoPlayers() ? " & " + esc(pname(1)) : "") + "</b><br>Besuchte Orte: " + S.visited.length + " · Hilfen von Marie: " + helps + " · Dauer: " + mins + " Min. · Geklärte Fragen: " + QIDS.filter(q => cond(G.questions[q].done)).length + "/4"));
     body.appendChild(el("p", "", "Jetzt kannst du die Fallakte exportieren (zwei Dateien)."));
+    if (P2) {   // Teil 1 geschafft: Teil 2 ist offen; das Schlüsselwort öffnet ihn auch auf einem anderen Gerät
+      openPart2();
+      const kb = el("div", "keybox", '<div class="kt">' + esc(G.ui.parts.endTitle) + '</div><div class="kw">' + esc(P2.key) + "</div><p>" + esc(G.ui.parts.endNote) + "</p>");
+      const go = el("button", "btn primary", esc(G.ui.parts.endGo)); go.addEventListener("click", () => { goMenu(); selectPart(2); if (INTRO) playIntro(() => {}); });
+      kb.appendChild(go); body.appendChild(kb);
+    }
     if (G.credits) body.appendChild(el("div", "credits", "<b>" + esc(G.credits.title) + "</b><br>" + G.credits.lines.map(esc).join("<br>")));
     const bar = el("div", "bar");
     const ex = el("button", "btn primary", G.ui.btn.exporter); ex.addEventListener("click", exportAll); bar.appendChild(ex);
@@ -1023,6 +1029,7 @@
     const bar = el("div", "bar");
     const unlock = el("button", "btn", "Alles freischalten"); unlock.addEventListener("click", () => { ["M00_done", "M02_done", "M03_done", "M04b_done", "P02_done", "P03_done", "P04_done", "P05_done", "P06_done", "B01a_done", "B03_open", "B04_done", "B05_done", "B06_done", "L02_C", "L02_done", "L02q_done", "L04_done", "L05_done", "C01_found", "vosges_seen", "V01q_done"].forEach(f => S.flags[f] = true); Object.keys(G.items).forEach(id => { if (!S.inv.includes(id)) S.inv.push(id); }); save(); refreshTop(); toast("Alles freigeschaltet"); }); bar.appendChild(unlock);
     const reset = el("button", "btn", "Spielstand löschen"); reset.addEventListener("click", () => { if (confirm("Spielstand auf diesem Gerät löschen?")) { localStorage.removeItem(SAVE_KEY); location.reload(); } }); bar.appendChild(reset);
+    if (P2) { const lk = el("button", "btn", "Teil 2 wieder sperren"); lk.addEventListener("click", () => { try { localStorage.removeItem(P2.store); } catch (e) { /* privat */ } toast("Teil 2 ist auf diesem Gerät wieder gesperrt (außerhalb der Lehrkraft-Ansicht)."); }); bar.appendChild(lk); }
     const exr = el("button", "btn", "Alle Ergebnisse (CSV)"); exr.addEventListener("click", () => { const all = JSON.parse(localStorage.getItem(RESULTS_KEY) || "[]"); download("pain-perdu_resultats.csv", csvRows(all.flatMap(r => r.diag)), "text/csv;charset=utf-8"); }); bar.appendChild(exr);
     const pz = el("a", "btn", "Notizblatt (Druck)"); pz.href = "zettel.html"; pz.target = "_blank"; bar.appendChild(pz);
     body.appendChild(bar);
@@ -1067,6 +1074,58 @@
   }
 
   /* ---------- Start ---------- */
+  /* Zwei Teile im Startmenü. Teil 2 (G.part2, Ordner guide-fantome/) ist gesperrt, bis Teil 1 geschafft ist oder jemand
+     das Schlüsselwort eingibt; die Freischaltung gilt für dieses Gerät und bleibt auch bei einer neuen Partie. Teil 2 behält
+     seinen eigenen Spielstand und startet über die Adresse: ?go=new&p1=…&p2=… oder ?go=resume, dazu home = dieses
+     Startmenü (dorthin führt „Menu“ in Teil 2 zurück, mit ?menu=2: ohne Intro, Teil 2 gewählt). */
+  const P2 = G.part2;
+  const INTRO = QS.get("intro") !== "0";
+  let part = 1;   // im Startmenü gewählter Teil
+  function part2Unlocked() { try { return localStorage.getItem(P2.store) === "1"; } catch (e) { return false; } }
+  function part2Open() { return PROF || part2Unlocked(); }   // Lehrkraft-Ansicht: beide Teile wählbar
+  function openPart2() { try { localStorage.setItem(P2.store, "1"); } catch (e) { /* privat */ } }
+  function loadPart2() { try { const s = JSON.parse(localStorage.getItem(P2.save) || "null"); return s && s.v === 1 ? s : null; } catch (e) { return null; } }
+  const keyNorm = t => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  function selectPart(k) {
+    if (!P2) return;
+    const open = part2Open();
+    part = k === 2 && open ? 2 : 1;
+    $$("#parts .part").forEach(b => { const on = +b.dataset.part === part; b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false"); });
+    $('#parts .part[data-part="2"]').classList.toggle("locked", !open);
+    if (open) $("#keyrow").hidden = true;
+    $("#start").classList.toggle("p2", part === 2);
+    $("#title").textContent = part === 2 ? P2.title : G.ui.title; $("#subtitle").textContent = part === 2 ? P2.subtitle : G.ui.subtitle;
+    refreshResume();
+  }
+  function goPart2(act) {
+    const q = new URLSearchParams({ go: act, home: location.href.split(/[?#]/)[0] });
+    if (act === "new") { q.set("p1", $("#p1").value.trim()); q.set("p2", $("#p2").value.trim()); }
+    location.href = P2.href + "?" + q;
+  }
+  function setupParts() {
+    if (!P2) { const p = $("#parts"); if (p) p.hidden = true; return; }
+    const key = $("#key"), msg = $("#keymsg");
+    const showKey = focus => { $("#keyrow").hidden = false; msg.textContent = ""; key.classList.remove("bad"); if (focus) key.focus(); };
+    $$("#parts .part").forEach(b => b.addEventListener("click", () => { if (+b.dataset.part === 2 && !part2Open()) showKey(true); else selectPart(+b.dataset.part); }));
+    const tryKey = () => {
+      if (!key.value.trim()) { key.focus(); return; }
+      if (keyNorm(key.value) !== keyNorm(P2.key)) { msg.textContent = G.ui.parts.wrong; key.classList.add("bad"); key.select(); return; }
+      openPart2(); key.value = ""; key.blur(); selectPart(2);
+      if (INTRO) playIntro(() => {}); else toast(G.ui.parts.ok);   // wie nach Teil 1: das Intro mit dem Titel von Teil 2
+    };
+    $("#btn-key").addEventListener("click", tryKey);
+    key.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); tryKey(); } });
+    key.addEventListener("input", () => { msg.textContent = ""; key.classList.remove("bad"); });
+    // wer Teil 1 schon vor den zwei Teilen geschafft hat, hat Teil 2 auch offen
+    let done = S && S.finished;
+    try { done = done || JSON.parse(localStorage.getItem(RESULTS_KEY) || "[]").some(r => r.finished); } catch (e) { /* privat */ }
+    if (done) openPart2();
+    // ?menu=2 (zurück aus Teil 2) oder ?part=2 (Teil 2 direkt aufgerufen): Teil 2 wählen, gesperrt: Schlüsselwort abfragen
+    const want = QS.get("menu") === "2" || QS.get("part") === "2";
+    selectPart(want || part2Unlocked() ? 2 : 1);
+    if (want && !part2Open()) showKey(false);   // ohne Fokus: auf dem Handy ginge sonst unter dem Intro die Tastatur auf
+    if (QS.has("menu") || QS.has("part")) try { const u = new URL(location.href); u.searchParams.delete("menu"); u.searchParams.delete("part"); history.replaceState(null, "", u.pathname + u.search + u.hash); } catch (e) { /* egal */ }
+  }
   /* Introvideo beim Laden der Seite (../assets/video/intro.mp4): Video, dann großer Titel, dann Startmenü.
      ?intro=0 überspringt es. Fehlt die Datei oder spielt der Browser sie nicht, erscheint sofort das Startmenü.
      Ohne Klick erlauben Browser nur stummes Abspielen: dann gibt es einen Knopf für den Ton. */
@@ -1110,6 +1169,14 @@
   /* Zurück zum Startmenü: der Spielstand ist gespeichert, „Continuer la partie" macht dort weiter */
   function refreshResume() {
     const b = $("#btn-resume");
+    if (part === 2) {   // Spielstand von Teil 2
+      const s2 = loadPart2();
+      if (!s2) { b.hidden = true; return; }
+      const names = (s2.players || []).map(p => String(p || "").trim()).filter(Boolean);
+      b.hidden = false; b.textContent = G.ui.btn.reprendre + (names.length ? " (" + names.join(" & ") + ")" : "");
+      $("#p1").value = s2.players[0] || ""; $("#p2").value = s2.players[1] || "";
+      return;
+    }
     if (!S) { b.hidden = true; return; }
     b.hidden = false; b.textContent = G.ui.btn.reprendre + " (" + pname(0) + (twoPlayers() ? " & " + pname(1) : "") + ")";
     $("#p1").value = S.players[0] || ""; $("#p2").value = S.players[1] || "";
@@ -1187,9 +1254,9 @@
       S = saved;
       refreshResume();
     }
-    $("#btn-resume").addEventListener("click", () => { if (S) resumeGame(); });
+    $("#btn-resume").addEventListener("click", () => { if (part === 2) goPart2("resume"); else if (S) resumeGame(); });
     $("#btn-menu").addEventListener("click", goMenu);
-    $("#btn-start").addEventListener("click", () => { if (!$("#p1").value.trim()) { $("#p1").focus(); $("#p1").classList.add("bad"); return; } if (S && S.diag && S.diag.length && !confirm("Neues Spiel? Das alte Spiel wird ersetzt.")) return; startNew(); });
+    $("#btn-start").addEventListener("click", () => { if (!$("#p1").value.trim()) { $("#p1").focus(); $("#p1").classList.add("bad"); return; } const old = part === 2 ? loadPart2() : S; if (old && old.diag && old.diag.length && !confirm("Neues Spiel? Das alte Spiel wird ersetzt.")) return; if (part === 2) goPart2("new"); else startNew(); });
     /* Solange eine Aufgabe, Zwischensequenz oder Fahrt offen ist, führt kein Knopf daran vorbei (auch nicht per Tastatur) */
     const busy = () => !modal.hidden && modal.classList.contains("nocl");
     $("#btn-carnet").addEventListener("click", () => { if (!busy()) openCarnet(); });
@@ -1198,10 +1265,11 @@
     $("#btn-gloss").addEventListener("click", () => { if (!busy()) openGlossary(); });
     $("#btn-lang").addEventListener("click", () => { S.linoLang = S.linoLang === "fr" ? "de" : "fr"; save(); toast("Lino : " + (S.linoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });
     setupMobile();
-    $("#btn-intro").addEventListener("click", e => { e.preventDefault(); playIntro(() => {}); });
-    if (QS.get("intro") !== "0") playIntro(() => {});
-    if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#title").textContent = G.ui.title; $("#subtitle").textContent = G.ui.subtitle;
+    setupParts();   // Titel des gewählten Teils, auch im Intro
+    $("#btn-intro").addEventListener("click", e => { e.preventDefault(); playIntro(() => {}); });
+    if (INTRO && !QS.has("menu")) playIntro(() => {});
+    if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#ver").textContent = "v" + G.version + (PROF ? " · prof" : "");
   }
   if (PROF || TEST) window.PP = { get S() { return S; }, goNode, enterScene, openMap, openCarnet, exportAll, flag, save, PROF, goMenu };
