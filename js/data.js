@@ -239,9 +239,10 @@ window.GAME = (function () {
   const N = {};
 
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
-    { who: "narrateur", fr: "Paris, 13 heures. La classe 10b d'Ohrdruf est à Montmartre. Monsieur Nowak compte les élèves pour la cinquième fois. Lino tient le sac de la classe : Bernd, un grand pain avec un visage... pas content. Marie, sa correspondante française, est avec lui." },
+    { who: "narrateur", fr: "Paris, 13 heures. La classe 10b d'Ohrdruf est à Montmartre. Monsieur Nowak compte les élèves pour la cinquième fois. Lino tient le sac de la classe : Bernd, un grand pain avec un visage... pas content." },
+    { who: "narrateur", fr: "Marie est avec lui. C'est une amie de Lino, et elle habite à Paris. Ils se connaissent depuis une colonie de vacances franco-allemande. Aujourd'hui, elle passe la journée avec la classe." },
     { who: "lino", fr: "Un sac en forme de pain. Très discret.", de: "Ein Rucksack in Brotform. Sehr unauffällig." },
-    { who: "marie", fr: "Ici, à Montmartre, il y a toujours beaucoup de monde. Fais attention à Bernd !" }
+    { who: "marie", fr: "Je connais bien Montmartre : ici, il y a toujours beaucoup de monde. Fais attention à Bernd !" }
   ], next: "M00" };
 
   N.M00 = { type: "doc", title: "Le sac Bernd", icon: "sac", doc: "Monsieur Nowak : « Lino, tu prends Bernd. Dedans, il y a les billets de train pour le retour. Mon enveloppe rouge est sous les billets : ne la perds pas ! Et la boîte bleue de Kevin est dans la poche de devant. Ne l'ouvre pas. Rendez-vous à 17 heures, cour du Louvre ! »",
@@ -293,18 +294,18 @@ window.GAME = (function () {
     next: "M05" };
 
   N.M05 = { type: "lines", lines: [
-    { who: "marie", fr: "Alors, on commence par les indices. Père-Lachaise ou le Marais ?" },
+    { who: "marie", fr: "Alors, on commence par les indices. Père-Lachaise ou le Marais ? En métro, ce n'est pas loin." },
     { who: "lino", fr: "Paris est grand. Mon problème aussi.", de: "Paris ist groß. Mein Problem auch." }
   ], next: "MAP" };
 
   N.M06 = { type: "lines", diag: "D_M06", count: true, lines: [
     { who: "narrateur", fr: "Au métro, il y a trois lignes et beaucoup de gens. Pas de mime." },
-    { who: "marie", fr: "Il y a plusieurs directions. Qui peut nous aider ?" }
+    { who: "marie", fr: "Je connais bien le métro. Mais sans indice, on ne sait pas quelle ligne il a prise. Qui peut nous aider ?" }
   ] };
 
   /* Père-Lachaise */
   N.P01 = { type: "lines", once: "P01_seen", lines: [
-    { who: "marie", fr: "Un cimetière, des arbres, un gardien et un chien." },
+    { who: "marie", fr: "Le Père-Lachaise, le plus grand cimetière de Paris. Des arbres, un gardien et un chien." },
     { who: "lino", fr: "Et une balle. Le chien ne regarde que la balle.", de: "Und ein Ball. Der Hund guckt nur auf den Ball." }
   ] };
   N.P01g = { type: "lines", lines: [{ who: "narrateur", fr: "Gaston, un labrador. Il regarde une balle sous le banc. Seulement la balle." }] };
@@ -616,7 +617,10 @@ window.GAME = (function () {
       wrongText: "Non, il n'est pas là-bas.", success: { who: "musicien", fr: "Le Louvre, oui. À 17 heures. Bonne chance !" },
       leaveLines: [{ who: "musicien", fr: "Revenez quand vous saurez." }] },
     effects: { flag: "X01_done" },
-    after: [{ who: "lino", fr: "Une belle place. Zéro mime.", de: "Ein schöner Platz. Null Pantomime." }],
+    after: [
+      { who: "marie", fr: "La place des Vosges, c'est la plus vieille place de Paris." },
+      { who: "lino", fr: "Une belle place. Zéro mime.", de: "Ein schöner Platz. Null Pantomime." }
+    ],
     next: "MAP" };
 
   N.C02 = { type: "lines", lines: [
@@ -716,7 +720,7 @@ window.GAME = (function () {
 
   /* ---------- Glossar ---------- */
   G.glossary = [
-    ["le sac", "die Tasche, der Rucksack"], ["le correspondant, la correspondante", "der Austauschpartner, die Austauschpartnerin"], ["le mime", "der Pantomime; auch: die Pantomime (Spiel ohne Worte)"], ["le kiosque", "der Kiosk"], ["l'escalier (m)", "die Treppe"],
+    ["le sac", "die Tasche, der Rucksack"], ["l'ami (m), l'amie (f)", "der Freund, die Freundin (befreundet, kein Liebespaar)"], ["la colonie de vacances", "das Ferienlager"], ["franco-allemand, franco-allemande", "deutsch-französisch"], ["le mime", "der Pantomime; auch: die Pantomime (Spiel ohne Worte)"], ["le kiosque", "der Kiosk"], ["l'escalier (m)", "die Treppe"],
     ["le ticket de caisse", "der Kassenbon"], ["la boulangerie, la boulangère", "die Bäckerei, die Bäckerin"], ["le spectacle", "die Aufführung, die Show"],
     ["le programme", "das Programm"], ["corrigé, corrigée", "korrigiert"], ["ancien, ancienne", "alt, früher"], ["la première version", "die erste Fassung"],
     ["l'affiche (f)", "das Plakat, der Aushang"], ["le tampon", "der Stempel"], ["annulé", "abgesagt"], ["la modification", "die Änderung"],
