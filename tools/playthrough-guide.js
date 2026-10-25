@@ -81,7 +81,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.click('#btn-start'); await page.waitForTimeout(300);
 
   log('== Auftakt Notre-Dame');
-  await cont();                                     // N00, N01 (mit Formeln), N02
+  await cont();                                     // N00 (Klasse), N01 (Beaumont, mit Formeln), N02
   expect((await txt()).includes('trois phrases'), 'N03 Auswahl nach dem Hörtext');
   await pick(['porte secrète', 'Les rois passaient', 'Le boulanger était très riche']);
   const f3 = await feedback();
