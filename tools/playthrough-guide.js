@@ -97,7 +97,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await loupeTap(91.6, 57.2);
   expect((await S()).flags.prix_vu, 'N04a Preis im Buch (Zoom) gefunden');
   await cont();
-  await loupeTap(78, 42.5); await loupeTap(87.5, 62);
+  await loupeTap(73.5, 48); await loupeTap(95, 81);
   await cont();
   log('  N05:', await txt());
   await cont();

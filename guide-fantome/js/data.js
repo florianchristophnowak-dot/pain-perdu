@@ -301,14 +301,14 @@ window.GAME = (function () {
     task: { kind: "loupe", img: "doc_selfie", ar: 1.3333, status: "Détails sur son visage : {n} sur {m}",
       intro: "Sur le selfie de Lino, on voit le visage de M. Beaumont. Trouve deux détails.",
       points: [
-        { id: "moustache", need: true, chip: "la moustache", x: 72, y: 38.5, w: 12, h: 6.5, line: marie("Une moustache grise.") },
-        { id: "montre", need: true, chip: "la montre", x: 83, y: 58, w: 9, h: 8, line: marie("Une montre dorée. Elle brille.") },
-        { id: "appareil", neutral: true, x: 45, y: 48.5, w: 10, h: 7, line: lino("Ça, c'est l'appareil dentaire de Kevin. Ça ne nous aide pas.") },
-        { id: "lino", neutral: true, x: 4, y: 18, w: 32, h: 80, line: lino("Moi. Très photogénique.") },
-        { id: "kevin", neutral: true, x: 37, y: 22, w: 26, h: 76, line: lino("Kevin. Il sourit toujours avec son appareil.") },
-        { id: "beaumont", neutral: true, x: 64, y: 15, w: 34, h: 83, line: lino("M. Beaumont. Regarde son visage de plus près.") }
+        { id: "moustache", need: true, chip: "la moustache", x: 67.5, y: 44.5, w: 12.5, h: 7.5, line: marie("Une moustache grise.") },
+        { id: "montre", need: true, chip: "la montre", x: 90.5, y: 76, w: 9, h: 10, line: marie("Une montre dorée. Elle brille.") },
+        { id: "appareil", neutral: true, x: 43.5, y: 54, w: 10.5, h: 7, line: lino("Ça, c'est l'appareil dentaire de Kevin. Ça ne nous aide pas.") },
+        { id: "lino", neutral: true, x: 0, y: 5, w: 39, h: 95, line: lino("Moi. Très photogénique.") },
+        { id: "kevin", neutral: true, x: 39, y: 29, w: 23, h: 71, line: lino("Kevin. Il sourit toujours avec son appareil.") },
+        { id: "beaumont", neutral: true, x: 60, y: 17, w: 40, h: 83, line: lino("M. Beaumont. Regarde son visage de plus près.") }
       ],
-      material: [{ x: 64, y: 15, w: 34, h: 55 }] },
+      material: [{ x: 62, y: 17, w: 38, h: 70 }] },
     next: "N05" };
   N.N05 = { type: "doc", title: "Le badge", render: "badge", help: "N05", diag: "D_N05",
     lines: [lino("J'ai aussi une photo de son badge. Il était très fier de son badge.")],
