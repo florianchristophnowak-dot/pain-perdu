@@ -90,11 +90,11 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await cont();                                     // N03 → N04
   expect((await S()).inv.length === 6, 'N04 sechs Gegenstände im Inventar');
   await page.screenshot({ path: SHOT + '02_loupe_photo.png' });
-  await loupeTap(73, 33); await loupeTap(83.5, 78.5); await loupeTap(66, 69);
-  expect(/Trouvé|3 sur 4/.test(await page.locator('#modal-body .lstatus').innerText()), 'N04a drei Fundpunkte: ' + await page.locator('#modal-body .lstatus').innerText());
-  { const b = await page.locator('#modal-body .lz').boundingBox(); await page.mouse.move(b.x + b.width * .823, b.y + b.height * .59); for (let i = 0; i < 4; i++) { await page.mouse.wheel(0, -120); await page.waitForTimeout(60); } }
+  await loupeTap(86, 40); await loupeTap(95.3, 61.5); await loupeTap(93.5, 70);
+  expect(/3 sur 4/.test(await page.locator('#modal-body .lstatus').innerText()), 'N04a drei Fundpunkte: ' + await page.locator('#modal-body .lstatus').innerText());
+  { const b = await page.locator('#modal-body .lz').boundingBox(); await page.mouse.move(b.x + b.width * .916, b.y + b.height * .572); for (let i = 0; i < 4; i++) { await page.mouse.wheel(0, -120); await page.waitForTimeout(60); } }
   await page.screenshot({ path: SHOT + '03_loupe_zoom.png' });
-  await loupeTap(82.3, 59);
+  await loupeTap(91.6, 57.2);
   expect((await S()).flags.prix_vu, 'N04a Preis im Buch (Zoom) gefunden');
   await cont();
   await loupeTap(78, 42.5); await loupeTap(87.5, 62);
@@ -205,8 +205,8 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await recall('des billets'); expect((await feedback()).includes("ce qu'il a dit, lui"), 'R5 Falle « billets »');
   await recall('un bon de réduction'); await cont();
   await page.screenshot({ path: SHOT + '11_retours.png' });
-  await loupeTap(32, 50); expect((await feedback()).includes("modèle de l'hiver"), 'F01 falscher Mann: eigene Reaktion');
-  await loupeTap(66, 50); await cont();
+  await loupeTap(26, 50); expect((await feedback()).includes("modèle de l'hiver"), 'F01 falscher Mann: eigene Reaktion');
+  await loupeTap(53, 45); await cont();
   await pick(['moustache grise', 'montre dorée']); await cont();
   await choose('Demain, c\'est notre guide'); await cont();
   await choose('Ce matin, c\'était notre guide'); await cont();

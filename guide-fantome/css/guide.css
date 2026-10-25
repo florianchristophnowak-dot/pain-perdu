@@ -15,10 +15,10 @@
 .lz { position: absolute; inset: 0; transform-origin: 0 0; container-type: inline-size; }
 .lz > .docimg, .observe > .oframe { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; object-fit: fill; -webkit-user-drag: none; pointer-events: none; }
 .lz > .gcard { position: absolute; inset: 0; width: 100%; height: auto; }
-.llabel { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none; line-height: 1; }
+.llabel { position: absolute; transform: translate(-50%, -50%); white-space: pre; text-align: center; pointer-events: none; line-height: 1; }
 .llabel.bag { font-family: var(--serif); font-weight: 700; font-size: 1.05cqw; color: #1b2a4a; letter-spacing: .02em; }
-.llabel.tag { font-family: var(--font); font-size: .42cqw; color: #222; font-weight: 700; }
-.llabel.pencil { font-family: "Segoe Print", "Bradley Hand", cursive; font-size: .9cqw; color: #555; transform: translate(-50%, -50%) rotate(-6deg); }
+.llabel.tag { font-family: var(--font); font-size: .26cqw; color: #222; font-weight: 700; }
+.llabel.pencil { font-family: "Segoe Print", "Bradley Hand", cursive; font-size: .55cqw; color: #222; font-weight: 700; transform: translate(-50%, -50%) rotate(-6deg); }
 .lmarks { position: absolute; inset: 0; pointer-events: none; }
 .lmark { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); border: 3px solid #36b06a; border-radius: 50%; box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
 .lmark.no { border-color: #e05a5a; }

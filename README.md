@@ -159,4 +159,6 @@ Eigener Spielstand (`pg_save_v1`, Ergebnisse `pg_results_v1`), getrennt von Teil
 
 **Test:** `node tools/playthrough-guide.js` (lokaler Server im Hauptordner, z. B. `python3 -m http.server 8765`) spielt Teil 2 mit zwei Spielenden ganz durch, prüft Fallen, Zählungen und Tore und macht Bildschirmfotos auf dem Computer und dem Handy (hoch und quer) in `test-shots/guide/`.
 
-**Noch offen (Schritt 2):** echte Bilder und Aufnahmen, deutsche Fassung, Offline-Pakete.
+**Stand der Bilder:** Eingesetzt sind `bg_parvis`, `bg_lafayette`, `bg_eiffel`, `bg_quai`, `bg_retours`, `cut_beaumont`, `doc_photo_groupe` und die Inventar-Symbole (`it_*.png`, aus einem 3 × 3-Sammelbild geschnitten); die Fundpunkte und Hotspots sind auf diese Bilder eingestellt. Platzhalter haben noch `cut_compte`, `cut_parapluie`, `doc_selfie` und `obs_bonneteau_1` bis `obs_bonneteau_4`.
+
+**Noch offen (Schritt 2):** die übrigen Bilder, die Porträts außer Lino und Marie, die Aufnahmen, deutsche Fassung, Offline-Pakete.

@@ -173,30 +173,30 @@ window.GAME = (function () {
     notredame: {
       name: "Notre-Dame · le parvis", bg: "bg_parvis", enter: [{ if: "N08_done", node: "Nr" }, { node: "N00" }],
       hotspots: [
-        { id: "nowak", label: "M. Nowak", x: 8, y: 40, w: 12, h: 45, actions: { parler: "Nr" }, showIf: "N08_done" },
-        { id: "classe", label: "la classe", x: 22, y: 50, w: 34, h: 40, actions: { regarder: "Ncl" }, showIf: "N08_done" },
-        { id: "cathedrale", label: "Notre-Dame", x: 30, y: 3, w: 40, h: 40, actions: { regarder: "Nc" }, showIf: "N08_done" }
+        { id: "nowak", label: "M. Nowak", x: 23, y: 38, w: 12, h: 60, actions: { parler: "Nr" }, showIf: "N08_done" },
+        { id: "classe", label: "la classe", x: 1, y: 40, w: 21, h: 56, actions: { regarder: "Ncl" }, showIf: "N08_done" },
+        { id: "cathedrale", label: "Notre-Dame", x: 52, y: 2, w: 33, h: 68, actions: { regarder: "Nc" }, showIf: "N08_done" }
       ]
     },
     lafayette: {
       name: "Galeries Lafayette · 2e étage", bg: "bg_lafayette", enter: [{ if: "G06_done", node: "Gr" }, { node: "G00" }],
       hotspots: [
-        { id: "vendeuse", label: "la vendeuse", x: 58, y: 30, w: 14, h: 50, actions: { parler: "Gr" }, showIf: "G06_done" },
-        { id: "coupole", label: "la coupole", x: 15, y: 0, w: 70, h: 22, actions: { regarder: "Gc" }, showIf: "G06_done" }
+        { id: "vendeuse", label: "la vendeuse", x: 26, y: 32, w: 15, h: 40, actions: { parler: "Gr" }, showIf: "G06_done" },
+        { id: "coupole", label: "la coupole", x: 20, y: 0, w: 78, h: 28, actions: { regarder: "Gc" }, showIf: "G06_done" }
       ]
     },
     eiffel: {
       name: "Tour Eiffel · pilier nord", bg: "bg_eiffel", enter: [{ if: "E05_done", node: "Er" }, { node: "E00" }],
       hotspots: [
-        { id: "joueur", label: "le joueur", x: 44, y: 45, w: 16, h: 40, actions: { regarder: "Er" }, showIf: "E05_done" },
-        { id: "tour", label: "la tour Eiffel", x: 2, y: 0, w: 30, h: 60, actions: { regarder: "Et" }, showIf: "E05_done" }
+        { id: "joueur", label: "le joueur", x: 36, y: 41, w: 13.5, h: 52, actions: { regarder: "Er" }, showIf: "E05_done" },
+        { id: "tour", label: "la tour Eiffel", x: 2, y: 0, w: 50, h: 42, actions: { regarder: "Et" }, showIf: "E05_done" }
       ]
     },
     bouquinistes: {
       name: "Les bouquinistes · quai de Montebello", bg: "bg_quai", enter: [{ if: "B06_done", node: "Br" }, { node: "B00" }],
       hotspots: [
-        { id: "bouquiniste", label: "la bouquiniste", x: 40, y: 30, w: 14, h: 50, actions: { parler: "Br" }, showIf: "B06_done" },
-        { id: "boites", label: "les boîtes vertes", x: 2, y: 45, w: 34, h: 30, actions: { regarder: "Bb" }, showIf: "B06_done" }
+        { id: "bouquiniste", label: "la bouquiniste", x: 27, y: 30, w: 15, h: 36, actions: { parler: "Br" }, showIf: "B06_done" },
+        { id: "boites", label: "les boîtes vertes", x: 0, y: 66, w: 58, h: 32, actions: { regarder: "Bb" }, showIf: "B06_done" }
       ]
     },
     retours: {
@@ -282,20 +282,20 @@ window.GAME = (function () {
     task: { kind: "loupe", img: "doc_photo_groupe", ar: 1.3333, status: "Détails sur M. Beaumont : {n} sur {m}",
       intro: "Regarde la photo de près. Trouve quatre détails sur M. Beaumont.",
       points: [
-        { id: "parapluie", need: true, chip: "le parapluie", x: 63, y: 20, w: 20, h: 26, line: marie("Le parapluie cache son visage. Pratique.") },
-        { id: "etiquette", need: true, chip: "l'étiquette", x: 80.5, y: 74.5, w: 6, h: 8, line: marie("Une étiquette sur la manche. Son manteau est neuf. Très neuf.") },
-        { id: "sac", need: true, chip: "le sac", x: 62.5, y: 58.9, w: 7.5, h: 20, line: lino("Un sac des Galeries Lafayette. Il fait du shopping, notre guide.") },
-        { id: "livre", need: true, chip: "le livre", x: 76.2, y: 50.5, w: 8.4, h: 11.2, line: marie("Un vieux livre. Un guide de Paris, peut-être.") },
-        { id: "prix", chip: "le prix", minZoom: 2, x: 80.5, y: 57, w: 3.6, h: 4, flag: "prix_vu", also: ["livre"], line: marie("Il y a un prix au crayon : huit euros.") },
-        { id: "notre_dame", neutral: true, x: 18, y: 0, w: 64, h: 40, line: lino("Ça, c'est Notre-Dame. Elle n'a rien fait.") },
-        { id: "classe", neutral: true, x: 2, y: 42, w: 56, h: 56, line: lino("La classe. Tout le monde sourit. Sauf M. Nowak.") }
+        { id: "parapluie", need: true, chip: "le parapluie", x: 78.5, y: 32.5, w: 20.8, h: 17.8, line: marie("Le parapluie cache son visage. Pratique.") },
+        { id: "etiquette", need: true, chip: "l'étiquette", x: 93.8, y: 59, w: 3.2, h: 5, line: marie("Une étiquette sur la manche. Son manteau est neuf. Très neuf.") },
+        { id: "sac", need: true, chip: "le sac", x: 89.5, y: 63, w: 8, h: 11.5, line: lino("Un sac des Galeries Lafayette. Il fait du shopping, notre guide.") },
+        { id: "livre", need: true, chip: "le livre", x: 89.8, y: 51.3, w: 5, h: 7.2, line: marie("Un vieux livre. Un guide de Paris, peut-être.") },
+        { id: "prix", chip: "le prix", minZoom: 2, x: 90.6, y: 56, w: 2.2, h: 2.6, flag: "prix_vu", also: ["livre"], line: marie("Il y a un prix au crayon : huit euros.") },
+        { id: "notre_dame", neutral: true, x: 52, y: 0, w: 40, h: 30, line: lino("Ça, c'est Notre-Dame. Elle n'a rien fait.") },
+        { id: "classe", neutral: true, x: 0, y: 38, w: 76, h: 56, line: lino("La classe. Tout le monde sourit. Sauf M. Nowak.") }
       ],
       labels: [
-        { x: 66.2, y: 70, text: "Galeries Lafayette", cls: "bag" },
-        { x: 83.5, y: 78.5, text: "Galeries Lafayette", cls: "tag", minZoom: 2.5 },
-        { x: 82.3, y: 59, text: "8 €", cls: "pencil", minZoom: 2 }
+        { x: 93.5, y: 68.8, text: "Galeries\nLafayette", cls: "bag" },
+        { x: 95.35, y: 61.6, text: "Galeries\nLafayette", cls: "tag", minZoom: 2.5 },
+        { x: 91.6, y: 57.2, text: "8 €", cls: "pencil", minZoom: 2 }
       ],
-      material: [{ x: 60, y: 18, w: 28, h: 66 }] },
+      material: [{ x: 78, y: 30, w: 21, h: 46 }] },
     next: "N04b" };
   N.N04b = { type: "task", title: "Le selfie de Lino", help: "N04b", diag: "D_N04b",
     task: { kind: "loupe", img: "doc_selfie", ar: 1.3333, status: "Détails sur son visage : {n} sur {m}",
@@ -666,11 +666,11 @@ window.GAME = (function () {
     task: { kind: "loupe", mode: "pick", img: "bg_retours", ar: 1.7778, status: "Touche M. Beaumont.",
       intro: "Lequel est M. Beaumont ? Regarde bien.",
       points: [
-        { id: "touriste", x: 9, y: 20, w: 12, h: 75, line: lino("Un parapluie rouge, ça ne prouve rien.") },
-        { id: "client", x: 26, y: 20, w: 12, h: 75, line: L("vendeuse", "C'est notre modèle de l'hiver. On en a vendu beaucoup.") },
-        { id: "jeune", x: 43, y: 20, w: 12, h: 75, line: lino("Une moustache, oui. Mais elle est noire.") },
-        { id: "lucien", ok: true, x: 60, y: 20, w: 12, h: 75, line: marie("C'est lui.") },
-        { id: "vendeuse", neutral: true, x: 76, y: 18, w: 22, h: 50, line: L("vendeuse", "Le suivant, s'il vous plaît.") }
+        { id: "touriste", x: 3, y: 16, w: 14, h: 80, line: lino("Un parapluie rouge, ça ne prouve rien.") },
+        { id: "client", x: 20.5, y: 14, w: 12, h: 80, line: L("vendeuse", "C'est notre modèle de l'hiver. On en a vendu beaucoup.") },
+        { id: "jeune", x: 33.5, y: 15, w: 11.5, h: 80, line: lino("Une moustache, oui. Mais elle est noire.") },
+        { id: "lucien", ok: true, x: 46, y: 15, w: 14, h: 79, line: marie("C'est lui.") },
+        { id: "vendeuse", neutral: true, x: 77, y: 18, w: 19, h: 34, line: L("vendeuse", "Le suivant, s'il vous plaît.") }
       ],
       matImgs: ["doc_selfie"], matFiche: true },
     next: "F01b" };
