@@ -124,16 +124,22 @@ Der Titel (Startbildschirm, Kopfzeile, Abspann) nutzt die Schrift Limelight aus 
 
 ## Introvideo
 
-Beim Laden der Seite läuft `assets/video/intro.mp4` (8 Sekunden, 1280 × 720, mit Ton): die Klasse vor dem Sacré-Cœur, Marcel kommt dazu. Am Ende erscheint der Titel groß in der Plakatschrift des Spiels, danach das Startmenü. „Passer l'intro“ überspringt das Video, „Revoir l'intro“ im Startmenü zeigt es noch einmal, `index.html?intro=0` lässt es ganz aus (etwa für Tests). Ohne vorherigen Klick spielen Browser nur stumm ab; der Knopf links unten schaltet den Ton ein. Fehlt die Datei oder kann der Browser sie nicht abspielen, erscheint sofort das Startmenü. `intro_poster.jpg` ist das erste Bild des Videos und wird gezeigt, solange das Video lädt.
+Beim Laden der Seite läuft das Introvideo des gewählten Teils (1280 × 720, mit Ton), am Ende erscheint der Titel groß in der Plakatschrift des Spiels, danach das Startmenü:
+
+- Teil 1: `assets/video/intro.mp4` (8 Sekunden): die Klasse vor dem Sacré-Cœur, Marcel kommt dazu.
+- Teil 2: `assets/video/intro_teil2.mp4` (8,5 Sekunden): Herr Nowak zählt die Klasse vor Notre-Dame durch, M. Beaumont mit dem roten Schirm kommt dazu. Das gelieferte Video war 10 Sekunden lang; die letzten, ruhigen anderthalb Sekunden sind abgeschnitten, damit Bild und Musik zusammen enden.
+- Beide Videos haben als Tonspur nur die Musik „Waltz du Café“ (8,4 Sekunden); in Teil 1 läuft sie knapp 2 % schneller, damit sie mit dem Bild endet.
+
+„Passer l'intro“ überspringt das Video, „Revoir l'intro“ im Startmenü zeigt es noch einmal, `index.html?intro=0` lässt es ganz aus (etwa für Tests). Ohne vorherigen Klick spielen Browser nur stumm ab; der Knopf links unten schaltet den Ton ein. Fehlt die Datei oder kann der Browser sie nicht abspielen, erscheint sofort das Startmenü. `intro_poster.jpg` und `intro_teil2_poster.jpg` sind die ersten Bilder der Videos und werden gezeigt, solange das Video lädt.
 
 ## Zwei Teile und Schlüsselwort
 
-Beide Teile laufen über ein gemeinsames Startmenü (`index.html`, mit dem Introvideo von Teil 1):
+Beide Teile laufen über ein gemeinsames Startmenü (`index.html`, mit dem Introvideo des gewählten Teils):
 
 - Unter dem Titel stehen beide Teile zur Auswahl: « Partie 1 · L'affaire du pain perdu » und « Partie 2 · Le guide fantôme ». Beim ersten Mal ist Teil 2 gesperrt (gestrichelt, mit Schloss); wer ihn antippt, bekommt das Feld für das Schlüsselwort.
-- Am Ende von Teil 1 zeigt der Endbildschirm das Schlüsselwort **Notre Dame**. Teil 2 ist damit auf diesem Gerät offen; „Jouer la partie 2“ zeigt das Intro mit dem Titel von Teil 2 und danach das Startmenü mit Teil 2.
+- Am Ende von Teil 1 zeigt der Endbildschirm das Schlüsselwort **Notre Dame**. Teil 2 ist damit auf diesem Gerät offen; „Jouer la partie 2“ zeigt das Intro von Teil 2 und danach das Startmenü mit Teil 2.
 - Mit dem Schlüsselwort lässt sich Teil 2 auch ohne Teil 1 öffnen, etwa auf einem anderen Gerät. Groß- und Kleinschreibung, Leerzeichen, Bindestrich und Akzente sind egal („notre-dame“, „NOTREDAME“, „Notre-Dâme“).
-- Ist Teil 2 offen, zeigt das Intro beim nächsten Laden den Titel von Teil 2, und Teil 2 ist vorgewählt. Teil 1 bleibt wählbar. Titel, Untertitel und die Sprachwahl für Lino (nur Teil 1) wechseln mit der Auswahl.
+- Ist Teil 2 offen, läuft beim nächsten Laden das Intro von Teil 2, und Teil 2 ist vorgewählt. „Revoir l'intro“ zeigt das Intro des gewählten Teils. Teil 1 bleibt wählbar. Titel, Untertitel und die Sprachwahl für Lino (nur Teil 1) wechseln mit der Auswahl.
 - Die Freischaltung steht im Browser (`pp_partie2`), unabhängig von den Spielständen: „Nouvelle partie“ sperrt Teil 2 nicht wieder. Wer Teil 1 schon vor dieser Änderung beendet hat, hat Teil 2 ebenfalls offen. In der Lehrkraft-Ansicht (`?mode=prof`) sind beide Teile wählbar, und „Teil 2 wieder sperren“ nimmt die Freischaltung auf diesem Gerät zurück.
 - Die Spielstände bleiben getrennt (Teil 1 `pp_save_v1`, Teil 2 `pg_save_v1`); „Continuer la partie“ gilt für den gewählten Teil. Teil 2 bekommt die Namen beim Start über die Adresse (`guide-fantome/index.html?go=new&p1=…`, bei „Continuer“ `?go=resume`), die gleich danach wieder aus der Adresszeile verschwinden. „Menu“ und „Nouvelle partie“ in Teil 2 führen zurück ins gemeinsame Startmenü (ohne Intro, Teil 2 gewählt). Wer `guide-fantome/` direkt aufruft, landet im Startmenü, außer es gibt auf dem Gerät schon einen Spielstand von Teil 2.
 - Das Wechseln zwischen den Teilen lädt eine neue Seite. Auf Android endet dabei der Vollbildmodus; der Knopf „Plein écran“ steht in Teil 2 ebenfalls oben rechts.
