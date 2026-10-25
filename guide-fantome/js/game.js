@@ -66,19 +66,26 @@
   /* Enthält der Text das Wort (oder den Wortanfang) k? Nur am Wortanfang, damit „va rapporter“ nicht „a rapporte“ enthält */
   function hasWord(v, k) { return (" " + v + " ").includes(" " + normAns(k)); }
 
-  /* Glossar: alle Formen eines Eintrags werden in den Spieltexten markiert, ein Tipp zeigt die Übersetzung */
+  /* Glossar: alle Formen eines Eintrags werden in den Spieltexten markiert, ein Tipp zeigt die Übersetzung.
+     Gleich geschriebene Wörter (la montre / il montre): Ein Eintrag mit { after: [...] } gilt nur direkt nach einem dieser Wörter,
+     sonst gilt der Eintrag ohne Bedingung mit derselben Form; gibt es keinen, bleibt das Wort unmarkiert. */
   const GL = (function () {
     const forms = [];
     G.glossary.forEach((e, i) => {
       e[0].split(",").forEach(f => {
-        const s = f.trim().replace(/\((m|f)\)/g, "").replace(/^(le |la |les |l'|l’)/, "").trim();
+        const s = f.trim().replace(/\((m|f)\)/g, "").replace(/^(le |la |les |l'|l’|il |vous )/, "").trim();
         if (s.length > 2) forms.push({ s, i });
       });
     });
     forms.sort((a, b) => b.s.length - a.s.length);
     const rx = new RegExp("(?<![A-Za-zÀ-ÿ])(" + forms.map(f => f.s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(s|es|x)?(?![A-Za-zÀ-ÿ])", "gi");
-    const idx = {}; forms.forEach(f => { idx[f.s.toLowerCase()] = f.i; });
-    return { mark(text) { return esc(text).replace(rx, (m, w) => { const i = idx[w.toLowerCase()]; return i === undefined ? m : '<span class="gl" data-i="' + i + '">' + m + "</span>"; }); } };
+    const idx = {}; forms.forEach(f => { const k = f.s.toLowerCase(); (idx[k] = idx[k] || []).push(f.i); });
+    Object.values(idx).forEach(list => list.sort((a, b) => !!G.glossary[b][2] - !!G.glossary[a][2]));
+    function pick(list, before) {
+      const prev = ((before.match(/([A-Za-zÀ-ÿ]+)[\s'’]*$/) || [])[1] || "").toLowerCase();
+      return list.find(i => { const c = G.glossary[i][2]; return !c || !c.after || c.after.includes(prev); });
+    }
+    return { mark(text) { return esc(text).replace(rx, (m, w, pl, off, str) => { const list = idx[w.toLowerCase()]; const i = list && pick(list, str.slice(0, off)); return i === undefined ? m : '<span class="gl" data-i="' + i + '">' + m + "</span>"; }); } };
   })();
   function gl(text) { return GL.mark(text); }
   document.addEventListener("click", e => {

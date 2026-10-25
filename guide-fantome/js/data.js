@@ -985,7 +985,7 @@ window.GAME = (function () {
     ["B03", "mot pour mot: Regardez cette petite porte / Le boulanger… / Un jour… · changé: porte secrète / les rois · pas dans le livre: Suivez le parapluie rouge"],
     ["B04", "porte secrète statt entrée des livraisons; les rois statt les marchands"],
     ["B05", "p. 12 parvis · p. 27 rue Chanoinesse · p. 41 quai aux Fleurs"],
-    ["F01", "Der vierte Mann von links (graue Moustache, goldene Uhr, Mantel in der Tüte)"],
+    ["F01", "Der vierte Mann von links (grauer Schnurrbart, goldene Uhr, Mantel in der Tüte)"],
     ["F01b", "moustache grise, montre dorée"], ["F03", "Ce matin, c'était notre guide"],
     ["F04", "10 h manteau → 11 h visite → 220 euros/cartes (pas) → midi moins le quart (jamais) → maintenant (rien)"],
     ["F05", "carte = bon de réduction · badge = 31 février · photo = manteau avec étiquette · selfie = moustache et montre · page_guide = vieux livre"]
@@ -998,18 +998,21 @@ window.GAME = (function () {
     lines: ["Florian Nowak 2026"]
   };
 
-  /* ---------- Glossar (französisch-deutsch); alle Formen werden in den Spieltexten markiert ---------- */
+  /* ---------- Glossar (französisch-deutsch); alle Formen werden in den Spieltexten markiert.
+     Gleiche Schreibung, andere Bedeutung: { after: [...] } = nur direkt nach diesen Wörtern (« une montre », aber « il montre ») ---------- */
   G.glossary = [
     ["le parvis", "der Vorplatz"], ["le guide", "der Fremdenführer; auch: der Reiseführer (Buch)"], ["officiel, officielle", "offiziell"], ["déranger", "stören"],
     ["exclusif, exclusive", "exklusiv"], ["la visite", "die Führung, die Besichtigung"], ["avec plaisir", "gern"], ["le parapluie", "der Regenschirm"],
     ["le Moyen Âge", "das Mittelalter"], ["le roi, les rois", "der König, die Könige"], ["le boulanger, la boulangerie", "der Bäcker, die Bäckerei"], ["léger, légère", "leicht"],
     ["plein, pleine", "voll"], ["l'acompte (m)", "die Anzahlung"], ["l'enveloppe (f)", "der Umschlag"], ["tout de suite", "sofort"], ["moins le quart, et quart", "Viertel vor, Viertel nach"],
-    ["l'étiquette (f)", "das Etikett"], ["la manche", "der Ärmel"], ["le manteau", "der Mantel"], ["le gilet", "die Weste"], ["la moustache", "der Schnurrbart"], ["la montre", "die Armbanduhr"],
+    ["l'étiquette (f)", "das Etikett"], ["la manche", "der Ärmel"], ["le manteau", "der Mantel"], ["le gilet", "die Weste"], ["la moustache", "der Schnurrbart"],
+    ["la montre", "die Armbanduhr", { after: ["la", "une", "sa", "ma", "ta", "cette", "même", "les", "des", "ses", "mes", "tes", "ces", "notre", "votre", "leur", "nos", "vos", "leurs"] }],
+    ["montrer, il montre, vous montrez", "zeigen"],
     ["doré, dorée", "golden"], ["l'appareil dentaire (m)", "die Zahnspange"], ["le badge", "der Ausweis"], ["valable", "gültig"], ["l'autocollant (m)", "der Aufkleber"],
     ["le coin", "die Ecke"], ["se décoller, se décolle", "sich ablösen"], ["le pilier", "der Pfeiler"], ["la fiche de signalement", "die Personenbeschreibung"],
     ["la taille", "die Körpergröße; beim Mantel: die Größe"], ["la voix", "die Stimme"], ["l'indice (m)", "der Hinweis"], ["la piste", "die Spur"],
     ["la coupole", "die Kuppel"], ["le rez-de-chaussée", "das Erdgeschoss"], ["l'étage (m)", "das Stockwerk"], ["le service des retours", "die Warenrückgabe"],
-    ["la vendeuse, le vendeur", "die Verkäuferin, der Verkäufer"], ["la laine", "die Wolle"], ["l'ouverture (f)", "die Öffnung; hier: die Ladeneröffnung"],
+    ["la vendeuse, le vendeur", "die Verkäuferin, der Verkäufer"], ["la laine", "die Wolle"], ["l'ouverture (f)", "die Öffnung; hier: wenn das Geschäft morgens aufmacht"],
     ["le client, la cliente", "der Kunde, die Kundin"], ["rendre, rend, rendu", "zurückgeben"], ["le ticket de caisse", "der Kassenbon"], ["le jour même", "am selben Tag"],
     ["poli, polie", "höflich"], ["le bon de réduction, les bons de réduction", "der Rabattgutschein"], ["à moitié prix", "zum halben Preis"], ["le bonneteau", "das Hütchenspiel"],
     ["la balle", "der Ball, die Kugel"], ["gagner, gagné", "gewinnen"], ["le gobelet", "der Becher"], ["le clin d'œil", "das Zwinkern"],
@@ -1018,7 +1021,7 @@ window.GAME = (function () {
     ["mot pour mot", "Wort für Wort"], ["la livraison, l'entrée des livraisons", "die Lieferung, der Lieferanteneingang"], ["le marchand, les marchands", "der Händler, die Händler"],
     ["le sommaire", "das Inhaltsverzeichnis"], ["oublier, oublié", "vergessen"], ["le malentendu", "das Missverständnis"], ["l'agent de sécurité (m)", "der Sicherheitsmann"],
     ["la preuve", "der Beweis"], ["l'erreur d'impression (f)", "der Druckfehler"], ["je vous en prie", "bitte sehr, gern geschehen"], ["la policière", "die Polizistin"],
-    ["le compte est bon", "es ist alles da"], ["le lycée", "die Oberstufe (Schule ab Klasse 10)"], ["le journal", "die Zeitung"], ["prévenir, préviens", "warnen"],
+    ["le compte est bon", "es ist alles da"], ["le lycée", "das Lycée: die Schule für die Klassen 10 bis 12 (etwa: die gymnasiale Oberstufe)"], ["le journal", "die Zeitung"], ["prévenir, préviens", "warnen"],
     ["démasquer, démasqué", "entlarven"]
   ];
 
