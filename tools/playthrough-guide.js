@@ -232,11 +232,11 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await proof(0, 'une carte « Visite exclusive »', "Ce n'est pas un billet. C'est un bon de réduction du magasin.");
   await btn('Valider'); await cont();
   await write('Nous sommes à Notre-Dame. Venez vite, s\'il vous plaît.'); expect((await feedback()).includes('15 heures'), 'F06 Notre-Dame statt Kaufhaus');
-  await write('Nous sommes aux Galeries Lafayette, au service des retours. Venez tout de suite !'); await cont();
+  await write('Nous sommes aux Galeries Lafayette, au service retour. Venez rapidement !'); expect((await feedback()).includes("J'arrive"), 'F06 « service retour » und « rapidement » angenommen'); await cont();
   expect((await S()).flags.formules_5, 'F07 Formeln gesammelt (Zusatzzeile)');
   await cont();
   await write('Ne paie pas, il n\'y a pas de visite.'); expect((await feedback()).includes('on dit vous'), 'Z01 tu statt vous');
-  await write('Ne payez rien ! Il n\'y a pas de visite. Ce monsieur n\'est pas guide.'); await cont();
+  await write('Ne lui donnez rien, madame. C\'est un escroc !'); await cont();
   const rapport = "Ce matin, devant Notre-Dame, il y avait un guide très poli. Il portait un manteau beige et il avait un parapluie rouge. Il a pris 220 euros et il nous a donné des cartes. À midi moins le quart, il est parti, et il n'est jamais revenu. Aux Galeries Lafayette, on a appris qu'il voulait rendre son manteau le jour même. À la tour Eiffel, on a entendu son vrai nom : Lucien. Ce n'était pas un guide. Finalement, on l'a trouvé au service des retours.";
   await write('Ce matin il y avait un guide. Il portait un manteau et un parapluie. Le guide était poli et la carte était belle. Lucien était aux Galeries Lafayette avec la police et M. Nowak. Tout le monde était content et la visite était longue et belle. Le matin, la classe attendait devant Notre-Dame.');
   expect((await feedback()).includes("Il manque l'action"), 'F09 passé composé fehlt');

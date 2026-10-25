@@ -523,7 +523,7 @@ window.GAME = (function () {
     lino("Facile ! Elle est à droite. Je peux essayer ?"),
     marie("Non. Ne regarde pas les mains. Regarde autour.")
   ], next: "E02" };
-  N.E02 = { type: "task", title: "Les mains, les gens, le sac", help: "E02", diag: "D_E02",
+  N.E02 = { type: "task", title: "Regarde autour", help: "E02", diag: "D_E02",
     task: { kind: "observe", intro: "Trouve trois choses bizarres. Pas sur les gobelets.",
       frames: ["obs_bonneteau_1", "obs_bonneteau_2", "obs_bonneteau_3", "obs_bonneteau_4"], dur: 3000, grace: 1000, ar: 1.7778,
       captions: [
@@ -778,8 +778,8 @@ window.GAME = (function () {
       intro: "Écris à M. Nowak. Où est-ce qu'il doit venir ? Où exactement dans le magasin ? Quand ? (au moins 8 mots)",
       starters: ["Nous sommes...", "Venez..."],
       place: ["galeries lafayette", "lafayette", "le magasin", "boulevard haussmann"],
-      spot: ["service des retours", "retours", "porte 5", "rez de chaussee"],
-      time: ["tout de suite", "maintenant", "vite", "immediatement", "14 heures", "quatorze heures"],
+      spot: ["service des retours", "retour", "porte 5", "rez de chaussee"],
+      time: ["tout de suite", "maintenant", "vite", "rapidement", "immediatement", "des que possible", "sans attendre", "urgent", "14 heures", "quatorze heures"],
       msgs: {
         place: "Il ne sait pas dans quel magasin.",
         spot: "Le magasin est très grand. Où exactement ?",
@@ -813,7 +813,9 @@ window.GAME = (function () {
     task: { kind: "write", min: 50, rows: 10, check: "rapport",
       intro: "Pour le journal de ton lycée, raconte l'affaire en 6 à 8 phrases. Comment était le faux guide ? Qu'est-ce qu'il a fait ? Comment est-ce que vous l'avez trouvé ?",
       starters: ["Ce matin, devant Notre-Dame, il y avait...", "Il portait...", "À midi moins le quart, il...", "Aux Galeries Lafayette, on a appris que...", "À la tour Eiffel, ...", "Ce n'était pas...", "Finalement, ..."],
-      topic: ["guide", "manteau", "parapluie", "carte", "euro", "lucien", "lafayette", "eiffel", "police", "nowak"], topicMin: 3,
+      topic: ["guide", "manteau", "parapluie", "carte", "euro", "lucien", "lafayette", "eiffel", "police", "nowak", "beaumont", "argent", "enveloppe", "acompte",
+        "badge", "selfie", "photo", "moustache", "montre", "etiquette", "visite", "billet", "voleur", "faux", "fausse", "vendeuse", "retour", "bonneteau", "joueur",
+        "bouquinist", "livre", "classe"], topicMin: 3,
       topicMsg: "Raconte l'affaire : le guide, le manteau, les cartes, les lieux.",
       msgs: {
         imparfait: "Il manque le décor : comment c'était ?",
@@ -835,7 +837,7 @@ window.GAME = (function () {
     task: { kind: "write", min: 5, rows: 3, check: "warn",
       intro: "Préviens la touriste. Qu'est-ce qu'elle ne doit pas faire ? (au moins 5 mots)",
       starters: ["Ne payez...", "Il n'y a..."],
-      topicWords: ["pay", "argent", "visite", "guide", "beaumont", "euro"],
+      topicWords: ["pay", "argent", "visite", "guide", "beaumont", "euro", "donn", "acompte", "carte", "billet", "vol", "escro", "arnaq", "faux", "fausse", "menteur", "ment", "police", "rendez", "suiv", "vien", "attend"],
       msgs: {
         neg: "Dis-lui ce qu'elle ne doit pas faire.",
         topic: "De quoi est-ce que tu parles ? Elle ne comprend pas.",

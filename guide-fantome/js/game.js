@@ -965,7 +965,7 @@
       if (has(["notre dame"]) && !has(T.place)) return T.msgs.notreDame;
       if (!has(T.place)) return T.msgs.place;
       if (!has(T.spot)) return T.msgs.spot;
-      if (!has(T.time) && !/\bdans \w+ minutes?\b/.test(v) && !/\b\d{1,2} ?h\b/.test(v)) return T.msgs.time;
+      if (!has(T.time) && !/\bdans \w+ minutes?\b/.test(v) && !/\b\d{1,2} ?h ?(\d{2})?\b/.test(v)) return T.msgs.time;   // auch 14h30
       return null;
     },
     /* F09: imparfait, passé composé, Verneinung, Zeitangabe */
