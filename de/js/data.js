@@ -219,9 +219,10 @@ window.GAME = (function () {
   const N = {};
 
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
-    { who: "narrateur", fr: "Paris, 13 Uhr. Die Klasse 10b aus Ohrdruf ist in Montmartre. Herr Nowak zählt die Schüler zum fünften Mal. Lino trägt den Klassenrucksack: Bernd, ein großes Brot mit Gesicht ... und zwar kein fröhliches. Neben ihm steht Marie, seine französische Austauschpartnerin." },
+    { who: "narrateur", fr: "Paris, 13 Uhr. Die Klasse 10b aus Ohrdruf ist in Montmartre. Herr Nowak zählt die Schüler zum fünften Mal. Lino trägt den Klassenrucksack: Bernd, ein großes Brot mit Gesicht ... und zwar kein fröhliches." },
+    { who: "narrateur", fr: "Neben ihm steht Marie. Sie ist eine gute Freundin von Lino und wohnt in Paris. Die beiden kennen sich aus einem deutsch-französischen Ferienlager. Heute verbringt sie den Tag mit der Klasse." },
     { who: "lino", fr: "Ein Rucksack in Brotform. Sehr unauffällig." },
-    { who: "marie", fr: "Hier in Montmartre ist immer viel los. Pass gut auf Bernd auf!" }
+    { who: "marie", fr: "Montmartre kenne ich gut: Hier ist immer viel los. Pass gut auf Bernd auf!" }
   ], next: "M00" };
 
   N.M00 = { type: "doc", title: "Der Rucksack Bernd", icon: "sac", doc: "Herr Nowak: „Lino, du nimmst Bernd. Da drin sind die Zugfahrkarten für die Rückfahrt. Mein roter Umschlag liegt unter den Fahrkarten: Verlier ihn nicht! Und Kevins blaue Dose ist in der Vordertasche. Mach sie nicht auf. Treffpunkt um 17 Uhr im Innenhof des Louvre!“",
@@ -273,18 +274,18 @@ window.GAME = (function () {
     next: "M05" };
 
   N.M05 = { type: "lines", lines: [
-    { who: "marie", fr: "Also fangen wir mit den Hinweisen an. Père-Lachaise oder das Marais?" },
+    { who: "marie", fr: "Also fangen wir mit den Hinweisen an. Père-Lachaise oder das Marais? Mit der Métro ist beides nicht weit." },
     { who: "lino", fr: "Paris ist groß. Mein Problem auch." }
   ], next: "MAP" };
 
   N.M06 = { type: "lines", diag: "D_M06", count: true, lines: [
     { who: "narrateur", fr: "An der Métro gibt es drei Linien und sehr viele Leute. Kein Pantomime." },
-    { who: "marie", fr: "Es gibt mehrere Richtungen. Wer kann uns helfen?" }
+    { who: "marie", fr: "Ich kenne die Métro gut. Aber ohne Hinweis wissen wir nicht, welche Linie er genommen hat. Wer kann uns helfen?" }
   ] };
 
   /* Père-Lachaise */
   N.P01 = { type: "lines", once: "P01_seen", lines: [
-    { who: "marie", fr: "Ein Friedhof, Bäume, ein Wärter und ein Hund." },
+    { who: "marie", fr: "Der Père-Lachaise, der größte Friedhof von Paris. Bäume, ein Wärter und ein Hund." },
     { who: "lino", fr: "Und ein Ball. Der Hund guckt nur auf den Ball." }
   ] };
   N.P01g = { type: "lines", lines: [{ who: "narrateur", fr: "Gaston, ein Labrador. Er schaut auf einen Ball unter der Bank. Nur auf den Ball." }] };
@@ -596,7 +597,10 @@ window.GAME = (function () {
       wrongText: "Nein, da ist er nicht.", success: { who: "musicien", fr: "Am Louvre, ja. Um 17 Uhr. Viel Glück!" },
       leaveLines: [{ who: "musicien", fr: "Kommt wieder, wenn ihr es wisst." }] },
     effects: { flag: "X01_done" },
-    after: [{ who: "lino", fr: "Ein schöner Platz. Null Pantomime." }],
+    after: [
+      { who: "marie", fr: "Die Place des Vosges ist der älteste Platz von Paris." },
+      { who: "lino", fr: "Ein schöner Platz. Null Pantomime." }
+    ],
     next: "MAP" };
 
   N.C02 = { type: "lines", lines: [

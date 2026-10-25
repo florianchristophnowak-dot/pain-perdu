@@ -242,7 +242,8 @@ window.GAME = (function () {
   /* ===== 2 Auftakt an Notre-Dame ===== */
   /* Erst das Zählen der Klasse (bg_parvis), dann wechselt das Bild, wenn M. Beaumont mit dem roten Schirm dazukommt (cut_beaumont) */
   N.N00 = { type: "cut", bg: "bg_parvis", lines: [
-    L("narrateur", "Paris, le deuxième jour. Il est onze heures moins cinq. La classe 10b d'Ohrdruf attend sur le parvis de Notre-Dame. Marie, la correspondante de Lino, est avec eux."),
+    L("narrateur", "Paris, le deuxième jour. Il est onze heures moins cinq. La classe 10b d'Ohrdruf attend sur le parvis de Notre-Dame."),
+    L("narrateur", "Marie est avec eux. C'est une amie de Lino, et elle habite à Paris. Ils se connaissent depuis une colonie de vacances franco-allemande. Aujourd'hui encore, elle passe la journée avec la classe."),
     L("nowak", "… dix-neuf, vingt, vingt et un… Il manque quelqu'un ?"),
     marie("Il y a toujours beaucoup de monde ici. Et beaucoup de guides.")
   ], next: "N01" };
@@ -409,7 +410,7 @@ window.GAME = (function () {
     L("narrateur", "Métro ligne 9, d'Iéna à Chaussée d'Antin–La Fayette.", { from: "eiffel" }),
     L("narrateur", "Les Galeries Lafayette : une grande coupole, des parfums, beaucoup de touristes."),
     lino("C'est un magasin ou une cathédrale ?"),
-    marie("Un magasin. Mais aujourd'hui, on ne vient pas pour acheter.")
+    marie("Un grand magasin. Mais aujourd'hui, on ne vient pas pour acheter.")
   ], next: "G01" };
   N.G01 = { type: "doc", title: "Le plan du magasin", help: "G01", diag: "D_G01",
     docs: [
@@ -567,7 +568,8 @@ window.GAME = (function () {
     L("narrateur", "Métro ligne 7, de Chaussée d'Antin–La Fayette à Pont Neuf.", { from: ["lafayette", "retours"] }),
     L("narrateur", "RER C, de Champ de Mars–Tour Eiffel à Saint-Michel–Notre-Dame.", { from: "eiffel" }),
     L("narrateur", "Quai de Montebello, en face de Notre-Dame. Des boîtes vertes pleines de vieux livres, de cartes postales et d'affiches."),
-    lino("Des livres dans des boîtes. Comme une bibliothèque, mais dehors.")
+    lino("Des livres dans des boîtes. Comme une bibliothèque, mais dehors."),
+    marie("Ce sont les bouquinistes. Ils vendent de vieux livres ici depuis plus de quatre cents ans.")
   ], next: "B01" };
   N.B01 = { type: "choice", who: "bouquiniste", help: "B01", diag: "D_B01",
     prompt: L("bouquiniste", "Bonjour ! Vous cherchez quelque chose ? Un livre, une affiche ?"),
@@ -932,7 +934,7 @@ window.GAME = (function () {
     N07a: ["C'est le décor ou l'action ?", "Le décor, c'est comment il était. L'action, c'est ce qu'il a fait.", "Le décor répond à : comment c'était ? L'action répond à : qu'est-ce qui s'est passé ?", "Comment il était, ce qu'il avait, ce qu'il portait : c'est le décor, alors l'imparfait. Ce qu'il a fait une fois, à midi moins le quart : c'est l'action, alors le passé composé."],
     N07b: ["Comment est-ce qu'il parlait ? Vite, lentement, poliment ?", { fr: "Regarde le selfie : ses cheveux, sa moustache.", action: "material" }, "Tu peux écrire : Il parlait lentement.", "Deux phrases : comment il parlait, et comment il était. Par exemple : Il parlait lentement. Il était très poli."],
     N07c: ["Qu'est-ce qu'on peut enlever, fermer ou rendre ?", { fr: "Regarde encore la photo et le selfie.", action: "material" }, "Un parapluie, on le ferme. Une moustache, on la garde.", "Pour chaque chose, demande-toi : est-ce qu'il peut l'enlever, la fermer ou la rendre en une minute ? Si oui, il peut la changer facilement."],
-    N08: ["Pour chaque indice : où est-ce qu'on peut le trouver ?", { fr: "Regarde encore le sac et la carte.", action: "material" }, "Le sac et l'étiquette viennent du même magasin.", "Lis ce qui est écrit sur chaque indice. Le sac et l'étiquette viennent d'un magasin, la carte donne un lieu de rendez-vous. Et les vieux livres, on les vend sur les quais."],
+    N08: ["Pour chaque indice : où est-ce qu'on peut le trouver ?", { fr: "Regarde encore le sac et la carte.", action: "material" }, "Le sac et l'étiquette viennent du même magasin.", "Lis ce qui est écrit sur chaque indice. Le sac et l'étiquette viennent d'un magasin, la carte donne un lieu de rendez-vous. Et les vieux livres ? Tu es de Paris : tu sais qu'on les vend sur les quais, chez les bouquinistes."],
     G01: ["Il a acheté un manteau d'homme.", { fr: "Regarde bien chaque étage.", action: "material" }, "Cherche le mot manteaux sur le plan.", "Mode homme, manteaux : c'est au 2e étage."],
     G02: ["Elle pense que tu veux acheter. Dis-lui ce que tu cherches.", { fr: "Regarde la photo : on cherche le manteau ou l'homme ?", action: "material" }, "Tu peux dire : Non, on cherche l'homme qui le portait.", "Réponds non, et dis que tu cherches l'homme."],
     G03: ["Elle vend des manteaux. Montre-lui le manteau.", { fr: "Dans l'inventaire, il y a les détails de la photo.", action: "material" }, "Sur la manche du manteau, il y a quelque chose du magasin.", "Montre l'étiquette sur la manche."],
@@ -1001,7 +1003,7 @@ window.GAME = (function () {
   /* ---------- Glossar (französisch-deutsch); alle Formen werden in den Spieltexten markiert.
      Gleiche Schreibung, andere Bedeutung: { after: [...] } = nur direkt nach diesen Wörtern (« une montre », aber « il montre ») ---------- */
   G.glossary = [
-    ["le parvis", "der Vorplatz"], ["le guide", "der Fremdenführer; auch: der Reiseführer (Buch)"], ["officiel, officielle", "offiziell"], ["déranger", "stören"],
+    ["le parvis", "der Vorplatz"], ["l'ami (m), l'amie (f)", "der Freund, die Freundin (befreundet, kein Liebespaar)"], ["la colonie de vacances", "das Ferienlager"], ["franco-allemand, franco-allemande", "deutsch-französisch"], ["le guide", "der Fremdenführer; auch: der Reiseführer (Buch)"], ["officiel, officielle", "offiziell"], ["déranger", "stören"],
     ["exclusif, exclusive", "exklusiv"], ["la visite", "die Führung, die Besichtigung"], ["avec plaisir", "gern"], ["le parapluie", "der Regenschirm"],
     ["le Moyen Âge", "das Mittelalter"], ["le roi, les rois", "der König, die Könige"], ["le boulanger, la boulangerie", "der Bäcker, die Bäckerei"], ["léger, légère", "leicht"],
     ["plein, pleine", "voll"], ["l'acompte (m)", "die Anzahlung"], ["l'enveloppe (f)", "der Umschlag"], ["tout de suite", "sofort"], ["moins le quart, et quart", "Viertel vor, Viertel nach"],
@@ -1011,7 +1013,7 @@ window.GAME = (function () {
     ["doré, dorée", "golden"], ["l'appareil dentaire (m)", "die Zahnspange"], ["le badge", "der Ausweis"], ["valable", "gültig"], ["l'autocollant (m)", "der Aufkleber"],
     ["le coin", "die Ecke"], ["se décoller, se décolle", "sich ablösen"], ["le pilier", "der Pfeiler"], ["la fiche de signalement", "die Personenbeschreibung"],
     ["la taille", "die Körpergröße; beim Mantel: die Größe"], ["la voix", "die Stimme"], ["l'indice (m)", "der Hinweis"], ["la piste", "die Spur"],
-    ["la coupole", "die Kuppel"], ["le rez-de-chaussée", "das Erdgeschoss"], ["l'étage (m)", "das Stockwerk"], ["le service des retours", "die Warenrückgabe"],
+    ["la coupole", "die Kuppel"], ["le grand magasin", "das Kaufhaus"], ["le rez-de-chaussée", "das Erdgeschoss"], ["l'étage (m)", "das Stockwerk"], ["le service des retours", "die Warenrückgabe"],
     ["la vendeuse, le vendeur", "die Verkäuferin, der Verkäufer"], ["la laine", "die Wolle"], ["l'ouverture (f)", "die Öffnung; hier: wenn das Geschäft morgens aufmacht"],
     ["le client, la cliente", "der Kunde, die Kundin"], ["rendre, rend, rendu", "zurückgeben"], ["le ticket de caisse", "der Kassenbon"], ["le jour même", "am selben Tag"],
     ["poli, polie", "höflich"], ["le bon de réduction, les bons de réduction", "der Rabattgutschein"], ["à moitié prix", "zum halben Preis"], ["le bonneteau", "das Hütchenspiel"],
