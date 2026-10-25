@@ -129,11 +129,11 @@ Gut zu wissen:
   gepunktet unterstrichene Wörter kann man anklicken.
 `;
 
-/* Offline-Paket: alles in einem Ordner, ohne die französischen Aufnahmen */
+/* Offline-Paket: alles in einem Ordner, ohne die französischen Aufnahmen und ohne das Intro von Teil 2 */
 function offline(zipFile) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pp-de-'));
   const out = path.join(tmp, 'pain-perdu-deutsch');
-  fs.cpSync(path.join(ROOT, 'assets'), path.join(out, 'assets'), { recursive: true, filter: src => !src.includes(path.join('assets', 'audio')) });
+  fs.cpSync(path.join(ROOT, 'assets'), path.join(out, 'assets'), { recursive: true, filter: src => !src.includes(path.join('assets', 'audio')) && !path.basename(src).startsWith('intro_teil2') });
   fs.mkdirSync(path.join(out, 'css')); fs.mkdirSync(path.join(out, 'js'));
   fs.copyFileSync(path.join(ROOT, 'css/style.css'), path.join(out, 'css/style.css'));
   fs.copyFileSync(path.join(ROOT, 'de/css/de.css'), path.join(out, 'css/de.css'));

@@ -18,6 +18,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   const title = p => p.locator('#title').innerText();
   const chosen = p => p.locator('#parts .part.on').getAttribute('data-part');
   const locked = p => p.locator('#parts .part[data-part="2"]').evaluate(b => b.classList.contains('locked'));
+  const vsrc = p => p.locator('.introvid video').evaluate(v => v.currentSrc || v.src).catch(() => '');
 
   log('== Erster Besuch: Teil 1, Teil 2 gesperrt');
   let ctx = await browser.newContext({ viewport: { width: 1280, height: 860 } });
@@ -75,6 +76,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.waitForURL(u => !/guide-fantome/.test(u)); await page.waitForTimeout(300);
   const intro1 = await page.locator('.introvid h1').innerText().catch(() => '');
   expect(!intro1 || intro1.includes('pain perdu'), 'Intro mit dem Titel von Teil 1' + (intro1 ? '' : ' (Video lief nicht, Startmenü sofort)'));
+  expect(!intro1 || /video\/intro\.mp4$/.test(await vsrc(page)), 'Video von Teil 1: ' + await vsrc(page));
   if (await page.locator('.introvid .skip').isVisible().catch(() => false)) await page.click('.introvid .skip');
   await page.waitForTimeout(1100);
   expect(await page.locator('#keyrow').isVisible() && await locked(page), 'Weiterleitung ins Startmenü, Schlüsselwort-Feld offen');
@@ -83,6 +85,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.fill('#key', ' notre-DÂME '); await page.click('#btn-key'); await page.waitForTimeout(400);
   const intro2 = await page.locator('.introvid h1').innerText().catch(() => '');
   expect(!intro2 || intro2.includes('guide fantôme'), 'Intro mit dem Titel von Teil 2' + (intro2 ? '' : ' (Video lief nicht)'));
+  expect(!intro2 || /video\/intro_teil2\.mp4$/.test(await vsrc(page)), 'Video von Teil 2: ' + await vsrc(page));
   if (await page.locator('.introvid .skip').isVisible().catch(() => false)) await page.click('.introvid .skip');
   await page.waitForTimeout(1100);
   expect(await chosen(page) === '2' && (await title(page)).includes('guide fantôme'), 'Schlüsselwort (Bindestrich, Akzent, Großbuchstaben) öffnet Teil 2');
@@ -93,6 +96,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.goto(BASE + 'index.html'); await page.waitForTimeout(400);
   const intro3 = await page.locator('.introvid h1').innerText().catch(() => '');
   expect(!intro3 || intro3.includes('guide fantôme'), 'nächster Besuch: Intro mit dem Titel von Teil 2');
+  expect(!intro3 || /video\/intro_teil2\.mp4$/.test(await vsrc(page)), 'nächster Besuch: Video von Teil 2');
   await ctx.close();
 
   log('== Teil 1 vor den zwei Teilen geschafft');

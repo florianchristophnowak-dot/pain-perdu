@@ -1111,7 +1111,7 @@
       if (!key.value.trim()) { key.focus(); return; }
       if (keyNorm(key.value) !== keyNorm(P2.key)) { msg.textContent = G.ui.parts.wrong; key.classList.add("bad"); key.select(); return; }
       openPart2(); key.value = ""; key.blur(); selectPart(2);
-      if (INTRO) playIntro(() => {}); else toast(G.ui.parts.ok);   // wie nach Teil 1: das Intro mit dem Titel von Teil 2
+      if (INTRO) playIntro(() => {}); else toast(G.ui.parts.ok);   // wie nach Teil 1: das Intro von Teil 2
     };
     $("#btn-key").addEventListener("click", tryKey);
     key.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); tryKey(); } });
@@ -1126,13 +1126,14 @@
     if (want && !part2Open()) showKey(false);   // ohne Fokus: auf dem Handy ginge sonst unter dem Intro die Tastatur auf
     if (QS.has("menu") || QS.has("part")) try { const u = new URL(location.href); u.searchParams.delete("menu"); u.searchParams.delete("part"); history.replaceState(null, "", u.pathname + u.search + u.hash); } catch (e) { /* egal */ }
   }
-  /* Introvideo beim Laden der Seite (../assets/video/intro.mp4): Video, dann großer Titel, dann Startmenü.
-     ?intro=0 überspringt es. Fehlt die Datei oder spielt der Browser sie nicht, erscheint sofort das Startmenü.
+  /* Introvideo beim Laden der Seite: Video des gewählten Teils (Teil 1 assets/video/intro.mp4, Teil 2 intro_teil2.mp4),
+     dann großer Titel, dann Startmenü. ?intro=0 überspringt es. Fehlt die Datei oder spielt der Browser sie nicht, erscheint sofort das Startmenü.
      Ohne Klick erlauben Browser nur stummes Abspielen: dann gibt es einen Knopf für den Ton. */
   function playIntro(cb) {
     const box = el("div", "introvid");
     const v = document.createElement("video");
-    v.src = "../assets/video/intro.mp4"; v.poster = "../assets/video/intro_poster.jpg";
+    const vid = "../assets/video/" + (part === 2 ? "intro_teil2" : "intro");
+    v.src = vid + ".mp4"; v.poster = vid + "_poster.jpg";
     v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto";
     const title = el("div", "ititle");
     title.innerHTML = "<h1>" + esc($("#title").textContent) + "</h1><p>" + esc($("#subtitle").textContent) + "</p>";
