@@ -114,7 +114,7 @@ window.GAME = (function () {
     telephone: { emoji: "📱", name: "das Handy", desc: "Akku: 23 %.", start: true,
       actions: [
         { if: "B05_done", label: "Kevins SMS noch mal lesen", icon: "sms", text: "Lino!!! Hast du Bernd gefunden??? Meine blaue Dose ist in der Vordertasche!!! Mit meinem Namen drauf: KEVIN, mit K. Da drin ist meine Zahnspange. Ohne die kann ich kein Baguette essen. Finde den Rucksack!!!" },
-        { if: "L05_done", label: "Herrn Nowak schreiben: „Was ist alles in Bernd?“", icon: "sms", flag: "nowak_asked", diag: "D_NOWAK", text: "Herr Nowak: „Lino! Kevins blaue Dose ist in der Vordertasche. Mein roter Umschlag liegt unter den Fahrkarten. Und wo seid ihr?! Ich zähle ... 31.“" }
+        { if: "L05_done", label: "Herrn Nowak schreiben: „Was ist alles in Bernd?“", icon: "sms", flag: "nowak_asked", diag: "D_NOWAK", text: "Herr Nowak: „Lino! Kevins blaue Dose ist in der Vordertasche. Mein roter Umschlag liegt unter den Fahrkarten. Und wo seid ihr?! Ich zähle ... 20.“" }
       ] },
     sac_mime: { emoji: "👜", name: "die Tasche des Pantomimen", desc: "Braun, mit rotem Reißverschluss und gelbem Aufkleber. Darin: drei Plastik-Baguettes, ein weißer Handschuh, ein nasses Programmheft (man kann nichts lesen)." },
     carte_chloe: { emoji: "📝", name: "Chloés Karte", desc: "„Père-Lachaise, heute Morgen. Danke für die Texte, Marcel! Chloé“" },
@@ -561,7 +561,7 @@ window.GAME = (function () {
   N.V04 = { type: "cut", bg: "cut_final", lines: [
     { who: "marcel", fr: "Eine braune Tasche, ein Rucksack in Brotform ... Für einen Pantomimen ist das fast dasselbe!" },
     { who: "lino", fr: "Für Sie vielleicht. Bernd sieht das anders." },
-    { who: "narrateur", fr: "Herr Nowak kommt mit der Klasse. Kevin öffnet seine blaue Dose. Herr Nowak öffnet seinen roten Umschlag: „Plan B: Ruhe bewahren und noch mal zählen.“ Er zählt: 31 ... 32. Er sieht Bernd an." },
+    { who: "narrateur", fr: "Herr Nowak kommt mit der Klasse. Kevin öffnet seine blaue Dose. Herr Nowak öffnet seinen roten Umschlag: „Plan B: Ruhe bewahren und noch mal zählen.“ Er zählt: 22 ... 23. Er sieht Bernd an." },
     { who: "lino", fr: "Er zählt nicht. Er urteilt." },
     { who: "lino", fr: "Notiz an mich: nicht „Dieb“ rufen ohne Beweise.", onlyIf: "V03_voleur" }
   ], next: "V05" };
