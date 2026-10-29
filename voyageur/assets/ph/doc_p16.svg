@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" width="1500" height="1000"><defs><filter id="sep"><feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0 0.349 0.686 0.168 0 0 0.272 0.534 0.131 0 0 0 0 0 1 0"/></filter></defs><g filter="url(#sep)"><rect x="0.0" y="0.0" width="1500.0" height="1000.0" fill="#d8c3a0" />
+<rect x="0.0" y="620.0" width="1500.0" height="380.0" fill="#cdb795" />
+<rect x="0.0" y="80.0" width="1500.0" height="560.0" fill="#c9ad80" />
+<rect x="0.0" y="60.0" width="1500.0" height="40.0" fill="#a88b5e" />
+<rect x="60.0" y="220.0" width="210.0" height="380.0" fill="#8e7350" />
+<ellipse cx="165.0" cy="220.0" rx="105.0" ry="70.0" fill="#8e7350" />
+<rect x="360.0" y="220.0" width="210.0" height="380.0" fill="#8e7350" />
+<ellipse cx="465.0" cy="220.0" rx="105.0" ry="70.0" fill="#8e7350" />
+<rect x="660.0" y="220.0" width="210.0" height="380.0" fill="#8e7350" />
+<ellipse cx="765.0" cy="220.0" rx="105.0" ry="70.0" fill="#8e7350" />
+<rect x="960.0" y="220.0" width="210.0" height="380.0" fill="#8e7350" />
+<ellipse cx="1065.0" cy="220.0" rx="105.0" ry="70.0" fill="#8e7350" />
+<rect x="1260.0" y="220.0" width="210.0" height="380.0" fill="#8e7350" />
+<ellipse cx="1365.0" cy="220.0" rx="105.0" ry="70.0" fill="#8e7350" />
+<ellipse cx="360.0" cy="160.0" rx="82.5" ry="80.0" fill="#efe6cf" stroke="#2b2420" stroke-width="4"/>
+<line x1="360.0" y1="160.0" x2="360.0" y2="110.0" stroke="#2b2420" stroke-width="4" stroke-linecap="round"/>
+<line x1="360.0" y1="160.0" x2="397.5" y2="170.0" stroke="#2b2420" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="960.0" cy="160.0" rx="82.5" ry="80.0" fill="#efe6cf" stroke="#2b2420" stroke-width="4"/>
+<line x1="960.0" y1="160.0" x2="960.0" y2="110.0" stroke="#2b2420" stroke-width="4" stroke-linecap="round"/>
+<line x1="960.0" y1="160.0" x2="997.5" y2="170.0" stroke="#2b2420" stroke-width="4" stroke-linecap="round"/>
+<rect x="907.8" y="863.0" width="43.2" height="231.0" fill="#3d3530" />
+<rect x="999.0" y="863.0" width="43.2" height="231.0" fill="#3d3530" />
+<polygon points="874.2,387.0 1075.8,387.0 1095.0,786.0 855.0,786.0" fill="#4a3b30" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="975.0" cy="317.0" rx="52.8" ry="77.0" fill="#e8c9a6" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="975.0" cy="265.2" rx="55.2" ry="30.8" fill="#b8b8b0" />
+<ellipse cx="975.0" cy="349.2" rx="28.8" ry="11.2" fill="#8f8f88" />
+<ellipse cx="975.0" cy="242.8" rx="62.4" ry="25.2" fill="#4a3b30" /></g></svg>
