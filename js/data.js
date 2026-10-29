@@ -134,7 +134,7 @@ window.GAME = (function () {
     telephone: { emoji: "📱", name: "le téléphone", desc: "Batterie : 23 %.", start: true,
       actions: [
         { if: "B05_done", label: "Relire le SMS de Kevin", icon: "sms", text: "Lino !!! Tu as retrouvé Bernd ??? Ma boîte bleue est dans la poche de devant !!! Avec mon nom dessus : KEVIN, avec un K. Dedans, c'est mon appareil dentaire. Sans lui, je ne peux pas manger de baguette. Trouve le sac !!!" },
-        { if: "L05_done", label: "Écrire à M. Nowak : « Qu'est-ce qu'il y a dans Bernd ? »", icon: "sms", flag: "nowak_asked", diag: "D_NOWAK", text: "M. Nowak : « Lino ! La boîte bleue de Kevin est dans la poche de devant. Mon enveloppe rouge est sous les billets de train. Et vous êtes où ?! Je compte... 31. »" }
+        { if: "L05_done", label: "Écrire à M. Nowak : « Qu'est-ce qu'il y a dans Bernd ? »", icon: "sms", flag: "nowak_asked", diag: "D_NOWAK", text: "M. Nowak : « Lino ! La boîte bleue de Kevin est dans la poche de devant. Mon enveloppe rouge est sous les billets de train. Et vous êtes où ?! Je compte... 20. »" }
       ] },
     sac_mime: { emoji: "👜", name: "le sac du mime", desc: "Brun, avec une fermeture rouge et un autocollant jaune. Dedans : trois baguettes en plastique, un gant blanc, un programme mouillé (on ne peut rien lire)." },
     carte_chloe: { emoji: "📝", name: "la carte de Chloé", desc: "« Père-Lachaise, ce matin. Merci pour les textes, Marcel ! Chloé »" },
@@ -581,7 +581,7 @@ window.GAME = (function () {
   N.V04 = { type: "cut", bg: "cut_final", lines: [
     { who: "marcel", fr: "Un sac brun, un sac en forme de pain... Pour un mime, c'est presque pareil !" },
     { who: "lino", fr: "Pour vous, peut-être. Bernd, lui, n'est pas d'accord.", de: "Für Sie vielleicht. Bernd sieht das anders." },
-    { who: "narrateur", fr: "Monsieur Nowak arrive avec la classe. Kevin ouvre sa boîte bleue. Monsieur Nowak ouvre son enveloppe rouge : « Plan B : rester calme et recompter. » Il compte : 31... 32. Il regarde Bernd." },
+    { who: "narrateur", fr: "Monsieur Nowak arrive avec la classe. Kevin ouvre sa boîte bleue. Monsieur Nowak ouvre son enveloppe rouge : « Plan B : rester calme et recompter. » Il compte : 22... 23. Il regarde Bernd." },
     { who: "lino", fr: "Il ne compte pas. Il juge.", de: "Er zählt nicht. Er beurteilt nur." },
     { who: "lino", fr: "Note pour moi : ne pas crier « voleur » sans preuves.", de: "Notiz an mich: nicht „Dieb“ rufen ohne Beweise.", onlyIf: "V03_voleur" }
   ], next: "V05" };
