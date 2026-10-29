@@ -128,7 +128,7 @@ window.GAME = (function () {
   /* ---------- Inventar ---------- */
   G.items = {
     sac_bernd: { emoji: "🎒", name: "le sac Bernd", desc: "Un grand pain avec un visage... pas content. Nos affaires sont dedans.", start: true },
-    carte_eleve: { emoji: "🪪", name: "la carte d'élève", desc: "Lino, 10b, Ohrdruf.", start: true },
+    carte_eleve: { emoji: "🪪", name: "la carte d'élève", desc: "Lino, 10b, Erfurt.", start: true },
     nougat: { emoji: "🍫", name: "le nougat Viba", desc: "Pour les urgences.", start: true },
     cola: { emoji: "🥤", name: "la Vita Cola", desc: "Une bouteille de Thuringe. Personne à Paris ne connaît ça.", start: true },
     telephone: { emoji: "📱", name: "le téléphone", desc: "Batterie : 23 %.", start: true,
@@ -239,7 +239,7 @@ window.GAME = (function () {
   const N = {};
 
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
-    { who: "narrateur", fr: "Paris, 13 heures. La classe 10b d'Ohrdruf est à Montmartre. Monsieur Nowak compte les élèves pour la cinquième fois. Lino tient le sac de la classe : Bernd, un grand pain avec un visage... pas content." },
+    { who: "narrateur", fr: "Paris, 13 heures. La classe 10b d'Erfurt est à Montmartre. Monsieur Nowak compte les élèves pour la cinquième fois. Lino tient le sac de la classe : Bernd, un grand pain avec un visage... pas content." },
     { who: "narrateur", fr: "Marie est avec lui. C'est une amie de Lino, et elle habite à Paris. Ils se connaissent depuis une colonie de vacances franco-allemande. Aujourd'hui, elle passe la journée avec la classe." },
     { who: "lino", fr: "Un sac en forme de pain. Très discret.", de: "Ein Rucksack in Brotform. Sehr unauffällig." },
     { who: "marie", fr: "Je connais bien Montmartre : ici, il y a toujours beaucoup de monde. Fais attention à Bernd !" }

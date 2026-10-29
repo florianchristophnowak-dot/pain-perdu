@@ -243,7 +243,7 @@ window.GAME = (function () {
   /* ===== 2 Auftakt an Notre-Dame ===== */
   /* Erst das Zählen der Klasse (bg_parvis), dann wechselt das Bild, wenn M. Beaumont mit dem roten Schirm dazukommt (cut_beaumont) */
   N.N00 = { type: "cut", bg: "bg_parvis", lines: [
-    L("narrateur", "Paris, le deuxième jour. Il est onze heures moins cinq. La classe 10b d'Ohrdruf attend sur le parvis de Notre-Dame."),
+    L("narrateur", "Paris, le deuxième jour. Il est onze heures moins cinq. La classe 10b d'Erfurt attend sur le parvis de Notre-Dame."),
     L("narrateur", "Marie est avec eux. C'est une amie de Lino, et elle habite à Paris. Ils se connaissent depuis une colonie de vacances franco-allemande. Aujourd'hui encore, elle passe la journée avec la classe."),
     L("nowak", "… dix-neuf, vingt, vingt et un… Il manque quelqu'un ?"),
     marie("Il y a toujours beaucoup de monde ici. Et beaucoup de guides.")

@@ -108,7 +108,7 @@ window.GAME = (function () {
   /* ---------- Inventar ---------- */
   G.items = {
     sac_bernd: { emoji: "🎒", name: "der Rucksack Bernd", desc: "Ein großes Brot mit Gesicht ... und zwar kein fröhliches. Unsere Sachen sind drin.", start: true },
-    carte_eleve: { emoji: "🪪", name: "der Schülerausweis", desc: "Lino, 10b, Ohrdruf.", start: true },
+    carte_eleve: { emoji: "🪪", name: "der Schülerausweis", desc: "Lino, 10b, Erfurt.", start: true },
     nougat: { emoji: "🍫", name: "das Viba-Nougat", desc: "Für Notfälle.", start: true },
     cola: { emoji: "🥤", name: "die Vita Cola", desc: "Eine Flasche aus Thüringen. In Paris kennt die niemand.", start: true },
     telephone: { emoji: "📱", name: "das Handy", desc: "Akku: 23 %.", start: true,
@@ -219,7 +219,7 @@ window.GAME = (function () {
   const N = {};
 
   N.S02 = { type: "cut", bg: "bg_montmartre", lines: [
-    { who: "narrateur", fr: "Paris, 13 Uhr. Die Klasse 10b aus Ohrdruf ist in Montmartre. Herr Nowak zählt die Schüler zum fünften Mal. Lino trägt den Klassenrucksack: Bernd, ein großes Brot mit Gesicht ... und zwar kein fröhliches." },
+    { who: "narrateur", fr: "Paris, 13 Uhr. Die Klasse 10b aus Erfurt ist in Montmartre. Herr Nowak zählt die Schüler zum fünften Mal. Lino trägt den Klassenrucksack: Bernd, ein großes Brot mit Gesicht ... und zwar kein fröhliches." },
     { who: "narrateur", fr: "Neben ihm steht Marie. Sie ist eine gute Freundin von Lino und wohnt in Paris. Die beiden kennen sich aus einem deutsch-französischen Ferienlager. Heute verbringt sie den Tag mit der Klasse." },
     { who: "lino", fr: "Ein Rucksack in Brotform. Sehr unauffällig." },
     { who: "marie", fr: "Montmartre kenne ich gut: Hier ist immer viel los. Pass gut auf Bernd auf!" }
@@ -717,7 +717,7 @@ window.GAME = (function () {
     ["Croissant", "Französisches Hörnchen aus Blätterteig, typisch zum Frühstück."],
     ["Pantomime, Pantomimen", "Künstler, der ohne Worte spielt, nur mit Gesten. Oft mit weiß geschminktem Gesicht. Auch die Kunst selbst heißt so: die Pantomime."],
     ["Baskenmütze", "Flache, runde Mütze, typisch für Frankreich (auf Französisch „le béret“)."],
-    ["Ohrdruf", "Kleine Stadt in Thüringen. Dort ist die Schule der Klasse 10b."],
+    ["Erfurt", "Landeshauptstadt von Thüringen. Dort ist die Schule der Klasse 10b."],
     ["Vita Cola, Viba", "Zwei Marken aus Thüringen: eine Cola und Nougat-Süßigkeiten."]
   ];
 

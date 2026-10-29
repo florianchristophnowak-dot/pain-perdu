@@ -1,6 +1,6 @@
 # L'affaire du pain perdu
 
-Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: Eine Klasse aus Ohrdruf sucht in Paris den Klassenrucksack „Bernd“, den ein Pantomime versehentlich mitgenommen hat. Lino ermittelt zusammen mit Marie, einer guten Freundin aus Paris (befreundet, kein Paar; die beiden kennen sich aus einem deutsch-französischen Ferienlager). Marie kennt sich in ihrer Stadt aus und gibt die Hilfen. Das Spiel prüft Hör- und Leseverstehen, den Wechsel von imparfait und passé composé sowie kommunikative Grammatik (passende Fragen, höfliche Reparatur, Wegbeschreibung).
+Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: Eine Klasse aus Erfurt sucht in Paris den Klassenrucksack „Bernd“, den ein Pantomime versehentlich mitgenommen hat. Lino ermittelt zusammen mit Marie, einer guten Freundin aus Paris (befreundet, kein Paar; die beiden kennen sich aus einem deutsch-französischen Ferienlager). Marie kennt sich in ihrer Stadt aus und gibt die Hilfen. Das Spiel prüft Hör- und Leseverstehen, den Wechsel von imparfait und passé composé sowie kommunikative Grammatik (passende Fragen, höfliche Reparatur, Wegbeschreibung).
 
 **Spielen:** https://florianchristophnowak-dot.github.io/pain-perdu/
 **Lehrkraft-Ansicht:** https://florianchristophnowak-dot.github.io/pain-perdu/?mode=prof (fragt nach dem Code der Lehrkraft)
@@ -160,7 +160,7 @@ Eine deutsche Testfassung (etwa für jüngere Testspieler ohne Französisch) lie
 
 Alle Spieltexte liegen in `js/data.js`. Figurentexte sind `fr`, Linos umschaltbare Kommentare zusätzlich `de`. Die Kennungen (M03, P04, …) verbinden Drehbuch, Code und Diagnose.
 
-Lino und Marie in beiden Teilen: Lino ist in der 10b in Ohrdruf, Marie wohnt in Paris und verbringt die Tage mit der Klasse. Die beiden sind befreundet, aber kein Paar; sie kennen sich aus einem deutsch-französischen Ferienlager. Deshalb heißt es im Französischen « une amie de Lino », nie « sa copine » oder « sa petite amie » (das wäre die feste Freundin), und im Deutschen „eine Freundin von Lino“ statt „seine Freundin“. Was Marie über Pariser Orte erzählt, kommt aus ihrer Ortskenntnis (« Je connais bien Montmartre », « C'est ma ville »).
+Lino und Marie in beiden Teilen: Lino ist in der 10b in Erfurt, Marie wohnt in Paris und verbringt die Tage mit der Klasse. Die beiden sind befreundet, aber kein Paar; sie kennen sich aus einem deutsch-französischen Ferienlager. Deshalb heißt es im Französischen « une amie de Lino », nie « sa copine » oder « sa petite amie » (das wäre die feste Freundin), und im Deutschen „eine Freundin von Lino“ statt „seine Freundin“. Was Marie über Pariser Orte erzählt, kommt aus ihrer Ortskenntnis (« Je connais bien Montmartre », « C'est ma ville »).
 
 ## Teil 2: Le guide fantôme
 
