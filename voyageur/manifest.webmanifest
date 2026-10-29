@@ -1,0 +1,17 @@
+{
+  "name": "Le voyageur de 1900",
+  "short_name": "Voyageur 1900",
+  "description": "Le voyageur de 1900 – une enquête de Lino et Marie à Paris pour apprendre le français (A2). Partie 3 de L'affaire du pain perdu.",
+  "lang": "fr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#1d1a17",
+  "theme_color": "#2a2521",
+  "icons": [
+    { "src": "../assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "../assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "../assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

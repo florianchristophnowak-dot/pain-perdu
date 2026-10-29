@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1000" width="2000" height="1000"><defs></defs><rect x="0.0" y="0.0" width="2000.0" height="1000.0" fill="#b98a5a" />
+<rect x="0.0" y="0.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="115.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="230.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="345.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="460.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="575.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="690.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="805.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="0.0" y="920.0" width="2000.0" height="6.0" fill="#a2774c" />
+<rect x="300.0" y="400.0" width="1560.0" height="200.0" fill="#e2a95a" stroke="#2b2420" stroke-width="5" rx="90"/>
+<line x1="920.0" y1="430.0" x2="1000.0" y2="570.0" stroke="#b9803c" stroke-width="6" stroke-linecap="round"/>
+<line x1="1060.0" y1="430.0" x2="1140.0" y2="570.0" stroke="#b9803c" stroke-width="6" stroke-linecap="round"/>
+<line x1="1200.0" y1="430.0" x2="1280.0" y2="570.0" stroke="#b9803c" stroke-width="6" stroke-linecap="round"/>
+<line x1="1340.0" y1="430.0" x2="1420.0" y2="570.0" stroke="#b9803c" stroke-width="6" stroke-linecap="round"/>
+<line x1="1480.0" y1="430.0" x2="1560.0" y2="570.0" stroke="#b9803c" stroke-width="6" stroke-linecap="round"/>
+<line x1="1620.0" y1="430.0" x2="1700.0" y2="570.0" stroke="#b9803c" stroke-width="6" stroke-linecap="round"/>
+<polygon points="110.0,400.0 160.0,430.0 116.0,470.0 172.0,510.0 112.0,550.0 164.0,585.0 120.0,610.0 330.0,610.0 330.0,395.0" fill="#e2a95a" stroke="#2b2420" stroke-width="5"/>
+<rect x="400.0" y="360.0" width="84.0" height="280.0" fill="#fbf7e8" stroke="#2b2420" stroke-width="3" opacity=".95"/>
+<rect x="530.0" y="360.0" width="84.0" height="280.0" fill="#fbf7e8" stroke="#2b2420" stroke-width="3" opacity=".95"/>
+<rect x="660.0" y="360.0" width="84.0" height="280.0" fill="#fbf7e8" stroke="#2b2420" stroke-width="3" opacity=".95"/></svg>

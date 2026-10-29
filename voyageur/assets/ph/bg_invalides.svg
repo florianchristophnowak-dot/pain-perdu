@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900"><defs></defs><rect x="0.0" y="0.0" width="1600.0" height="900.0" fill="#dccaa8" />
+<rect x="0.0" y="0.0" width="1600.0" height="360.0" fill="#cfdce4" />
+<rect x="400.0" y="144.0" width="800.0" height="216.0" fill="#cbb38a" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="800.0" cy="144.0" rx="144.0" ry="108.0" fill="#d6b04a" stroke="#2b2420" stroke-width="4"/>
+<rect x="0.0" y="360.0" width="1600.0" height="540.0" fill="#bfcf9e" />
+<rect x="576.0" y="324.0" width="448.0" height="63.0" fill="#efe2c4" stroke="#2b2420" stroke-width="3"/>
+<rect x="32.0" y="576.0" width="352.0" height="90.0" fill="#3f6b3f" stroke="#2b2420" stroke-width="3"/>
+<rect x="173.8" y="798.5" width="37.4" height="142.6" fill="#3d3530" />
+<rect x="252.8" y="798.5" width="37.4" height="142.6" fill="#3d3530" />
+<polygon points="144.6,504.7 319.4,504.7 336.0,751.0 128.0,751.0" fill="#3f6b3f" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="232.0" cy="461.5" rx="45.8" ry="47.5" fill="#e8c9a6" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="232.0" cy="429.6" rx="47.8" ry="19.0" fill="#7a6a5a" />
+<rect x="746.2" y="796.5" width="34.6" height="148.5" fill="#3d3530" />
+<rect x="819.2" y="796.5" width="34.6" height="148.5" fill="#3d3530" />
+<polygon points="719.4,490.5 880.6,490.5 896.0,747.0 704.0,747.0" fill="#f2ece0" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="800.0" cy="445.5" rx="42.2" ry="49.5" fill="#e8c9a6" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="800.0" cy="412.2" rx="44.2" ry="19.8" fill="#6b5642" />
+<rect x="928.0" y="594.0" width="320.0" height="54.0" fill="#7a5a36" stroke="#2b2420" stroke-width="3"/>
+<rect x="960.0" y="558.0" width="160.0" height="27.0" fill="#d9a85f" rx="8"/>
+<rect x="1136.0" y="549.0" width="80.0" height="45.0" fill="#8a6a3e" />
+<rect x="1248.0" y="450.0" width="288.0" height="234.0" fill="#e9e3d6" stroke="#2b2420" stroke-width="3"/>
+<rect x="1280.0" y="360.0" width="160.0" height="54.0" fill="#efe2c4" stroke="#2b2420" stroke-width="3"/></svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" width="1500" height="1000"><defs><filter id="sep"><feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0 0.349 0.686 0.168 0 0 0.272 0.534 0.131 0 0 0 0 0 1 0"/></filter></defs><g filter="url(#sep)"><rect x="0.0" y="0.0" width="1500.0" height="1000.0" fill="#d8c3a0" />
+<rect x="0.0" y="0.0" width="1500.0" height="400.0" fill="#dccaa8" />
+<rect x="300.0" y="280.0" width="900.0" height="260.0" fill="#c9ad80" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="750.0" cy="260.0" rx="165.0" ry="140.0" fill="#d6b04a" stroke="#2b2420" stroke-width="4"/>
+<rect x="732.0" y="60.0" width="36.0" height="80.0" fill="#b8923a" />
+<rect x="0.0" y="540.0" width="1500.0" height="460.0" fill="#c8b48f" />
+<rect x="481.2" y="682.8" width="37.8" height="171.6" fill="#3d3530" />
+<rect x="561.0" y="682.8" width="37.8" height="171.6" fill="#3d3530" />
+<polygon points="451.8,329.2 628.2,329.2 645.0,625.6 435.0,625.6" fill="#d9c8a4" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="540.0" cy="277.2" rx="46.2" ry="57.2" fill="#e8c9a6" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="540.0" cy="238.7" rx="48.3" ry="22.9" fill="#b8b8b0" />
+<ellipse cx="540.0" cy="301.1" rx="25.2" ry="8.3" fill="#8f8f88" />
+<ellipse cx="540.0" cy="222.1" rx="54.6" ry="18.7" fill="#4a3b30" />
+<rect x="901.2" y="682.8" width="37.8" height="171.6" fill="#3d3530" />
+<rect x="981.0" y="682.8" width="37.8" height="171.6" fill="#3d3530" />
+<polygon points="871.8,329.2 1048.2,329.2 1065.0,625.6 855.0,625.6" fill="#f2ece0" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="960.0" cy="277.2" rx="46.2" ry="57.2" fill="#e8c9a6" stroke="#2b2420" stroke-width="3"/>
+<ellipse cx="960.0" cy="238.7" rx="48.3" ry="22.9" fill="#6b5642" />
+<rect x="918.0" y="162.8" width="84.0" height="67.6" fill="#f6f2ea" stroke="#2b2420" stroke-width="3"/>
+<rect x="630.0" y="550.0" width="210.0" height="170.0" fill="#8a6a3e" stroke="#2b2420" stroke-width="4"/>
+<line x1="630.0" y1="635.0" x2="840.0" y2="635.0" stroke="#2b2420" stroke-width="3" stroke-linecap="round"/>
+<rect x="600.0" y="790.0" width="300.0" height="150.0" fill="#222222" stroke="#2b2420" stroke-width="3"/>
+<polygon points="600.0,790.0 900.0,770.0 900.0,735.0 600.0,755.0" fill="#f2f2f2" stroke="#2b2420" stroke-width="3"/>
+<polygon points="630.0,753.0 660.0,751.0 637.5,788.0 607.5,790.0" fill="#222222" />
+<polygon points="690.0,753.0 720.0,751.0 697.5,788.0 667.5,790.0" fill="#222222" />
+<polygon points="750.0,753.0 780.0,751.0 757.5,788.0 727.5,790.0" fill="#222222" />
+<polygon points="810.0,753.0 840.0,751.0 817.5,788.0 787.5,790.0" fill="#222222" />
+<polygon points="870.0,753.0 900.0,751.0 877.5,788.0 847.5,790.0" fill="#222222" /></g></svg>
