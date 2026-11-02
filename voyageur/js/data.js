@@ -150,7 +150,7 @@ window.GAME = (function () {
      Lesbarer Text (die Filmklappe) kommt als labels vom Spiel. Fundpunkte stehen bei den Aufgaben, ebenfalls in Fotokoordinaten. */
   G.photos = {
     P16: { img: "doc_p16", ar: 1.5, label: "P16", decoy: true },
-    P17: { img: "doc_p17", ar: 1.5, label: "P17", crop: { x: 14, y: 8, w: 58, h: 84 }, legend: "Visite du musée d'Orsay, 1900" },
+    P17: { img: "doc_p17", ar: 1.5, label: "P17", crop: { x: 11, y: 7, w: 64, h: 93 }, legend: "Visite du musée d'Orsay, 1900" },
     P18: { img: "doc_p18", ar: 1.5, label: "P18", crop: { x: 16, y: 6, w: 62, h: 88 }, legend: "Le pont Alexandre III, 1900" },
     P19: { img: "doc_p19", ar: 1.5, label: "P19", crop: { x: 20, y: 4, w: 60, h: 70 }, legend: "Les Invalides, 1900",
       labels: [{ x: 50, y: 86.5, text: "PARIS 1900\nSEPTEMBRE 2025\nCHLOÉ", cls: "clap" }] }
@@ -287,15 +287,15 @@ window.GAME = (function () {
     task: { kind: "loupe", render: "album", maxZoom: 5, status: "Sur la photo A : {n} sur {m}",
       intro: "Regardez les trois photos. Sur la photo A, trouvez le visage et la montre du monsieur.",
       points: [
-        { id: "visage", need: true, chip: "le visage", photo: "P17", x: 40, y: 28, w: 9, h: 15, lines: [lino("Marie. Le monsieur sur la photo. C'est notre guide !"), marie("Notre faux guide. Lucien.")] },
-        { id: "montre", need: true, chip: "la montre", photo: "P17", x: 47.5, y: 60, w: 7, h: 9, line: marie("La même montre, peut-être.") },
+        { id: "visage", need: true, chip: "le visage", photo: "P17", x: 39, y: 20.5, w: 8, h: 12.5, lines: [lino("Marie. Le monsieur sur la photo. C'est notre guide !"), marie("Notre faux guide. Lucien.")] },
+        { id: "montre", need: true, chip: "la montre", photo: "P17", x: 42, y: 46.5, w: 9.5, h: 8, line: marie("La même montre, peut-être.") },
         { id: "lucien_c", neutral: true, photo: "P19", x: 30, y: 16, w: 14, h: 40, line: lino("Encore le même monsieur. Mais regarde d'abord la photo A.") },
         { id: "baguette", neutral: true, photo: "P18", x: 34, y: 50, w: 20, h: 13, line: lino("Une baguette avec du ruban adhésif ? Bizarre.") },
-        { id: "brun_a", neutral: true, weak: true, photo: "P17", x: 14, y: 8, w: 58, h: 84, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
+        { id: "brun_a", neutral: true, weak: true, photo: "P17", x: 11, y: 7, w: 64, h: 93, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
         { id: "brun_b", neutral: true, weak: true, photo: "P18", x: 16, y: 6, w: 62, h: 88, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
         { id: "brun_c", neutral: true, weak: true, photo: "P19", x: 20, y: 4, w: 60, h: 70, line: marie("La couleur peut être ancienne. Ou ajoutée.") }
       ],
-      material: [{ photo: "P17", x: 36, y: 24, w: 22, h: 50 }] },
+      material: [{ photo: "P17", x: 37, y: 19, w: 16, h: 37 }] },
     after: [
       lino("En 1900, il avait déjà la même moustache."),
       marie("Ça lui ressemble. Mais un visage, ce n'est pas une date."),
@@ -585,7 +585,7 @@ window.GAME = (function () {
       decoy: lino("Le même monument. Mais la personne n'est pas à la même place. Regarde aussi le manteau."),
       matched: L("chloe", "Oui. Ce sont les mêmes photos. Maintenant, regardez les bords."),
       points: [
-        { id: "telephone", chip: "l'assistante avec un smartphone", photo: "P17", x: 79, y: 33, w: 16, h: 61, lines: [
+        { id: "telephone", chip: "l'assistante avec un smartphone", photo: "P17", x: 79, y: 25, w: 20, h: 75, lines: [
           lino("À droite, avec le téléphone : c'est l'assistante ! Du pont. Et du Louvre."),
           L("chloe", "Et Lucien… il n'a jamais voulu enlever sa montre. En 1900 !")
         ] },
@@ -595,7 +595,7 @@ window.GAME = (function () {
         ] },
         { id: "clap", chip: "le clap", photo: "P19", x: 39, y: 76, w: 22, h: 21, line: marie("Le clap ! « Paris 1900 »… et septembre 2025.") }
       ],
-      material: [{ photo: "P16", x: 56, y: 24, w: 18, h: 70 }, { photo: "P17", x: 35, y: 22, w: 22, h: 72 }] },
+      material: [{ photo: "P16", x: 56, y: 24, w: 18, h: 70 }, { photo: "P17", x: 33, y: 19, w: 21, h: 80 }] },
     after: [lino("Il n'a rien ajouté. Il a seulement coupé ce qui racontait la vérité.")],
     effects: { item: "photos_entieres", flag: "C01_done" }, next: "C02d" };
   N.C02d = { type: "doc", title: "La fiche de Chloé",

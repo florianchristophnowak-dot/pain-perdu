@@ -97,10 +97,10 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   expect((await feedback()).includes('ancienne. Ou ajoutée'), 'O02 braune Farbe: Bemerkung');
   await loupeTap(...toSlot('P18', 44, 56.5));
   expect((await feedback()).includes('ruban adhésif ? Bizarre'), 'O02 Baguette auf B: nur eine Bemerkung');
-  await loupeTap(...toSlot('P17', 44.5, 35.5));
+  await loupeTap(...toSlot('P17', 43, 26.5));
   expect((await feedback()).includes('notre guide') && (await status()).includes('1 sur 2'), 'O02 Gesicht gefunden: ' + await status());
   expect((await page.locator('#modal-body .help-bubble, #modal-body .btn.aide').first().getAttribute('data-who')) === 'marie', 'O02 Hilfe von Marie (Lino ermittelt)');
-  await loupeTap(...toSlot('P17', 51, 64.5));
+  await loupeTap(...toSlot('P17', 49, 51.5));
   await cont();
   expect((await S()).inv.includes('photo_a') && (await S()).inv.includes('photo_c'), 'O02 Fotos A, B, C im Inventar');
   await btn("L'album est vieux ?");
