@@ -9,18 +9,18 @@ window.GAME = (function () {
 
   G.version = "3.0.0";
 
-  /* ---------- Figuren (Porträts mit Pfad kommen aus Teil 1 und Teil 2) ---------- */
+  /* ---------- Figuren (Porträts ohne Pfad liegen in voyageur/assets/img/, mit Pfad kommen sie aus Teil 1 und Teil 2) ---------- */
   const T1 = "../assets/img/", T2 = "../guide-fantome/assets/img/";
   G.chars = {
     narrateur: { name: "", initials: "", color: "#8b7355" },
     lino: { name: "Lino", pt: T2 + "pt_lino", initials: "L", color: "#3b4a6b" },
     marie: { name: "Marie", pt: T2 + "pt_marie", initials: "M", color: "#8a3b3b" },
     nowak: { name: "M. Nowak", pt: T2 + "pt_nowak", initials: "N", color: "#5a5a5a" },
-    kevin: { name: "Kevin", initials: "Kv", color: "#3a7ab0" },
+    kevin: { name: "Kevin", pt: "pt_kevin", initials: "Kv", color: "#3a7ab0" },
     delmas: { name: "Victor Delmas", pt: "pt_delmas", initials: "VD", color: "#6b4a2a" },
     bouquiniste: { name: "La bouquiniste", pt: T2 + "pt_bouquiniste", initials: "Bq", color: "#3f6b3f" },
     assistante: { name: "L'assistante", pt: T1 + "pt_assistante", initials: "A", color: "#4a4a6b" },
-    marcel: { name: "Marcel", pt: T1 + "pt_marcel", initials: "Mb", color: "#333" },
+    marcel: { name: "Marcel", pt: "pt_marcel_civil", initials: "Mb", color: "#333" },   // ohne Schminke (I00); das Porträt aus Teil 1 zeigt den Pantomimen
     chloe: { name: "Chloé", pt: T1 + "pt_chloe", initials: "C", color: "#b04a3a" },
     responsable: { name: "Le responsable", pt: "pt_responsable", initials: "R", color: "#2f4b5a" },
     lucien: { name: "Lucien", pt: T2 + "pt_lucien", initials: "Lu", color: "#7a5a3a" }
