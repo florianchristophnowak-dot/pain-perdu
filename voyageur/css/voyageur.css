@@ -196,8 +196,10 @@
 .area.locked .compare .loupe, .area.locked .fullgrid .loupe { filter: grayscale(.6) brightness(.85); }
 
 /* Zwischenbild mit der Tafel der Klasse (Text vom Spiel) */
-.modal.cut .cutpic { position: relative; }
+.modal.cut .cutpic { position: relative; container-type: inline-size; }
 .cutsign { position: absolute; left: 50%; bottom: 9%; transform: translateX(-50%) rotate(-1.5deg); background: #2d2a26; color: #f4f1e8; font-family: "Segoe Print", "Bradley Hand", cursive; padding: .3rem .9rem; border: 3px solid #8b6b45; border-radius: 4px; font-size: clamp(.8rem, 2.2vw, 1.25rem); white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+/* Kreide direkt auf der Tafel im Bild (signAt in % des Bildes, Schrift in cqw, wächst also mit dem Bild) */
+.cutsign.at { bottom: auto; transform: rotate(-1deg); background: none; border: none; box-shadow: none; padding: 0; display: flex; align-items: center; justify-content: center; text-align: center; white-space: pre-line; line-height: 1.2; font-size: 1.2cqw; color: rgba(244,241,232,.9); text-shadow: 0 0 .15cqw rgba(244,241,232,.35); }
 
 @media (max-width: 760px), (max-height: 520px) {
   .rrow { grid-template-columns: 72px minmax(0, 1fr); }
@@ -215,4 +217,8 @@
 /* Schilder auf dem Hintergrund (Text vom Spiel) */
 .stage { container-type: inline-size; }
 .slabel { position: absolute; transform: translate(-50%, -50%); pointer-events: none; white-space: nowrap; font-family: var(--serif); font-weight: 700; font-size: 1.5cqw; color: #2b2018; background: #efe2c4; border: .2cqw solid #6b5236; border-radius: .4cqw; padding: .1cqw .8cqw; box-shadow: 0 .2cqw .4cqw rgba(0,0,0,.35); }
+/* Auf ein leeres Schild im Bild gemalt (statt eines aufgeklebten Schildchens) */
+.slabel.paint { background: none; border: none; box-shadow: none; padding: 0; color: #3a2a1c; }
+.slabel.big { font-size: 3cqw; }
+.slabel.mid { font-size: 2cqw; }
 .material .paper.fiche { box-shadow: 0 0 0 3px rgba(241,194,125,.6); }

@@ -9,18 +9,18 @@ window.GAME = (function () {
 
   G.version = "3.0.0";
 
-  /* ---------- Figuren (Porträts mit Pfad kommen aus Teil 1 und Teil 2) ---------- */
+  /* ---------- Figuren (Porträts ohne Pfad liegen in voyageur/assets/img/, mit Pfad kommen sie aus Teil 1 und Teil 2) ---------- */
   const T1 = "../assets/img/", T2 = "../guide-fantome/assets/img/";
   G.chars = {
     narrateur: { name: "", initials: "", color: "#8b7355" },
     lino: { name: "Lino", pt: T2 + "pt_lino", initials: "L", color: "#3b4a6b" },
     marie: { name: "Marie", pt: T2 + "pt_marie", initials: "M", color: "#8a3b3b" },
     nowak: { name: "M. Nowak", pt: T2 + "pt_nowak", initials: "N", color: "#5a5a5a" },
-    kevin: { name: "Kevin", initials: "Kv", color: "#3a7ab0" },
+    kevin: { name: "Kevin", pt: "pt_kevin", initials: "Kv", color: "#3a7ab0" },
     delmas: { name: "Victor Delmas", pt: "pt_delmas", initials: "VD", color: "#6b4a2a" },
     bouquiniste: { name: "La bouquiniste", pt: T2 + "pt_bouquiniste", initials: "Bq", color: "#3f6b3f" },
     assistante: { name: "L'assistante", pt: T1 + "pt_assistante", initials: "A", color: "#4a4a6b" },
-    marcel: { name: "Marcel", pt: T1 + "pt_marcel", initials: "Mb", color: "#333" },
+    marcel: { name: "Marcel", pt: "pt_marcel_civil", initials: "Mb", color: "#333" },   // ohne Schminke (I00); das Porträt aus Teil 1 zeigt den Pantomimen
     chloe: { name: "Chloé", pt: T1 + "pt_chloe", initials: "C", color: "#b04a3a" },
     responsable: { name: "Le responsable", pt: "pt_responsable", initials: "R", color: "#2f4b5a" },
     lucien: { name: "Lucien", pt: T2 + "pt_lucien", initials: "Lu", color: "#7a5a3a" }
@@ -150,10 +150,10 @@ window.GAME = (function () {
      Lesbarer Text (die Filmklappe) kommt als labels vom Spiel. Fundpunkte stehen bei den Aufgaben, ebenfalls in Fotokoordinaten. */
   G.photos = {
     P16: { img: "doc_p16", ar: 1.5, label: "P16", decoy: true },
-    P17: { img: "doc_p17", ar: 1.5, label: "P17", crop: { x: 14, y: 8, w: 58, h: 84 }, legend: "Visite du musée d'Orsay, 1900" },
-    P18: { img: "doc_p18", ar: 1.5, label: "P18", crop: { x: 16, y: 6, w: 62, h: 88 }, legend: "Le pont Alexandre III, 1900" },
-    P19: { img: "doc_p19", ar: 1.5, label: "P19", crop: { x: 20, y: 4, w: 60, h: 70 }, legend: "Les Invalides, 1900",
-      labels: [{ x: 50, y: 86.5, text: "PARIS 1900\nSEPTEMBRE 2025\nCHLOÉ", cls: "clap" }] }
+    P17: { img: "doc_p17", ar: 1.5, label: "P17", crop: { x: 11, y: 7, w: 64, h: 93 }, legend: "Visite du musée d'Orsay, 1900" },
+    P18: { img: "doc_p18", ar: 1.5, label: "P18", crop: { x: 10, y: 0, w: 90, h: 100 }, legend: "Le pont Alexandre III, 1900" },
+    P19: { img: "doc_p19", ar: 1.5, label: "P19", crop: { x: 18, y: 0, w: 62, h: 83.8 }, legend: "Les Invalides, 1900",
+      labels: [{ x: 49.5, y: 94, rot: -4.5, size: 1.3, text: "PARIS 1900\nSEPTEMBRE 2025\nCHLOÉ", cls: "clap" }] }
   };
   /* Das aufgeschlagene Album: drei Seiten, je ein Foto (x, y, w in % der Ansicht; die Höhe folgt aus dem Ausschnitt) */
   G.album = { ar: 1.9, pages: 3, slots: { A: { x: 3.2, y: 10, w: 27, photo: "P17" }, B: { x: 36.5, y: 10, w: 27, photo: "P18" }, C: { x: 69.8, y: 13, w: 27, photo: "P19" } } };
@@ -184,44 +184,44 @@ window.GAME = (function () {
   G.scenes = {
     orsay: {
       name: "Musée d'Orsay · la brocante du quai", bg: "bg_orsay", enter: [{ if: "O06_done", node: "Or" }, { node: "O00" }],
-      labels: [{ x: 62, y: 30, text: "Brocante du quai" }],
+      labels: [{ x: 46, y: 26.5, text: "Brocante du quai", cls: "paint big" }],
       hotspots: [
-        { id: "album", label: "l'album", x: 44, y: 56, w: 14, h: 16, actions: { regarder: "Oa" }, showIf: "O06_done" },
-        { id: "delmas", label: "le vendeur", x: 60, y: 34, w: 12, h: 56, actions: { parler: "Or" }, showIf: "O06_done" },
-        { id: "fiche", label: "la fiche de vente", x: 32, y: 60, w: 10, h: 12, actions: { lire: "Of" }, showIf: "O06_done" },
-        { id: "brocante", label: "la brocante", x: 50, y: 24, w: 24, h: 10, actions: { regarder: "Ob" }, showIf: "O06_done" },
-        { id: "responsable", label: "le monsieur", x: 84, y: 36, w: 10, h: 50, actions: { regarder: "Orp" }, showIf: "O06_done" }
+        { id: "album", label: "l'album", x: 40, y: 70, w: 30, h: 22, actions: { regarder: "Oa" }, showIf: "O06_done" },
+        { id: "delmas", label: "le vendeur", x: 41, y: 34, w: 28, h: 35.5, actions: { parler: "Or" }, showIf: "O06_done" },
+        { id: "fiche", label: "la fiche de vente", x: 21.5, y: 79, w: 9, h: 13.5, actions: { lire: "Of" }, showIf: "O06_done" },
+        { id: "brocante", label: "la brocante", x: 24, y: 19.5, w: 44, h: 14.5, actions: { regarder: "Ob" }, showIf: "O06_done" },
+        { id: "responsable", label: "le monsieur", x: 80.5, y: 33, w: 15, h: 52, actions: { regarder: "Orp" }, showIf: "O06_done" }
       ]
     },
     pont: {
       name: "Pont Alexandre III", bg: "bg_pont", enter: [{ if: "P_done", node: "Pr" }, { node: "P00" }],
-      labels: [{ x: 80, y: 46, text: "Information" }],
+      labels: [{ x: 80.3, y: 30.5, text: "Information", cls: "paint mid" }],
       hotspots: [
-        { id: "assistante", label: "l'assistante", x: 72, y: 50, w: 12, h: 44, actions: { parler: "Pr" }, showIf: "P_done" },
-        { id: "pont", label: "le pont", x: 4, y: 6, w: 60, h: 50, actions: { regarder: "Pp" }, showIf: "P_done" }
+        { id: "assistante", label: "l'assistante", x: 75.5, y: 38, w: 18.5, h: 60, actions: { parler: "Pr" }, showIf: "P_done" },
+        { id: "pont", label: "le pont", x: 0, y: 8, w: 62, h: 55, actions: { regarder: "Pp" }, showIf: "P_done" }
       ]
     },
     invalides: {
       name: "Les Invalides · l'esplanade", bg: "bg_invalides", enter: [{ if: "I_done", node: "Ir" }, { if: "R2_done", node: "I05" }, { if: "I03_done", node: "R2" }, { node: "I00" }],
-      labels: [{ x: 50, y: 40, text: "Les Images de Paris" }],
+      labels: [{ x: 50, y: 36.5, text: "Les Images de Paris", cls: "paint big" }, { x: 88.5, y: 35.8, text: "Stand 6", cls: "paint mid" }],
       hotspots: [
-        { id: "marcel", label: "Marcel", x: 44, y: 44, w: 12, h: 50, actions: { parler: "Ir" }, showIf: "I_done" },
-        { id: "bouquiniste", label: "la bouquiniste", x: 8, y: 46, w: 13, h: 48, actions: { parler: "Ib" }, showIf: "I_done" },
-        { id: "table", label: "la table des accessoires", x: 58, y: 62, w: 20, h: 18, actions: { regarder: "Itemps" }, showIf: "I02_done", hideIf: "Itemps_done" }
+        { id: "marcel", label: "Marcel", x: 35, y: 39, w: 14, h: 60, actions: { parler: "Ir" }, showIf: "I_done" },
+        { id: "bouquiniste", label: "la bouquiniste", x: 11, y: 41, w: 13, h: 31, actions: { parler: "Ib" }, showIf: "I_done" },
+        { id: "table", label: "la table des accessoires", x: 49.5, y: 64, w: 30, h: 25, actions: { regarder: "Itemps" }, showIf: "I02_done", hideIf: "Itemps_done" }
       ]
     },
     stand6: {
-      name: "Les Invalides · stand 6", bg: "bg_invalides", enter: [{ if: "W1_done", node: "Cr" }, { if: "R3_done", node: "W1" }, { if: "C02_done", node: "R3" }, { node: "C00" }],
-      labels: [{ x: 84, y: 44, text: "Stand 6" }],
+      name: "Les Invalides · stand 6", bg: "bg_stand6", enter: [{ if: "W1_done", node: "Cr" }, { if: "R3_done", node: "W1" }, { if: "C02_done", node: "R3" }, { node: "C00" }],
+      labels: [{ x: 50, y: 36.5, text: "Les Images de Paris", cls: "paint big" }, { x: 88.5, y: 35.5, text: "Stand 6", cls: "paint mid" }],
       hotspots: [
-        { id: "chloe", label: "Chloé", x: 78, y: 48, w: 12, h: 46, actions: { parler: "Cr" }, showIf: "W1_done" }
+        { id: "chloe", label: "Chloé", x: 80, y: 44, w: 15, h: 53, actions: { parler: "Cr" }, showIf: "W1_done" }
       ]
     },
     finale: {
       name: "Musée d'Orsay · le stand du vendeur", bg: "bg_orsay", enter: [{ if: "finished", node: "Fr" }, { if: "R4_done", node: "F05" }, { if: "F04_done", node: "R4" }, { node: "F00" }],
-      labels: [{ x: 62, y: 30, text: "Brocante du quai" }],
+      labels: [{ x: 46, y: 26.5, text: "Brocante du quai", cls: "paint big" }],
       hotspots: [
-        { id: "delmas", label: "le vendeur", x: 60, y: 34, w: 12, h: 56, actions: { parler: "Fr" }, showIf: "finished" }
+        { id: "delmas", label: "le vendeur", x: 41, y: 34, w: 28, h: 35.5, actions: { parler: "Fr" }, showIf: "finished" }
       ]
     }
   };
@@ -287,15 +287,15 @@ window.GAME = (function () {
     task: { kind: "loupe", render: "album", maxZoom: 5, status: "Sur la photo A : {n} sur {m}",
       intro: "Regardez les trois photos. Sur la photo A, trouvez le visage et la montre du monsieur.",
       points: [
-        { id: "visage", need: true, chip: "le visage", photo: "P17", x: 40, y: 28, w: 9, h: 15, lines: [lino("Marie. Le monsieur sur la photo. C'est notre guide !"), marie("Notre faux guide. Lucien.")] },
-        { id: "montre", need: true, chip: "la montre", photo: "P17", x: 47.5, y: 60, w: 7, h: 9, line: marie("La même montre, peut-être.") },
-        { id: "lucien_c", neutral: true, photo: "P19", x: 30, y: 16, w: 14, h: 40, line: lino("Encore le même monsieur. Mais regarde d'abord la photo A.") },
-        { id: "baguette", neutral: true, photo: "P18", x: 34, y: 50, w: 20, h: 13, line: lino("Une baguette avec du ruban adhésif ? Bizarre.") },
-        { id: "brun_a", neutral: true, weak: true, photo: "P17", x: 14, y: 8, w: 58, h: 84, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
-        { id: "brun_b", neutral: true, weak: true, photo: "P18", x: 16, y: 6, w: 62, h: 88, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
-        { id: "brun_c", neutral: true, weak: true, photo: "P19", x: 20, y: 4, w: 60, h: 70, line: marie("La couleur peut être ancienne. Ou ajoutée.") }
+        { id: "visage", need: true, chip: "le visage", photo: "P17", x: 39, y: 20.5, w: 8, h: 12.5, lines: [lino("Marie. Le monsieur sur la photo. C'est notre guide !"), marie("Notre faux guide. Lucien.")] },
+        { id: "montre", need: true, chip: "la montre", photo: "P17", x: 42, y: 46.5, w: 9.5, h: 8, line: marie("La même montre, peut-être.") },
+        { id: "lucien_c", neutral: true, photo: "P19", x: 22, y: 11, w: 20, h: 72.5, line: lino("Encore le même monsieur. Mais regarde d'abord la photo A.") },
+        { id: "baguette", neutral: true, photo: "P18", x: 43.5, y: 21.5, w: 20, h: 11, line: lino("Une baguette avec du ruban adhésif ? Bizarre.") },
+        { id: "brun_a", neutral: true, weak: true, photo: "P17", x: 11, y: 7, w: 64, h: 93, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
+        { id: "brun_b", neutral: true, weak: true, photo: "P18", x: 10, y: 0, w: 90, h: 100, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
+        { id: "brun_c", neutral: true, weak: true, photo: "P19", x: 18, y: 0, w: 62, h: 83.8, line: marie("La couleur peut être ancienne. Ou ajoutée.") }
       ],
-      material: [{ photo: "P17", x: 36, y: 24, w: 22, h: 50 }] },
+      material: [{ photo: "P17", x: 37, y: 19, w: 16, h: 37 }] },
     after: [
       lino("En 1900, il avait déjà la même moustache."),
       marie("Ça lui ressemble. Mais un visage, ce n'est pas une date."),
@@ -385,29 +385,29 @@ window.GAME = (function () {
       intro: "Qu'est-ce que vous voyez sur les deux images ? Choisissez trois choses.",
       images: [{ label: "La photo B", photo: "P18" }, { label: "Le pont aujourd'hui", img: "doc_pont", ar: 1.5 }],
       points: [
-        { id: "lampadaires", need: true, chip: "les lampadaires", img: 0, rects: [{ x: 52, y: 18, w: 8, h: 58 }, { x: 21.5, y: 26, w: 7, h: 50 }], line: lino("Les mêmes lampadaires.") },
-        { id: "lampadaires", img: 1, rects: [{ x: 46, y: 16, w: 8, h: 58 }, { x: 15.5, y: 24, w: 8, h: 50 }] },
-        { id: "colonnes", need: true, chip: "les colonnes", img: 0, x: 64.5, y: 22, w: 11, h: 50, line: lino("Les mêmes colonnes.") },
-        { id: "colonnes", img: 1, x: 60.5, y: 18, w: 12, h: 52 },
-        { id: "statues", need: true, chip: "les statues", img: 0, x: 63, y: 7, w: 15, h: 15, line: lino("Et les mêmes statues.") },
-        { id: "statues", img: 1, x: 59, y: 3, w: 16, h: 15 },
-        { id: "bateau", no: true, img: 1, x: 28, y: 74, w: 34, h: 17, line: lino("Ça, c'est seulement sur l'image d'aujourd'hui.") },
-        { id: "velo", no: true, img: 1, x: 69, y: 68, w: 18, h: 26, line: lino("Ça, c'est seulement sur l'image d'aujourd'hui.") }
+        { id: "lampadaires", need: true, chip: "les lampadaires", img: 0, rects: [{ x: 66.5, y: 4.5, w: 14, h: 46 }, { x: 13.5, y: 3.5, w: 14, h: 47 }], line: lino("Les mêmes lampadaires.") },
+        { id: "lampadaires", img: 1, rects: [{ x: 58.5, y: 8.5, w: 10.5, h: 32.5 }, { x: 16, y: 10, w: 10, h: 31 }] },
+        { id: "colonnes", need: true, chip: "les colonnes", img: 0, x: 82, y: 14, w: 18, h: 40, line: lino("Les mêmes colonnes.") },
+        { id: "colonnes", img: 1, x: 78, y: 13.5, w: 17, h: 37.5 },
+        { id: "statues", need: true, chip: "les statues", img: 0, x: 86, y: 0.5, w: 11, h: 13.5, line: lino("Et les mêmes statues.") },
+        { id: "statues", img: 1, x: 82, y: 0.5, w: 11.5, h: 13.5 },
+        { id: "bateau", no: true, img: 1, x: 12, y: 66.5, w: 43.5, h: 18, line: lino("Ça, c'est seulement sur l'image d'aujourd'hui.") },
+        { id: "velo", no: true, img: 1, x: 70, y: 65.5, w: 26, h: 27, line: lino("Ça, c'est seulement sur l'image d'aujourd'hui.") }
       ],
-      material: [{ img: 0, x: 20, y: 6, w: 58, h: 72 }, { img: 1, x: 14, y: 2, w: 62, h: 72 }],
+      material: [{ img: 0, x: 12, y: 0, w: 88, h: 55 }, { img: 1, x: 14, y: 0, w: 82, h: 52 }],
       success: marie("Le même endroit, ce n'est pas la même année.") },
     next: "P01" };
   N.P01 = { type: "task", title: "Le pain qui ne vieillit pas", help: "P01", diag: "D_P01",
     task: { kind: "loupe", render: "crop", photo: "P18", maxZoom: 5, status: "La baguette : {n} sur {m}",
       intro: "Regardez la photo B de près. Trouvez trois détails sur la baguette.",
       points: [
-        { id: "bout", need: true, chip: "le bout cassé", photo: "P18", x: 35, y: 52.5, w: 5.5, h: 9, line: marie("Le bout est cassé.") },
-        { id: "ruban", need: true, chip: "le ruban adhésif", photo: "P18", x: 40.5, y: 52, w: 7, h: 9, lines: [lino("Regarde ce pain. Il a trois pansements."), marie("Du pain avec du ruban adhésif ?")] },
-        { id: "gant", need: true, chip: "le gant blanc", photo: "P18", x: 47.5, y: 54, w: 6.5, h: 9, line: marie("Un gant blanc. Comme au théâtre.") },
-        { id: "pied", chip: "le bord", photo: "P18", x: 15.8, y: 79, w: 4.5, h: 16, flag: "pied_vu", line: marie("Qu'est-ce que c'est, au bord ? On ne voit pas tout.") },
-        { id: "boulanger", neutral: true, photo: "P18", x: 33, y: 26, w: 19, h: 68, line: lino("Le boulanger. Regarde son pain.") }
+        { id: "bout", need: true, chip: "le bout cassé", photo: "P18", x: 43.6, y: 25.3, w: 3, h: 6.6, line: marie("Le bout est cassé.") },
+        { id: "ruban", need: true, chip: "le ruban adhésif", photo: "P18", x: 46.6, y: 24.2, w: 4, h: 7, lines: [lino("Regarde ce pain. Il a trois pansements."), marie("Du pain avec du ruban adhésif ?")] },
+        { id: "gant", need: true, chip: "le gant blanc", photo: "P18", x: 57.2, y: 23, w: 4.3, h: 10.5, line: marie("Un gant blanc. Comme au théâtre.") },
+        { id: "pied", chip: "le bord", photo: "P18", x: 10, y: 80, w: 6.8, h: 16, flag: "pied_vu", line: marie("Qu'est-ce que c'est, au bord ? On ne voit pas tout.") },
+        { id: "boulanger", neutral: true, photo: "P18", x: 32.5, y: 5.5, w: 28.5, h: 91.5, line: lino("Le boulanger. Regarde son pain.") }
       ],
-      material: [{ photo: "P18", x: 33, y: 50, w: 22, h: 14 }] },
+      material: [{ photo: "P18", x: 43, y: 21, w: 19.5, h: 13 }] },
     after: [lino("Marcel avait des baguettes en plastique. Et des problèmes de sac.")],
     next: "P01b" };
   N.P01b = { type: "task", title: "Le pain qui ne vieillit pas", help: "P01b", diag: "D_P01b",
@@ -513,16 +513,16 @@ window.GAME = (function () {
   N.I03 = { type: "task", title: "La même baguette", help: "I03", diag: "D_I03", doneAt: true,
     task: { kind: "compare", both: true, maxZoom: 5, status: "Pareil sur les deux photos : {n} sur {m}",
       intro: "Comparez la photo B et la photo de la baguette. Trouvez deux détails pareils.",
-      images: [{ label: "La photo B", photo: "P18" }, { label: "La photo de la baguette", img: "doc_baguette", ar: 2 }],
+      images: [{ label: "La photo B", photo: "P18" }, { label: "La photo de la baguette", img: "doc_baguette", ar: 1.7769 }],
       points: [
-        { id: "bout", need: true, chip: "le bout cassé", img: 0, x: 35, y: 52.5, w: 5.5, h: 9, line: marie("Oui. Le même bout.") },
-        { id: "bout", img: 1, x: 5, y: 34, w: 12, h: 32 },
-        { id: "ruban", need: true, chip: "les trois morceaux de ruban adhésif", img: 0, x: 40.5, y: 52, w: 7, h: 9, line: marie("Oui. Le même ruban.") },
-        { id: "ruban", img: 1, x: 18, y: 34, w: 20, h: 32 },
-        { id: "couleur", no: true, img: 1, x: 38, y: 38, w: 55, h: 24, line: marie("Ça peut changer. Cherche un détail de la baguette.") },
+        { id: "bout", need: true, chip: "le bout cassé", img: 0, x: 43.6, y: 25.3, w: 3, h: 6.6, line: marie("Oui. Le même bout.") },
+        { id: "bout", img: 1, x: 5, y: 35, w: 12.5, h: 27 },
+        { id: "ruban", need: true, chip: "les trois morceaux de ruban adhésif", img: 0, x: 46.6, y: 24.2, w: 4, h: 7, line: marie("Oui. Le même ruban.") },
+        { id: "ruban", img: 1, x: 18.5, y: 34, w: 19, h: 28 },
+        { id: "couleur", no: true, img: 1, x: 38, y: 36, w: 57, h: 25, line: marie("Ça peut changer. Cherche un détail de la baguette.") },
         { id: "fond", neutral: true, weak: true, img: 1, x: 0, y: 0, w: 100, h: 100, line: marie("Ça peut changer. Cherche un détail de la baguette.") }
       ],
-      material: [{ img: 0, x: 33, y: 50, w: 16, h: 13 }, { img: 1, x: 3, y: 32, w: 37, h: 36 }],
+      material: [{ img: 0, x: 43, y: 22, w: 9, h: 11 }, { img: 1, x: 3, y: 32, w: 36, h: 32 }],
       success: lino("Le même bout cassé. Les mêmes trois morceaux de ruban. C'est sa baguette.") },
     after: [
       marie("La photo B ne peut pas être plus vieille que la réparation. Pour les deux autres, on doit voir Chloé."),
@@ -585,17 +585,17 @@ window.GAME = (function () {
       decoy: lino("Le même monument. Mais la personne n'est pas à la même place. Regarde aussi le manteau."),
       matched: L("chloe", "Oui. Ce sont les mêmes photos. Maintenant, regardez les bords."),
       points: [
-        { id: "telephone", chip: "l'assistante avec un smartphone", photo: "P17", x: 79, y: 33, w: 16, h: 61, lines: [
+        { id: "telephone", chip: "l'assistante avec un smartphone", photo: "P17", x: 79, y: 25, w: 20, h: 75, lines: [
           lino("À droite, avec le téléphone : c'est l'assistante ! Du pont. Et du Louvre."),
           L("chloe", "Et Lucien… il n'a jamais voulu enlever sa montre. En 1900 !")
         ] },
-        { id: "lampe", chip: "la lampe LED sur un trépied", photo: "P18", x: 0.5, y: 17, w: 15, h: 79, lines: [
+        { id: "lampe", chip: "la lampe LED sur un trépied", photo: "P18", x: 0, y: 13, w: 17, h: 85, lines: [
           lino("Une lampe LED sur un trépied."),
           L("marie", "Le pied au bord de la photo B ! C'était le trépied.", { onlyIf: "pied_vu" })
         ] },
-        { id: "clap", chip: "le clap", photo: "P19", x: 39, y: 76, w: 22, h: 21, line: marie("Le clap ! « Paris 1900 »… et septembre 2025.") }
+        { id: "clap", chip: "le clap", photo: "P19", x: 41, y: 84.3, w: 16.5, h: 15, line: marie("Le clap ! « Paris 1900 »… et septembre 2025.") }
       ],
-      material: [{ photo: "P16", x: 56, y: 24, w: 18, h: 70 }, { photo: "P17", x: 35, y: 22, w: 22, h: 72 }] },
+      material: [{ photo: "P16", x: 58, y: 19, w: 20, h: 79 }, { photo: "P17", x: 33, y: 19, w: 21, h: 80 }] },
     after: [lino("Il n'a rien ajouté. Il a seulement coupé ce qui racontait la vérité.")],
     effects: { item: "photos_entieres", flag: "C01_done" }, next: "C02d" };
   N.C02d = { type: "doc", title: "La fiche de Chloé",
@@ -722,7 +722,7 @@ window.GAME = (function () {
     marie("Attendez. Il manque une chose.")
   ], next: "F05b" };
   /* Die Tafel vor der Klasse: Text vom Spiel, damit er auf dem braunen Bild lesbar bleibt */
-  N.F05b = { type: "cut", bg: "cut_photo_classe", sign: "Classe 10b d'Erfurt · Paris · 2026", lines: [
+  N.F05b = { type: "cut", bg: "cut_photo_classe", sign: "Classe 10b\nd'Erfurt\nParis · 2026", signAt: { x: 43, y: 74.3, w: 9.6, h: 11.1 }, lines: [
     lino("Maintenant, même en brun, c'est vrai.")
   ], next: "W2" };
   N.W2 = { type: "task", title: "Le rapport", perPlayer: true, help: "W2", diag: "D_W2", doneAt: true,
