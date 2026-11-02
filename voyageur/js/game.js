@@ -373,7 +373,11 @@
   function runCut(id, n, finish) {
     const body = openModal("cut nocl");
     const pic = el("div", "cutpic"); setBg(pic, n.bg); body.appendChild(pic);
-    if (n.sign) pic.appendChild(el("div", "cutsign", esc(n.sign)));   // lesbarer Text kommt vom Spiel, nicht aus dem Bild (Tafel der Klasse)
+    if (n.sign) {   // lesbarer Text kommt vom Spiel, nicht aus dem Bild (Tafel der Klasse)
+      const sg = el("div", "cutsign" + (n.signAt ? " at" : ""), esc(n.sign));
+      if (n.signAt) { const a = n.signAt; sg.style.left = a.x + "%"; sg.style.top = a.y + "%"; sg.style.width = a.w + "%"; sg.style.height = a.h + "%"; }   // auf die Tafel im Bild, in % des Bildes
+      pic.appendChild(sg);
+    }
     const box = el("div", "cutbox"); body.appendChild(box);
     showLines(n.lines, () => { applyEffects(n.effects, id); closeModal(); finish(); goNode(resolve(n.next)); }, { box });
   }
@@ -1220,7 +1224,7 @@
 
   /* ---------- Teil 3: Ausschnitte aus den vollständigen Fotos (G.photos) ----------
      Ein Foto: { img, ar (Breite/Höhe), crop { x, y, w, h } in % des ganzen Bildes (das, was im Album zu sehen ist), label (P17),
-     legend (die Bildunterschrift im Album), labels [{ x, y, text, cls }] (lesbarer Text im Bild kommt vom Spiel) }.
+     legend (die Bildunterschrift im Album), labels [{ x, y, text, cls, rot (Grad), size (cqw) }] (lesbarer Text im Bild kommt vom Spiel) }.
      Albumseiten und Vollbilder entstehen aus derselben Datei; so sind Ausschnitt und Vollbild garantiert dasselbe Bild. */
   function cropAr(pid) { const ph = G.photos[pid], cr = ph.crop; return ph.ar * cr.w / cr.h; }
   /* Das ganze Foto mit seinen Beschriftungen (Schriftgröße in cqw, also mit dem Foto skaliert) */
@@ -1228,7 +1232,13 @@
     const ph = G.photos[pid], box = el("div", "photo");
     box.style.setProperty("--par", ph.ar);
     box.appendChild(docImg(ph.img));
-    (ph.labels || []).forEach(l => { const d = el("div", "plabel" + (l.cls ? " " + l.cls : ""), esc(l.text)); d.style.left = l.x + "%"; d.style.top = l.y + "%"; box.appendChild(d); });
+    (ph.labels || []).forEach(l => {
+      const d = el("div", "plabel" + (l.cls ? " " + l.cls : ""), esc(l.text));
+      d.style.left = l.x + "%"; d.style.top = l.y + "%";
+      if (l.rot) d.style.transform = "translate(-50%, -50%) rotate(" + l.rot + "deg)";   // schräg gehaltene Filmklappe
+      if (l.size) d.style.fontSize = l.size + "cqw";
+      box.appendChild(d);
+    });
     return box;
   }
   function cropEl(pid, cls) {
