@@ -457,6 +457,7 @@
       const res = Object.assign({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, replays: n.audio ? (S.replays[n.audio] || 0) - replays0 : undefined, transcript: n.audio ? st.transcript : undefined, duration: Math.round((Date.now() - st.t0) / 1000), pauses: S.pauses[id] || undefined, playerIdx }, extra || {});
       delete S.tries[id]; delete S.pause[id]; delete S.pauses[id]; save();
       if (n.diag) record(res);
+      if (Array.isArray(line)) line = line.find(l => cond(l.if));   // mehrere Erfolgszeilen: die erste, deren „if“ zutrifft
       feedback(line || { who: "marie", fr: help > 0 ? G.ui.marie.afterHelp : G.ui.marie.ok }, true);
       const b = el("button", "btn primary", G.ui.btn.continuer); b.addEventListener("click", () => done(Object.assign({ player: pname(playerIdx) }, extra || {})));
       const bar = el("div", "bar"); bar.appendChild(b); fb.appendChild(bar);

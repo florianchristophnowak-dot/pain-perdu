@@ -197,7 +197,7 @@ window.GAME = (function () {
         { id: "tel", label: "das Telefon", x: 73.5, y: 54, w: 7, h: 6.5, actions: { regarder: "C02c" }, showIf: "C02_done" }
       ]
     },
-    repetition: { name: "Katakomben · die Probe", bg: "bg_catacombes", enter: null, hotspots: [] },
+    repetition: { name: "Chloés Probe", bg: "bg_catacombes", enter: null, hotspots: [] },
     lampes: { name: "Innenhof des Louvre · die Lampen", bg: "bg_lampes", enter: null, hotspots: [] }
   };
 
@@ -297,7 +297,7 @@ window.GAME = (function () {
     lines: [{ who: "gardien", fr: "Guten Tag. Sucht ihr ein Grab? Jim Morrison ist da lang. Alle suchen Jim Morrison." }],
     choices: [
       { fr: "Nein, wir suchen einen Mann. Haben Sie diesen Pantomimen gesehen?", hint: "(zeigt das Gruppenfoto)", kind: "ok", next: "P02m" },
-      { fr: "Ja, Jim Morrison, bitte.", kind: "repair", reply: [{ who: "gardien", fr: "Geradeaus, dann rechts. Viel Spaß!" }, { who: "lino", fr: "Marie, wir suchen nicht Jim Morrison." }], next: "P02" },
+      { fr: "Ja, Jim Morrison, bitte.", kind: "repair", reply: [{ who: "gardien", fr: "Geradeaus, dann rechts. Viel Spaß!" }, { who: "marie", fr: "Lino, wir suchen nicht Jim Morrison." }], next: "P02" },
       { fr: "Kennen Sie Chloé?", kind: "repair", reply: [{ who: "gardien", fr: "Chloé? Ja, die ist da hinten mit ihrer Theatergruppe. Warum?" }], next: "P02" }
     ] };
   /* Der Wärter kennt Marcel: Vorspann vor dem Lesetext */
@@ -638,7 +638,10 @@ window.GAME = (function () {
     task: { kind: "recall", who: "marie", intro: "Wähle Chloés Nummer.",
       fields: [{ id: "num", label: "Die Nummer:", answers: ["06 12 34 56 78"], digits: true, size: 16, placeholder: "06 ..", where: "Die Nummer steht auf der Karte „morgen“ im Inventar.",
         traps: [{ answers: ["01 42 72 18 90"], digits: true, who: "nora", fr: "„Bäckerei Nora, guten Tag! Pain perdu? ... Chloé? Nein, die ist nicht hier.“" }] }],
-      wrongText: "„Kein Anschluss unter dieser Nummer.“", success: { who: "chloe", fr: "Hallo? Ach, ihr seid's! Wartet, ich lese euch vor, was wir proben." },
+      wrongText: "„Kein Anschluss unter dieser Nummer.“",
+      /* Kennt man Chloé noch nicht (Katakomben vor dem Père-Lachaise), grüßt sie anders */
+      success: [{ if: "P05_done", who: "chloe", fr: "Hallo? Ach, ihr seid's! Wartet, ich lese euch vor, was wir proben." },
+        { who: "chloe", fr: "Hallo? Ja, hier ist Chloé. Ihr habt Marcels Tasche? Komisch ... Wartet, ich lese euch vor, was wir proben." }],
       leaveLines: [{ who: "marie", fr: "Wir rufen sie später an." }] },
     next: "C03s" };
   N.C03s = { type: "scene", scene: "repetition", next: "C03" };

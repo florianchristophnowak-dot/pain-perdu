@@ -1376,7 +1376,7 @@
       const Q = G.questions[q], done = cond(Q.done);
       const box = el("div", "qbox " + (done ? "proven" : ""));
       box.appendChild(el("div", "qtitle", "<b>" + q + "</b> " + gl(Q.title) + ' <span class="status">' + esc(done ? G.ui.carnet.done : G.ui.carnet.open) + "</span>"));
-      if (done) box.appendChild(el("div", "qanswer", gl(lineText({ fr: Q.answer }))));
+      if (done && cond(Q.reveal)) box.appendChild(el("div", "qanswer", gl(lineText({ fr: Q.answer }))));   // erst nach der Abfrage, die danach fragt
       body.appendChild(box);
     });
     body.appendChild(el("p", "hint", esc(G.ui.carnet.hint)));
