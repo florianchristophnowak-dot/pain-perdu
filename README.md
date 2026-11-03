@@ -83,7 +83,7 @@ Das Spiel läuft auch auf Handys, am besten im Querformat: Dann füllt das Bild 
 
 Alle Hörtexte in Teil 1, 2 und 3 laufen über denselben Player (`js/audioplayer.js`, Stile in `css/style.css` unter „Audioplayer“): im Hörtext-Fenster (startet von selbst), in den Aufgaben zum Hörtext (startet erst auf Antippen) und in der Hilfe « Écoute encore … » (spielt den Player der Aufgabe von vorn).
 
-- **Abspielen und Pause:** Der große Knopf wechselt zwischen « Écouter », « Pause », « Reprendre » und am Ende « Rejouer » (von vorn).
+- **Abspielen und Pause:** Der große Knopf wechselt zwischen « Écouter », « Pause », « Reprendre » und am Ende « Rejouer » (von vorn). Liest der Browser vor (Aufnahme fehlt), gibt es auf Android keine Pause: Dort bricht `speechSynthesis.pause()` das Vorlesen ab, ohne weiterzumachen oder ein Ende zu melden. Der Knopf ruht dann, bis der Text zu Ende ist.
 - **5 Sekunden zurück und vor:** zwei Knöpfe neben dem Balken; den Balken kann man auch ziehen oder antippen. Am Ende spielt « 5 s zurück » das letzte Stück gleich noch einmal.
 - **Tempo:** « Vitesse » 100 %, 95 %, 90 %, 85 % oder 80 %; die Tonhöhe bleibt gleich. Das Tempo gilt für alle Hörtexte und alle drei Teile auf diesem Gerät (`localStorage` `pp_audio_rate`). Liest der Browser vor (Aufnahme fehlt), gilt das Tempo ab dem nächsten Start.
 - **Erst ganz hören:** „Continuer“ im Hörtext-Fenster und die Antworten bei `listenFirst` gehen erst auf, wenn mindestens 90 % der Aufnahme wirklich gelaufen sind (`S.heard`). Wer vorspult und das Ende erreicht, bekommt den Hinweis « Tu as sauté un passage. Écoute-le aussi. » (Teil 3: « Vous avez … », `G.ui.player`).

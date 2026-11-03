@@ -1,7 +1,8 @@
 const { chromium } = require('playwright');
 /* Test für den Audioplayer der Hörtexte (js/audioplayer.js) in Teil 1 und Teil 2:
    Pause und Weiter, 5 Sekunden zurück und vor, Tempo 100–80 % (bleibt auf dem Gerät), „gehört“ erst nach ganzem Hören,
-   Grenze beim Telefonat (zweimal, ohne Spulen), Hilfe „Écoute encore“, Darstellung auf Computer und Handy.
+   Grenze beim Telefonat (zweimal, ohne Spulen), Hilfe „Écoute encore“, Darstellung auf Computer und Handy,
+   Vorlesen ohne Aufnahme (Pause am Computer, auf Android keine Pause).
    Voraussetzungen wie bei tools/playthrough.js (lokaler Server im Hauptordner auf Port 8765).
    Aufruf: node tools/hoeren.js   (Umgebung: URL=... bis einschließlich des Hauptordners, SHOT_DIR=..., CHROMIUM=Pfad, optional)
    Dauer etwa eine Minute, weil die Aufnahmen wirklich laufen. */
@@ -164,6 +165,49 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
   check((await page.locator('#modal-body .ap-note').innerText()).startsWith('Vous'), 'Teil 3: Hinweis in der vous-Form');
   await page.screenshot({ path: SHOT + '05_teil3.png' });
   await page.close();
+
+  /* ---------- Vorlesen statt Aufnahme: am Computer mit Pause, auf Android ohne ----------
+     Auf Android bricht speechSynthesis.pause() das Vorlesen ab, ohne weiterzumachen oder ein Ende zu melden.
+     Die Aufnahme fehlt hier (404); speechSynthesis ist ersetzt, damit der Test bestimmt, wann der Text zu Ende ist. */
+  const ANDROID = 'Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36';
+  for (const [name, opts] of [['Computer', { viewport: { width: 1200, height: 900 } }], ['Android', { viewport: { width: 412, height: 915 }, userAgent: ANDROID, isMobile: true, hasTouch: true }]]) {
+    const ctx = await browser.newContext(opts);
+    page = await ctx.newPage();
+    page.on('pageerror', e => errors.push(e.message));
+    await page.route('**/*.mp3', r => r.fulfill({ status: 404, body: '' }));
+    await page.addInitScript(() => {
+      const s = window.speechSynthesis, log = []; let cur = null, paused = false;
+      Object.defineProperty(s, 'speaking', { get: () => !!cur });
+      Object.defineProperty(s, 'paused', { get: () => paused });
+      s.speak = u => { cur = u; paused = false; log.push('speak'); };
+      s.cancel = () => { const u = cur; cur = null; paused = false; log.push('cancel'); if (u && u.onerror) setTimeout(() => u.onerror({ error: 'interrupted' }), 0); };
+      s.pause = () => { if (cur) paused = true; log.push('pause'); };
+      s.resume = () => { paused = false; log.push('resume'); };
+      window.__tts = { log, end() { const u = cur; cur = null; paused = false; if (u && u.onend) u.onend({}); } };
+    });
+    await page.goto(BASE + 'index.html?intro=0&test=1&listen=1');
+    await page.fill('#p1', 'Ada'); await page.locator('#btn-start').click(); await page.waitForTimeout(300);
+    await page.evaluate(() => { PP.S.heard = {}; PP.save(); });
+    await jump(page, 'lampes', 'V02b');
+    const said = () => page.evaluate(() => __tts.log.join(' '));
+    check(await waitFor(page, async () => / tts/.test(await page.locator('#modal-body .ap').getAttribute('class')) && (await said()).includes('speak'), 3000), name + ': ohne Aufnahme liest der Browser vor');
+    check((await playBtn(page).innerText()).includes('Pause') && await cont(page).isDisabled(), name + ': Vorlesen läuft, „Continuer“ wartet');
+    if (name === 'Computer') {
+      await playBtn(page).click(); await page.waitForTimeout(100);
+      check((await said()).includes('pause') && (await playBtn(page).innerText()).includes('Reprendre'), name + ': Pause hält das Vorlesen an');
+      await playBtn(page).click(); await page.waitForTimeout(100);
+      check((await said()).includes('resume') && (await playBtn(page).innerText()).includes('Pause'), name + ': Reprendre liest an derselben Stelle weiter');
+    } else {
+      check(await playBtn(page).isDisabled(), name + ': beim Vorlesen keine Pause (Knopf ruht)');
+      await playBtn(page).click({ force: true }); await page.waitForTimeout(100);
+      check(!(await said()).includes('pause') && (await playBtn(page).innerText()).includes('Pause'), name + ': Antippen hält nichts an');
+      await page.screenshot({ path: SHOT + '06_android_vorlesen.png' });
+    }
+    await page.evaluate(() => __tts.end()); await page.waitForTimeout(150);
+    check(!(await cont(page).isDisabled()) && await page.evaluate(() => PP.S.heard.au_assistante === true), name + ': Text zu Ende, „Continuer“ ist frei');
+    check((await playBtn(page).innerText()).includes('Rejouer') && !(await playBtn(page).isDisabled()), name + ': danach « Rejouer »');
+    await ctx.close();
+  }
 
   check(errors.length === 0, 'keine Skriptfehler ' + errors.join(' | '));
   await browser.close();
