@@ -154,8 +154,8 @@ window.GAME = (function () {
         { id: "gardien", label: "der Wärter", to: "dem Wärter", x: 77, y: 28, w: 20, h: 57, who: "gardien", actions: { parler: [{ if: "P07_done", node: "P02r" }, { if: "P03_done", node: "P07" }, { node: "P02" }], montrer: { photo_groupe: [{ if: "P03_done", node: "P02r" }, { node: "P02m" }], carte_chloe: [{ if: "P03_done", node: "P02r" }, { node: "P02m" }] } } },
         { id: "gaston", label: "Gaston", x: 35, y: 46, w: 21, h: 29, actions: { regarder: [{ if: "P07_done", node: "P07r" }, { if: "P03_done", node: "P07" }, { node: "P01g" }] } },
         { id: "plan", label: "der Plan", x: 1, y: 17, w: 13, h: 34, actions: { regarder: [{ if: "P04_done", node: "P04r" }, { if: "P03_done", node: "P04" }, { node: "P01p" }] } },
-        { id: "banc", label: "die rote Bank", x: 15, y: 41, w: 18, h: 19, who: "chloe", actions: { parler: [{ if: ["P06_done", "C03_done"], node: "P05r" }, { if: "P06_done", node: "P06c" }, { if: "P04_done", node: "P05" }, { node: "P01x" }], regarder: [{ if: ["P06_done", "C03_done"], node: "P05r" }, { if: "P06_done", node: "P06c" }, { if: "P04_done", node: "P05" }, { node: "P01x" }] } },
-        { id: "chemin", label: "der Weg bergab", x: 57, y: 44, w: 15, h: 24, actions: { regarder: "P01x" } }
+        { id: "banc", label: "die rote Bank", x: 15, y: 41, w: 18, h: 19, who: "chloe", actions: { parler: [{ if: ["P06_done", "C03_done"], node: "P05r" }, { if: "P06_done", node: "P06c" }, { if: "P04_done", node: "P05" }, { if: "P03_done", node: "P01b" }, { node: "P01x" }], regarder: [{ if: ["P06_done", "C03_done"], node: "P05r" }, { if: "P06_done", node: "P06c" }, { if: "P04_done", node: "P05" }, { if: "P03_done", node: "P01b" }, { node: "P01x" }] } },
+        { id: "chemin", label: "der Weg bergab", x: 57, y: 44, w: 15, h: 24, actions: { regarder: [{ if: "P03_done", node: "P01d" }, { node: "P01x" }] } }
       ]
     },
     marais: {
@@ -292,6 +292,9 @@ window.GAME = (function () {
   N.P01g = { type: "lines", lines: [{ who: "narrateur", fr: "Gaston, ein Labrador. Er schaut auf einen Ball unter der Bank. Nur auf den Ball." }] };
   N.P01p = { type: "lines", lines: [{ who: "marie", fr: "Ein Plan vom Friedhof. Viele Wege. Wir wissen noch nicht, wo Chloé ist. Fragen wir den Wärter." }] };
   N.P01x = { type: "lines", lines: [{ who: "marie", fr: "Wir wissen noch nicht, wo Chloé ist. Fragen wir den Wärter." }] };
+  /* Nach der Wegbeschreibung des Wärters (P03): Bank und Weg sagen nicht mehr „Fragen wir den Wärter“ */
+  N.P01b = { type: "lines", lines: [{ who: "marie", fr: "Chloé ist bei der roten Bank, ja. Aber welcher Weg führt dorthin? Schauen wir zuerst auf den Plan." }] };
+  N.P01d = { type: "lines", lines: [{ who: "marie", fr: "Nein, nicht dieser Weg. Der Wärter hat gesagt: Der geht zu einem anderen Ausgang." }] };
 
   N.P02 = { type: "choice", who: "gardien", diag: "D_P02", help: "P02", firstOnly: true,
     lines: [{ who: "gardien", fr: "Guten Tag. Sucht ihr ein Grab? Jim Morrison ist da lang. Alle suchen Jim Morrison." }],
@@ -342,7 +345,7 @@ window.GAME = (function () {
     ],
     next: "P06c" };
   N.P06c = { type: "choice", who: "chloe", noDiag: true,
-    lines: [{ who: "chloe", fr: "Morgen proben wir in den Katakomben. Willst du hören, was wir proben?" }],
+    lines: [{ who: "chloe", fr: "Morgen proben wir in den Katakomben. Heute bereiten wir die Kulissen vor. Wollt ihr zuhören?" }],
     choices: [
       { fr: "Ja, gern!", kind: "ok", next: "C03s" },
       { fr: "Später, danke. Wir suchen unseren Rucksack.", kind: "ok", reply: [{ who: "chloe", fr: "Okay. Viel Glück!" }], next: "END" }
@@ -595,7 +598,7 @@ window.GAME = (function () {
   N.P07r = { type: "lines", lines: [{ who: "narrateur", fr: "Gaston schläft. Vor der Kamera." }] };
 
   N.X01 = { type: "lines", lines: [
-    { who: "musicien", fr: "Marcel? Er sollte hier um 17 Uhr spielen, aber er ist nicht gekommen. Ich spiele seit Mittag auf diesem Platz: Ein Pantomime macht zwar keinen Lärm, aber ich hätte ihn gesehen. Man hat mir gesagt, das Programm hat sich geändert. Wisst ihr, wo er jetzt spielt?" }
+    { who: "musicien", fr: "Marcel? Er sollte hier um 17 Uhr spielen, aber man hat mir gesagt, das Programm hat sich geändert. Ich spiele seit Mittag auf diesem Platz: kein Pantomime. Na ja, ein Pantomime macht keinen Lärm ... Wisst ihr, wo er jetzt spielt?" }
   ], next: "X01t" };
   N.X01t = { type: "task", diag: "D_X01", title: "Place des Vosges",
     task: { kind: "recall", who: "musicien", intro: "Die Place des Vosges ist der alte Ort. Wo ist der neue Ort?",

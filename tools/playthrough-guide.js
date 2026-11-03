@@ -160,7 +160,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
     expect(await page.locator('#modal-body .oring').isVisible(), 'E02 Telefon klingelt erst nach zwei Funden');
     await at(56.9, 43.2); await page.waitForTimeout(150); }
   await cont();                                     // E02 → E03 Hörtext → E04
-  const e4 = { 'Lucien ?': 'Ce qui a été dit', 'Tu rapportes': 'Ce qui a été dit', 'Il reste encore': 'Ce qui a été dit', "s'appelle Lucien": "Ce qu'on peut en déduire", 'va bientôt': "Ce qu'on peut en déduire", 'travaillent ensemble': "Ce qu'on peut en déduire", 'fausses cartes': "Ce qu'on peut en déduire", 'Aller aux': 'Ce qui nous aide', 'Écrire à': 'Ce qui nous aide', 'Ne pas jouer': 'Ce qui nous aide', 'a rendu le manteau': 'Ce qui a été dit', 'Le joueur, c\'est': "C'est faux", 'parler au joueur': "C'est faux" };
+  const e4 = { 'Lucien ?': "Ce qu'il a dit", 'Tu rapportes': "Ce qu'il a dit", 'Il reste encore': "Ce qu'il a dit", "s'appelle Lucien": "Ce qu'on peut en déduire", 'va bientôt': "Ce qu'on peut en déduire", 'travaillent ensemble': "Ce qu'on peut en déduire", 'fausses cartes': "Ce qu'on peut en déduire", 'Aller aux': 'Ce qui nous aide', 'Écrire à': 'Ce qui nous aide', 'Ne pas jouer': 'Ce qui nous aide', 'a rendu le manteau': "Ce qu'il a dit", 'Le joueur, c\'est': "C'est faux", 'parler au joueur': "C'est faux" };
   for (const [l, c] of Object.entries(e4)) await selectRow('.crow', l, c);
   await btn('Valider');
   expect(/Juste : 12 sur 13/.test(await feedback()) && (await feedback()).includes('pose une question'), 'E04 Zählung und Falle');
