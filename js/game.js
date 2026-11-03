@@ -1150,33 +1150,84 @@
   }
   /* Introvideo beim Laden der Seite: Video des gewählten Teils (Teil 1 assets/video/intro.mp4, Teil 2 intro_teil2.mp4,
      Teil 3 intro_teil3.mp4), dann großer Titel, dann Startmenü. ?intro=0 überspringt es. Fehlt die Datei oder spielt der
-     Browser sie nicht, erscheint sofort das Startmenü. Ohne Klick erlauben Browser nur stummes Abspielen: dann gibt es einen Knopf für den Ton. */
+     Browser sie nicht, erscheint sofort das Startmenü. Ohne Klick erlauben Browser nur stummes Abspielen: dann gibt es einen Knopf für den Ton.
+     Musik: Der Schalter „Musique“ (im Startmenü #btn-music, im Intro eine Kopie davon unten links) schaltet die Musik ab. Das gilt
+     auf diesem Gerät für alle Teile und beide Sprachen (pp_intro_music). Teil 1 und 2 haben als Ton nur die Musik und laufen dann
+     stumm; Teil 3 spielt intro_teil3_ohne_musik.mp4 (Originalton mit Nowaks Stimme) und wechselt auch mitten im Video an derselben Stelle. */
+  const MUSIC_KEY = "pp_intro_music";
+  const NOMUSIC = { 3: "_ohne_musik" };   // Teile mit eigener Fassung ohne Musik
+  function introMusic() { try { return localStorage.getItem(MUSIC_KEY) !== "0"; } catch (e) { return true; } }
+  function setIntroMusic(on) {
+    try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch (e) { /* privat */ }
+    $$(".musicsw").forEach(b => b.setAttribute("aria-checked", on ? "true" : "false"));
+  }
   function playIntro(cb) {
     const box = el("div", "introvid");
     const v = document.createElement("video");
     const vid = "assets/video/" + (part > 1 ? "intro_teil" + part : "intro");
-    v.src = vid + ".mp4"; v.poster = vid + "_poster.jpg";
+    let alt = NOMUSIC[part] || "";   // Endung der Fassung ohne Musik; ohne sie gibt es ohne Musik nichts zu hören
+    let music = introMusic(), muted = false, locked = false;   // muted: kein Ton (gesperrt oder „Son“ aus); locked: der Browser hat den Ton gesperrt
+    const file = () => vid + (music ? "" : alt) + ".mp4";
+    v.src = file(); v.poster = vid + "_poster.jpg";
     v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto";
     const title = el("div", "ititle");
     title.innerHTML = "<h1>" + esc($("#title").textContent) + "</h1><p>" + esc($("#subtitle").textContent) + "</p>";
+    const ctl = el("div", "ictl");
+    const ms = $("#btn-music"), mus = ms ? ms.cloneNode(true) : null;
     const snd = el("button", "btn snd", "🔇 Son"); snd.hidden = true;
     const skip = el("button", "btn skip", "Passer l'intro ▸");
     const big = el("button", "bigplay", "▶"); big.hidden = true; big.setAttribute("aria-label", "Lancer l'intro");
     let done = false, timer = null;
+    const apply = () => {
+      v.muted = muted || (!music && !alt);
+      snd.textContent = muted ? "🔇 Son" : "🔊 Son";
+      snd.hidden = !locked || (!music && !alt);   // ohne Musik und ohne eigene Fassung hilft der Knopf nicht
+    };
+    /* Standbild über dem Video, solange die andere Fassung lädt und an die Stelle springt */
+    const hold = () => {
+      if (!v.videoWidth || v.readyState < 2) return;
+      const c = document.createElement("canvas"); c.className = "ihold"; c.width = v.videoWidth; c.height = v.videoHeight;
+      try { c.getContext("2d").drawImage(v, 0, 0, c.width, c.height); } catch (e) { return; }
+      box.insertBefore(c, title);
+      const off = () => { c.remove(); v.removeEventListener("seeked", off); v.removeEventListener("playing", off); };
+      v.addEventListener("seeked", off); v.addEventListener("playing", off); setTimeout(off, 4000);
+    };
+    const swap = run => {
+      const t = v.currentTime;
+      hold();
+      v.src = file();
+      if (t) v.addEventListener("loadedmetadata", () => { v.currentTime = Math.min(t, v.duration || t); }, { once: true });
+      apply();
+      if (run) v.play().catch(() => {});
+    };
     const end = () => { if (done) return; done = true; clearTimeout(timer); box.classList.add("out"); setTimeout(() => { box.remove(); cb(); }, 900); };
-    const showTitle = () => { if (done || box.classList.contains("titled")) return; box.classList.add("titled"); skip.hidden = true; snd.hidden = true; big.hidden = true; timer = setTimeout(end, 3400); };
+    const showTitle = () => { if (done || box.classList.contains("titled")) return; box.classList.add("titled"); skip.hidden = true; ctl.hidden = true; big.hidden = true; timer = setTimeout(end, 3400); };
     skip.addEventListener("click", end);
     title.addEventListener("click", end);
     v.addEventListener("ended", showTitle);
-    v.addEventListener("error", () => { if (!box.classList.contains("titled")) end(); });
-    snd.addEventListener("click", () => { v.muted = !v.muted; snd.textContent = v.muted ? "🔇 Son" : "🔊 Son"; });
-    big.addEventListener("click", () => { big.hidden = true; v.muted = false; v.play().catch(() => { v.muted = true; v.play().catch(end); }); });
+    v.addEventListener("error", () => {
+      if (!music && alt) { alt = ""; swap(big.hidden); return; }   // Fassung ohne Musik fehlt: weiter ohne Ton
+      if (!box.classList.contains("titled")) end();
+    });
+    snd.addEventListener("click", () => { muted = !muted; apply(); });
+    if (mus) {
+      mus.removeAttribute("id"); mus.classList.add("btn"); mus.setAttribute("aria-checked", music ? "true" : "false");
+      mus.addEventListener("click", () => {
+        music = !music; setIntroMusic(music);
+        if (music) muted = false;   // wer die Musik einschaltet, will sie hören; nach dem Klick erlaubt der Browser den Ton
+        if (alt) swap(!v.paused && !v.ended); else apply();
+      });
+      ctl.appendChild(mus);
+    }
+    big.addEventListener("click", () => { big.hidden = true; muted = false; apply(); v.play().catch(() => { muted = true; apply(); v.play().catch(end); }); });
+    apply();
     v.play().catch(() => {
       if (v.error || done) return;
-      v.muted = true; snd.hidden = false;
+      muted = true; locked = true; apply();
       v.play().catch(() => { if (!v.error && !done) big.hidden = false; });
     });
-    box.appendChild(v); box.appendChild(title); box.appendChild(snd); box.appendChild(skip); box.appendChild(big);
+    ctl.appendChild(snd);
+    box.appendChild(v); box.appendChild(title); box.appendChild(ctl); box.appendChild(skip); box.appendChild(big);
     document.body.appendChild(box);
   }
   function startNew() {
@@ -1291,6 +1342,8 @@
     $("#title").textContent = G.ui.title; $("#subtitle").textContent = G.ui.subtitle;
     setupParts();   // Titel des gewählten Teils, auch im Intro
     $("#btn-intro").addEventListener("click", e => { e.preventDefault(); playIntro(() => {}); });
+    const ms = $("#btn-music");
+    if (ms) { ms.setAttribute("aria-checked", introMusic() ? "true" : "false"); ms.addEventListener("click", () => setIntroMusic(!introMusic())); }
     if (INTRO && !QS.has("menu")) playIntro(() => {});
     if (PROF) { $("#btn-prof").hidden = false; $("#btn-prof").addEventListener("click", openProf); $("#node-id").hidden = false; }
     $("#ver").textContent = "v" + G.version + (PROF ? " · prof" : "");

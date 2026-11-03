@@ -26,6 +26,15 @@ h1, h2, h3 { font-family: var(--serif); margin: 0 0 .5rem; }
 .start-card fieldset { border: 1px solid var(--line); border-radius: 8px; margin: .8rem 0; padding: .5rem .8rem; }
 .start-card .radio { display: inline-block; margin: 0 1rem 0 0; font-weight: 500; }
 .tiny { font-size: .8rem; color: var(--muted); }
+/* Schalter „Musique“ für das Intro: im Startmenü neben „Revoir l'intro“, im Intro als Knopf */
+.musicsw { display: inline-flex; align-items: center; gap: .4em; vertical-align: middle; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.musicsw:not(.btn) { background: none; border: 0; padding: .25rem 0; color: inherit; }
+.musicsw .nicon { width: 1.15em; height: 1.15em; flex: none; }
+.musicsw .sw { position: relative; flex: none; width: 2.1em; height: 1.2em; border-radius: .6em; background: #c9bca4; transition: background .2s; }
+.musicsw .sw::after { content: ""; position: absolute; top: .15em; left: .15em; width: .9em; height: .9em; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.35); transition: transform .2s; }
+.musicsw[aria-checked="true"] .sw { background: var(--ok); }
+.musicsw[aria-checked="true"] .sw::after { transform: translateX(.9em); }
+@media (pointer: coarse) { .musicsw:not(.btn) { padding: .6rem 0; } }   /* größere Tippfläche im Startmenü */
 /* Startmenü: Teil 1, 2 oder 3 (2 und 3 gesperrt bis zum Schlüsselwort), untereinander: Nummer links, Titel daneben,
    das Schloss eines gesperrten Teils rechts */
 .parts { display: grid; gap: .4rem; margin: 0 0 .9rem; }
@@ -306,9 +315,20 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .introvid.out { opacity: 0; pointer-events: none; }
 .introvid video { width: 100%; height: 100%; object-fit: contain; display: block; transition: filter 1.2s ease; }
 .introvid.titled video { filter: brightness(.5) saturate(.85); }
-.introvid .skip, .introvid .snd { position: absolute; bottom: 1.2rem; background: rgba(0,0,0,.55); color: #f1c27d; border: 1px solid rgba(241,194,125,.6); }
-.introvid .skip { right: 1.2rem; }
-.introvid .snd { left: 1.2rem; }
+.introvid .skip, .introvid .ictl .btn { background: rgba(0,0,0,.55); color: #f1c27d; border: 1px solid rgba(241,194,125,.6); }
+.introvid .skip { position: absolute; bottom: 1.2rem; right: 1.2rem; }
+/* unten links: Schalter „Musique“, daneben „Son“, wenn der Browser den Ton gesperrt hat */
+.introvid .ictl { position: absolute; bottom: 1.2rem; left: 1.2rem; display: flex; align-items: center; gap: .5rem; }
+.introvid .ihold { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }   /* Standbild beim Wechsel der Fassung (Teil 3) */
+.introvid .musicsw .sw { background: rgba(241,194,125,.25); }
+.introvid .musicsw .sw::after { background: #f6ead3; }
+.introvid .musicsw[aria-checked="true"] .sw { background: #f1c27d; }
+@media (max-width: 480px) { .introvid .ictl { flex-direction: column-reverse; align-items: flex-start; } }
+@media (max-width: 400px) {   /* schmale Handys: kleinere Knöpfe, damit „Intro überspringen“ (deutsch) danebenpasst */
+  .introvid .ictl .btn, .introvid .skip { font-size: .85rem; padding: .4rem .65rem; }
+  .introvid .ictl { left: .8rem; bottom: .8rem; }
+  .introvid .skip { right: .8rem; bottom: .8rem; }
+}
 .introvid .bigplay { position: absolute; width: 96px; height: 96px; border-radius: 50%; border: 2px solid #f1c27d; background: rgba(0,0,0,.6); color: #f1c27d; font-size: 2.4rem; padding-left: 8px; cursor: pointer; }
 /* Titelkarte am Ende des Videos: über dem letzten Bild, in der Plakatschrift des Spiels */
 .introvid .ititle { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 1rem 1.2rem; background: radial-gradient(ellipse at center, rgba(0,0,0,.25), rgba(0,0,0,.75)); opacity: 0; transition: opacity 1.1s ease; pointer-events: none; }

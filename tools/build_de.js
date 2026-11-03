@@ -88,7 +88,7 @@ const PATCHES = [
   [R`"<b>" + k + ".mp3 · " + esc(G.chars[G.audio[k].who].name)`, R`"<b>" + k + " · " + esc(G.chars[G.audio[k].who].name)`],
   [R`<tr><th>Datum</th><th>Joueur</th>`, R`<tr><th>Datum</th><th>Spieler</th>`],
   [R`el("button", "btn snd", "🔇 Son")`, R`el("button", "btn snd", "🔇 Ton")`],
-  [R`snd.textContent = v.muted ? "🔇 Son" : "🔊 Son";`, R`snd.textContent = v.muted ? "🔇 Ton" : "🔊 Ton";`],
+  [R`snd.textContent = muted ? "🔇 Son" : "🔊 Son";`, R`snd.textContent = muted ? "🔇 Ton" : "🔊 Ton";`],
   [R`el("button", "btn skip", "Passer l'intro ▸")`, R`el("button", "btn skip", "Intro überspringen ▸")`],
   [R`big.setAttribute("aria-label", "Lancer l'intro")`, R`big.setAttribute("aria-label", "Intro starten")`],
   [R`!confirm("Nouvelle partie ? L'ancienne partie sera remplacée.")`, R`!confirm("Neues Spiel? Das alte Spiel wird ersetzt.")`]
