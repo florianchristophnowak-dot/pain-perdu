@@ -1319,6 +1319,12 @@
     const helps = Object.values(S.helpUsed).reduce((a, b) => a + b, 0);
     body.appendChild(el("div", "paper", "<b>" + esc(pname(0)) + (twoPlayers() ? " & " + esc(pname(1)) : "") + "</b><br>" + esc(fmtTpl(G.ui.endStats, { places: S.visited.length, helps, mins, q: solvedCount() }))));
     body.appendChild(el("p", "", esc(G.ui.endExport)));
+    if (G.next) {   // Teil 2 geschafft: Teil 3 ist offen; das Schlüsselwort öffnet ihn auch auf einem anderen Gerät
+      try { localStorage.setItem(G.next.store, "1"); } catch (e) { /* privat */ }
+      const kb = el("div", "keybox", '<div class="kt">' + esc(G.next.title) + '</div><div class="kw">' + esc(G.next.key) + "</div><p>" + esc(G.next.note) + "</p>");
+      const go = el("button", "btn primary", esc(G.next.go)); go.addEventListener("click", () => { save(); location.href = hubUrl("part=" + G.next.part); });   // Startmenü mit dem Intro von Teil 3
+      kb.appendChild(go); body.appendChild(kb);
+    }
     if (G.credits) body.appendChild(el("div", "credits", "<b>" + esc(G.credits.title) + "</b><br>" + G.credits.lines.map(esc).join("<br>")));
     const bar = el("div", "bar");
     const ex = el("button", "btn primary", esc(G.ui.btn.exporter)); ex.addEventListener("click", exportAll); bar.appendChild(ex);
