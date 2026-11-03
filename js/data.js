@@ -83,7 +83,8 @@ window.GAME = (function () {
       afterHelp: "Bien. La prochaine fois, sans moi !",
       tense: "C'est le décor ou l'action ?",
       witness: "Tu veux parler de maintenant, de plus tard ou de tout à l'heure ?",
-      helpLater: "Essaie encore une fois. Après, je t'aide."
+      helpLater: "Essaie encore une fois. Après, je t'aide.",
+      read: "Doucement. Lis d'abord."
     },
     mapQuestion: "Question sur place :",
     locked: "fermé",
@@ -172,8 +173,8 @@ window.GAME = (function () {
       hotspots: [
         { id: "gardien", label: "le gardien", x: 77, y: 28, w: 20, h: 57, who: "gardien", actions: { parler: [{ if: "P07_done", node: "P02r" }, { if: "P03_done", node: "P07" }, { node: "P02" }], montrer: { photo_groupe: [{ if: "P03_done", node: "P02r" }, { node: "P02m" }], carte_chloe: [{ if: "P03_done", node: "P02r" }, { node: "P02m" }] } } },
         { id: "gaston", label: "Gaston", x: 35, y: 46, w: 21, h: 29, actions: { regarder: [{ if: "P07_done", node: "P07r" }, { if: "P03_done", node: "P07" }, { node: "P01g" }] } },
-        { id: "plan", label: "le plan", x: 1, y: 17, w: 13, h: 34, actions: { regarder: [{ if: "P03_done", node: "P04" }, { node: "P01p" }] } },
-        { id: "banc", label: "le banc rouge", x: 15, y: 41, w: 18, h: 19, who: "chloe", actions: { parler: [{ if: "P04_done", node: "P05" }, { node: "P01x" }], regarder: [{ if: "P04_done", node: "P05" }, { node: "P01x" }] } },
+        { id: "plan", label: "le plan", x: 1, y: 17, w: 13, h: 34, actions: { regarder: [{ if: "P04_done", node: "P04r" }, { if: "P03_done", node: "P04" }, { node: "P01p" }] } },
+        { id: "banc", label: "le banc rouge", x: 15, y: 41, w: 18, h: 19, who: "chloe", actions: { parler: [{ if: ["P06_done", "C03_done"], node: "P05r" }, { if: "P06_done", node: "P06c" }, { if: "P04_done", node: "P05" }, { node: "P01x" }], regarder: [{ if: ["P06_done", "C03_done"], node: "P05r" }, { if: "P06_done", node: "P06c" }, { if: "P04_done", node: "P05" }, { node: "P01x" }] } },
         { id: "chemin", label: "le chemin qui descend", x: 57, y: 44, w: 15, h: 24, actions: { regarder: "P01x" } }
       ]
     },
@@ -183,7 +184,7 @@ window.GAME = (function () {
         { id: "nora", label: "Nora", x: 47, y: 21, w: 13, h: 40, who: "nora", actions: { parler: [{ if: "B04_done", node: "B02r" }, { node: "B02" }], montrer: { ticket: [{ if: "B04_done", node: "B02r" }, { node: "B02t" }], photo_groupe: [{ if: "B04_done", node: "B02r" }, { node: "B02" }], flyer: [{ if: "B04_done", node: "B02r" }, { node: "B02" }] } } },
         { id: "flyer", label: "le flyer", x: 73.5, y: 36, w: 6, h: 11, actions: { regarder: "B01a" } },
         { id: "panneau", label: "le panneau", x: 64, y: 2, w: 13, h: 34, actions: { regarder: "B01p" } },
-        { id: "telephone", label: "le téléphone de Nora", x: 58, y: 60, w: 6.5, h: 7, actions: { ecouter: "B03" }, showIf: "B03_open" },
+        { id: "telephone", label: "le téléphone de Nora", x: 58, y: 60, w: 6.5, h: 7, actions: { ecouter: [{ if: "B06_done", node: "B03r" }, { node: "B03" }] }, showIf: "B03_open" },
         { id: "porte", label: "la porte de la librairie", x: 83, y: 5, w: 16, h: 80, actions: { regarder: [{ if: "B03_open", node: "GO_librairie" }, { node: "B01l" }] } }
       ]
     },
@@ -201,7 +202,7 @@ window.GAME = (function () {
       hotspots: [
         { id: "assistante", label: "l'assistante", x: 2, y: 33, w: 17, h: 30, who: "assistante", actions: { parler: [{ if: "V01q_done", node: "V02" }, { if: "L02_done", node: "V01q" }, { node: "V01" }] } },
         { id: "scene", label: "la scène", x: 22, y: 10, w: 26, h: 56, actions: { regarder: "V00s" } },
-        { id: "marcel", label: "Marcel", x: 49, y: 34, w: 19, h: 56, who: "marcel", actions: { parler: [{ if: "V03_done", node: "V03r" }, { if: "V03_talked", node: "V03q" }, { if: "V02_done", node: "V03" }, { node: "V00m" }] }, showIf: "V01q_done" }
+        { id: "marcel", label: "Marcel", x: 49, y: 34, w: 19, h: 56, who: "marcel", actions: { parler: [{ if: "V05_done", node: "V03r" }, { if: "V03_done", node: "V04" }, { if: "V03_talked", node: "V03q" }, { if: "V02_done", node: "V03" }, { node: "V00m" }] }, showIf: "V01q_done" }
       ]
     },
     /* Phase 2 */
@@ -336,6 +337,9 @@ window.GAME = (function () {
     effects: { flag: "P04_done" },
     after: [{ who: "marie", fr: "Le banc rouge ! Il y a quelqu'un." }],
     next: "P05" };
+  /* Plan und Bank nach gelöster Aufgabe: nur noch eine Bemerkung (vorher begannen P04 bis P06 von vorn) */
+  N.P04r = { type: "lines", lines: [{ who: "marie", fr: "Tout droit, puis à gauche : le banc rouge." }] };
+  N.P05r = { type: "lines", lines: [{ who: "chloe", fr: "Bonne chance pour votre sac !" }] };
 
   N.P05 = { type: "choice", who: "chloe", diag: "D_P05", count: true,
     lines: [{ who: "chloe", fr: "Salut ! Vous êtes perdus ? Jim Morrison, c'est de l'autre côté." }],
@@ -393,6 +397,8 @@ window.GAME = (function () {
     ] };
 
   N.B03 = { type: "audio", audio: "au_marcel", transcriptHelp: "B04", effects: { flag: "B03_open" }, next: "B04" };
+  /* Noch einmal hören, wenn B04 bis B06 erledigt sind (sonst begann die ganze Kette mit Aufgabe und Nachricht an M. Nowak von vorn) */
+  N.B03r = { type: "audio", audio: "au_marcel", transcriptHelp: "B04" };
 
   N.B04 = { type: "task", diag: "D_B04", help: "B04", audio: "au_marcel", title: "Qu'est-ce qui est sûr ?",
     task: { kind: "pick", intro: "Marcel dit beaucoup de choses. Trois phrases sont sûres.", question: "Choisis les trois phrases sûres.", n: 3,

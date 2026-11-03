@@ -17,6 +17,7 @@ const PATCHES = [
   [R`text: a.text, lang: "fr-FR",`, R`text: a.text, lang: "de-DE",`],
   [R`toast("Inventaire : " + G.items[id].name)`, R`toast("Inventar: " + G.items[id].name)`],
   [R`toast("Marie : " + G.ui.marie.afterHelp)`, R`toast("Marie: " + G.ui.marie.afterHelp)`],
+  [R`toast("Marie : " + G.ui.marie.read)`, R`toast("Marie: " + G.ui.marie.read)`],
   [R`toast("Marie : " + (p.lockedMsg`, R`toast("Marie: " + (p.lockedMsg`],
   [R`'<div class="who">Marie · ' + level + "/4</div><div class=\"text" + (level === 4 ? " de" : "") + '">' + (level === 4 ? esc(txt) : gl(txt)) + "</div>"`, R`'<div class="who">Marie · ' + level + '/4</div><div class="text">' + gl(txt) + "</div>"`],
   [R`    /* Porträt neben dem Namen, der Player bekommt die volle Breite (auch auf dem Handy) */

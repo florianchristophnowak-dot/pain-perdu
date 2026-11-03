@@ -157,7 +157,7 @@ window.GAME = (function () {
     selfie: { emoji: "🤳", name: "le selfie de Lino", desc: "Lino, Kevin et M. Beaumont, sans parapluie. On voit son visage.", img: "doc_selfie" },
     badge: { emoji: "🪪", name: "la photo du badge", desc: "GUIDE OFFICIEL · Ville de Paris · M. Beaumont · valable jusqu'au 31 février", render: "badge" },
     carte: { emoji: "🎟️", name: "une carte « Visite exclusive »", desc: "N° 042. Un coin de l'autocollant se décolle.", desc2: { if: "carte_peeled", text: "N° 042. Sous l'autocollant : RÉDUCTION – DEUXIÈME ARTICLE À MOITIÉ PRIX." }, render: "card" },
-    fiche: { emoji: "📝", name: "la fiche de signalement", desc: "Notre description de M. Beaumont :", cards: "N07b" },
+    fiche: { emoji: "📝", name: "la fiche de signalement", desc: "Notre description de M. Beaumont : Il était grand. Il avait une moustache grise. Il portait un manteau beige et une montre dorée. Il avait un parapluie rouge. À midi moins le quart, il est parti avec 220 euros.", cards: "N07b" },   // Text aus N07a, dahinter die eigenen Sätze aus N07b
     plan: { emoji: "🗺️", name: "le plan de Paris", desc: "Notre-Dame, les Galeries Lafayette, la tour Eiffel. Et les quais de la Seine." },
     telephone: { emoji: "📱", name: "le téléphone de Marie", desc: "Pour écrire à M. Nowak." },
     page_guide: { emoji: "📖", name: "une page de « Paris insolite »", desc: "Paris insolite, 1958. Page 27 : une petite porte, l'entrée des livraisons. Pas de porte secrète." },
