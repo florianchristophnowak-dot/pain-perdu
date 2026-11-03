@@ -48,8 +48,8 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
 
   /* ===== Teil 1: Finale V03q, französisch und deutsch ===== */
   const T1 = ['M00_done', 'M02_done', 'M03_done', 'M04b_done', 'P02_done', 'P03_done', 'P04_done', 'P05_done', 'P06_done', 'B03_open', 'B04_done', 'B05_done', 'B06_done', 'L02q_done', 'L02_done', 'L04_done', 'L05_done', 'V01q_done', 'V02_done', 'V03_talked'];
-  for (const L of [{ dir: '', cont: 'Continuer', check: 'Vérifier', vals: ['devant', 'bleue', 'Kevin', 'rouge', 'billets'], scene: 'la scène' },
-                   { dir: 'de/', cont: 'Weiter', check: 'Prüfen', vals: ['Vordertasche', 'blau', 'Kevin', 'rot', 'Fahrkarten'], scene: 'Bühne' }]) {
+  for (const L of [{ dir: '', cont: 'Continuer', check: 'Vérifier', vals: ['devant', 'bleue', 'Kevin', 'rouge', 'billets'], scene: 'la scène', chloeNew: "Oui, c'est Chloé", chloeMet: "Ah, c'est vous" },
+                   { dir: 'de/', cont: 'Weiter', check: 'Prüfen', vals: ['Vordertasche', 'blau', 'Kevin', 'rot', 'Fahrkarten'], scene: 'Bühne', chloeNew: 'Ja, hier ist Chloé', chloeMet: "Ach, ihr seid's" }]) {
     const tag = 'Teil 1' + (L.dir ? ' deutsch' : '');
     await start(BASE + L.dir + 'index.html?intro=0&test=1');
     await setup(T1, 'louvre', 'V03q');
@@ -64,6 +64,16 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     await setup([], 'louvre', null);
     await use('Marcel');
     check(await node() === 'V04', tag + ': festgefahrener Stand (V03_done ohne Rapport): Marcel führt zu V04 (' + await node() + ')');
+    /* Chloé am Telefon: Wer sie am Père-Lachaise noch nicht getroffen hat, hört kein « Ah, c'est vous ! » */
+    for (const met of [false, true]) {
+      await page.evaluate(() => { PP.S.resume = null; delete PP.S.flags.P05_done; PP.save(); });
+      await setup(['C01_found', 'C02_done'].concat(met ? ['P05_done'] : []), 'catacombes', 'C02n');
+      await page.locator('#modal-body input.rin').first().fill('06 12 34 56 78');
+      await click('#modal-body button', L.check);
+      const fb = norm(await page.locator('#modal-body .feedback').last().innerText());
+      const want = met ? L.chloeMet : L.chloeNew, not = met ? L.chloeNew : L.chloeMet;
+      check(fb.includes(want) && !fb.includes(not), tag + ': Chloé am Telefon ' + (met ? 'nach' : 'vor') + ' dem Treffen am Père-Lachaise (' + fb.slice(0, 70) + ')');
+    }
   }
 
   /* ===== Teil 1: Nachricht von Marcel (B04) und Wiederholungen ===== */
@@ -93,6 +103,13 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
   await start(BASE + 'guide-fantome/index.html?test=1');
   const fiche = await page.evaluate(() => window.GAME.items.fiche.desc);
   check(fiche.includes('midi moins le quart') && fiche.includes('moustache grise'), 'Teil 2: die Fiche de signalement nennt die Uhrzeit (R1) und die Merkmale (F01)');
+  /* Das Carnet verrät die Antworten der Abfragen R2, R3, R3b und R5 erst, wenn sie beantwortet sind */
+  const carnet = async flags => { await page.evaluate(fl => { fl.forEach(f => { PP.S.flags[f] = true; }); PP.save(); PP.openCarnet(); }, flags); await page.waitForTimeout(150); return modalText(); };
+  const before = await carnet(['N08_done', 'badge_faux', 'E03_done', 'N06_done', 'G06_done', 'G05_done', 'E04_done', 'R2_done']);
+  check(['Lucien', 'bons de réduction', 'rendre le manteau'].every(w => !before.includes(w)) && (before.match(/réglé/g) || []).length >= 3,
+    'Teil 2: Q1 bis Q3 sind geklärt, das Carnet zeigt ihre Antworten aber noch nicht vor R3, R3b und R5');
+  const after = await carnet(['R3_done', 'R3b_done', 'R5_done']);
+  check(['Lucien', 'bons de réduction', 'rendre le manteau'].every(w => after.includes(w)), 'Teil 2: nach den Abfragen stehen die Antworten im Carnet');
 
   /* ===== Teil 3: P02 unterbrechen, O06 und I02 im Nachspann ===== */
   await start(BASE + 'voyageur/index.html?test=1&listen=1');

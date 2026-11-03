@@ -217,7 +217,7 @@ window.GAME = (function () {
         { id: "tel", label: "le téléphone", x: 73.5, y: 54, w: 7, h: 6.5, actions: { regarder: "C02c" }, showIf: "C02_done" }
       ]
     },
-    repetition: { name: "Catacombes · la répétition", bg: "bg_catacombes", enter: null, hotspots: [] },
+    repetition: { name: "La répétition de Chloé", bg: "bg_catacombes", enter: null, hotspots: [] },
     lampes: { name: "Cour du Louvre · les lampes", bg: "bg_lampes", enter: null, hotspots: [] }
   };
 
@@ -317,7 +317,7 @@ window.GAME = (function () {
     lines: [{ who: "gardien", fr: "Bonjour. Vous cherchez une tombe ? Jim Morrison, c'est par là. Tout le monde cherche Jim Morrison." }],
     choices: [
       { fr: "Non, on cherche un homme. Vous avez vu ce mime ?", hint: "(montre la photo de groupe)", kind: "ok", next: "P02m" },
-      { fr: "Oui, Jim Morrison, s'il vous plaît.", kind: "repair", reply: [{ who: "gardien", fr: "Tout droit, puis à droite. Bonne visite !" }, { who: "lino", fr: "Marie, on ne cherche pas Jim Morrison.", de: "Marie, wir suchen nicht Jim Morrison." }], next: "P02" },
+      { fr: "Oui, Jim Morrison, s'il vous plaît.", kind: "repair", reply: [{ who: "gardien", fr: "Tout droit, puis à droite. Bonne visite !" }, { who: "marie", fr: "Lino, on ne cherche pas Jim Morrison." }], next: "P02" },
       { fr: "Vous connaissez Chloé ?", kind: "repair", reply: [{ who: "gardien", fr: "Chloé ? Oui, elle est là-bas avec son groupe de théâtre. Pourquoi ?" }], next: "P02" }
     ] };
   /* Der Wärter kennt Marcel: Vorspann vor der Aufnahme */
@@ -658,7 +658,10 @@ window.GAME = (function () {
     task: { kind: "recall", who: "marie", intro: "Compose le numéro de Chloé.",
       fields: [{ id: "num", label: "Le numéro :", answers: ["06 12 34 56 78"], digits: true, size: 16, placeholder: "06 ..", where: "Le numéro est sur la carte « demain », dans l'inventaire.",
         traps: [{ answers: ["01 42 72 18 90"], digits: true, who: "nora", fr: "« Boulangerie Nora, bonjour ! Du pain perdu ? ... Chloé ? Non, elle n'est pas là. »" }] }],
-      wrongText: "« Le numéro que vous avez demandé n'est pas attribué. »", success: { who: "chloe", fr: "Allô ? Ah, c'est vous ! Attendez, je vous passe la répétition." },
+      wrongText: "« Le numéro que vous avez demandé n'est pas attribué. »",
+      /* Kennt man Chloé noch nicht (Catacombes vor dem Père-Lachaise), grüßt sie anders */
+      success: [{ if: "P05_done", who: "chloe", fr: "Allô ? Ah, c'est vous ! Attendez, je vous passe la répétition." },
+        { who: "chloe", fr: "Allô ? Oui, c'est Chloé. Vous avez le sac de Marcel ? Bizarre... Attendez, je vous passe la répétition." }],
       leaveLines: [{ who: "marie", fr: "On l'appellera plus tard." }] },
     next: "C03s" };
   N.C03s = { type: "scene", scene: "repetition", next: "C03" };

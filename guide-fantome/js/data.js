@@ -128,10 +128,11 @@ window.GAME = (function () {
   };
 
   /* ---------- Die vier Fragen im Carnet ---------- */
+  /* reveal: die Antwort steht erst nach der passenden Abfrage im Carnet (R3: Lucien, R2 und R3b: aujourd'hui, rendre le manteau, R5: bon de réduction) */
   G.questions = {
-    Q1: { title: "Qui est vraiment M. Beaumont ?", done: ["badge_faux", "E03_done"], answer: "Il s'appelle Lucien. Ce n'est pas un guide." },
-    Q2: { title: "Qu'est-ce qu'il nous a vendu ?", done: ["N06_done", "G06_done"], answer: "Rien. Les cartes sont des bons de réduction." },
-    Q3: { title: "Où et quand est-ce qu'il va revenir ?", done: ["G05_done", "E04_done"], answer: "Aujourd'hui, aux Galeries Lafayette, pour rendre le manteau." },
+    Q1: { title: "Qui est vraiment M. Beaumont ?", done: ["badge_faux", "E03_done"], answer: "Il s'appelle Lucien. Ce n'est pas un guide.", reveal: "R3_done" },
+    Q2: { title: "Qu'est-ce qu'il nous a vendu ?", done: ["N06_done", "G06_done"], answer: "Rien. Les cartes sont des bons de réduction.", reveal: "R5_done" },
+    Q3: { title: "Où et quand est-ce qu'il va revenir ?", done: ["G05_done", "E04_done"], answer: "Aujourd'hui, aux Galeries Lafayette, pour rendre le manteau.", reveal: ["R2_done", "R3b_done"] },
     Q4: { title: "Comment est-ce qu'on peut le prouver ?", done: "F05_done", answer: "Avec trois preuves : {proofs}." }
   };
   G.openAfter = "N08_done";   // Carnet und Karte öffnen sich nach dem Auftakt
