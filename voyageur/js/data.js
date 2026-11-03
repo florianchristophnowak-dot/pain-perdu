@@ -47,8 +47,8 @@ window.GAME = (function () {
     },
     recall: {
       check: "Vérifier", later: "Revenir plus tard",
-      pause: "Là, vous devinez. Allez vérifier, puis revenez après la pause.",
-      paused: "Pas maintenant. Vérifiez d'abord, puis revenez dans {s} secondes.",
+      pause: "Là, tu devines. Va vérifier, puis reviens après la pause.",
+      paused: "Pas maintenant. Vérifie d'abord, puis reviens dans {s} secondes.",
       wrong: "Non, ce n'est pas ça.", unknown: "Tu ne sais plus ? Va revoir, puis reviens.",
       intro: "Réponds de mémoire ou avec ta feuille.", empty: "Écris d'abord une réponse."
     },
@@ -166,7 +166,7 @@ window.GAME = (function () {
     photo_b: { emoji: "🌉", name: "la photo du pont", desc: "La photo B de l'album. Légende : « Le pont Alexandre III, 1900 ».", render: "crop", photo: "P18" },
     photo_c: { emoji: "⛪", name: "la photo des Invalides", desc: "La photo C de l'album. Légende : « Les Invalides, 1900 ».", render: "crop", photo: "P19" },
     fiche_vente: { emoji: "🏷️", name: "la fiche de vente", desc: "Album Paris 1900 · Couverture et pages anciennes · Trois photographies prises en 1900 · Photos originales, pas des copies · Prix : 180 € · Vendeur : Victor Delmas" },
-    fiche_orsay: { emoji: "📄", name: "la fiche sur Orsay", desc: "La gare d'Orsay. En 1900, il y avait une grande exposition à Paris : l'Exposition universelle. Pour elle, on a construit une gare. Les gens prenaient le train ici. En 1986, la gare est devenue un musée : le musée d'Orsay. Aujourd'hui, on regarde des tableaux ici. Le bâtiment est vieux, mais ce n'est plus une gare." },
+    fiche_orsay: { emoji: "📄", name: "la fiche sur Orsay", desc: "La gare d'Orsay. En 1900, il y avait une grande exposition à Paris : l'Exposition universelle. Pour cette exposition, on a construit une gare. Les gens prenaient le train ici. En 1986, la gare est devenue un musée : le musée d'Orsay. Aujourd'hui, on regarde des tableaux ici. Le bâtiment est vieux, mais ce n'est plus une gare." },
     programme: { emoji: "📋", name: "le programme", desc: "Les Images de Paris · Aujourd'hui · Pont Alexandre III : information · Esplanade des Invalides : livres et costumes · Marcel Blanchard : accessoires de théâtre, le matin · Chloé : photos, à partir de 14 h, stand 6" },
     photo_baguette: { emoji: "🥖", name: "la photo de la baguette", desc: "La baguette de Marcel aujourd'hui : le bout cassé et trois morceaux de ruban adhésif.", img: "doc_baguette" },
     photos_entieres: { emoji: "📁", name: "les photos entières", desc: "Les photos de Chloé : P17, P18 et P19. On voit aussi les bords.", render: "fulls", photos: ["P17", "P18", "P19"] },
@@ -356,7 +356,7 @@ window.GAME = (function () {
   ], next: "O06" };
   N.O06 = { type: "task", title: "Une gare avant un musée", help: "O06", diag: "D_O06", doneAt: true,
     task: { kind: "cols", intro: "Lisez la fiche. Rangez les cinq phrases.", docIcon: "fiche",
-      doc: "La gare d'Orsay\nEn 1900, il y avait une grande exposition à Paris : l'Exposition universelle. Pour elle, on a construit une gare. Les gens prenaient le train ici. En 1986, la gare est devenue un musée : le musée d'Orsay. Aujourd'hui, on regarde des tableaux ici. Le bâtiment est vieux, mais ce n'est plus une gare.",
+      doc: "La gare d'Orsay\nEn 1900, il y avait une grande exposition à Paris : l'Exposition universelle. Pour cette exposition, on a construit une gare. Les gens prenaient le train ici. En 1986, la gare est devenue un musée : le musée d'Orsay. Aujourd'hui, on regarde des tableaux ici. Le bâtiment est vieux, mais ce n'est plus une gare.",
       columns: [{ id: "oui", label: "Le document dit oui" }, { id: "non", label: "Le document dit non" }, { id: "rien", label: "Le document ne dit rien" }],
       cards: [
         { id: "c1", label: "Le bâtiment existait en 1900.", col: "oui" },
@@ -369,7 +369,7 @@ window.GAME = (function () {
     after: [lino("Le bâtiment est vieux. Mais la légende raconte n'importe quoi.")],
     effects: { item: "fiche_orsay", flag: "O06_done" }, next: "R1" };
   /* Nebenbemerkungen nach dem Auftakt */
-  N.Or = { type: "lines", amb: true, lines: [L("delmas", "Tout est sur la fiche.")], next: "RESUME" };
+  N.Or = { type: "lines", amb: true, lines: [L("delmas", "Tout est sur la fiche. Un vrai trésor !")], next: "RESUME" };
   N.Oa = { type: "doc", amb: true, title: "L'album", render: "album", next: "RESUME" };
   N.Of = { type: "doc", amb: true, title: "La fiche de vente", icon: "fiche", doc: "Album Paris 1900\nCouverture et pages anciennes\nTrois photographies prises en 1900\nPhotos originales, pas des copies\nPrix : 180 €\nVendeur : Victor Delmas", next: "RESUME" };
   N.Ob = { type: "lines", amb: true, lines: [lino("Une brocante. On vend des vieilles choses. Des vraies, j'espère.")], next: "RESUME" };
@@ -462,7 +462,7 @@ window.GAME = (function () {
       ],
       wrong: lino("Pas encore."), success: lino("Elle raconte un souvenir. Et elle dit aussi ce qu'elle ne sait pas.") },
     effects: { flag: "P_done" }, next: [{ if: "I_done", node: "LUNCH" }, { node: "MAP" }] };
-  N.Pr = { type: "lines", amb: true, lines: [L("assistante", "Chloé arrive à quatorze heures.")], next: "RESUME" };
+  N.Pr = { type: "lines", amb: true, lines: [L("assistante", "Chloé arrive à quatorze heures. Elle est toujours à l'heure. Moi, jamais.")], next: "RESUME" };
   N.Pp = { type: "lines", amb: true, lines: [marie("Les lampadaires, les colonnes, les statues : tout ça existait déjà en 1900.")], next: "RESUME" };
 
   /* ===== 5 Marcel an den Invalides (Lino ermittelt, Marie hilft) ===== */
@@ -538,7 +538,7 @@ window.GAME = (function () {
       { fr: "Tout est faux, même la couverture.", kind: "wrong", reply: [L("bouquiniste", "Attention. La couverture, je l'ai regardée. Elle est vraiment vieille.")] },
       { fr: "La légende de la photo A est fausse. Et Marcel reconnaît sa baguette sur la photo B. Maintenant, on attend Chloé.", kind: "ok", reply: [
         L("bouquiniste", "Bien. Je ne paie pas avant de voir ses photos."),
-        L("bouquiniste", "Rendez-vous à quatorze heures quarante-cinq, au stand du vendeur. Mon voisin peut garder mon stand un quart d'heure.")
+        L("bouquiniste", "Rendez-vous à quatorze heures quarante-cinq, au stand du vendeur. Mon voisin peut garder mon stand une heure.")
       ] },
       { fr: "Lucien est sur une photo. Alors, le vendeur travaille avec lui.", kind: "wrong", reply: [L("bouquiniste", "Ça, ce n'est pas une preuve.")] }
     ],
@@ -553,8 +553,8 @@ window.GAME = (function () {
       ],
       wrong: marie("C'est le décor ou l'action ?") },
     effects: { flag: "Itemps_done" }, next: "RESUME" };
-  N.Ir = { type: "lines", amb: true, lines: [L("marcel", "Chloé a les photos entières.")], next: "RESUME" };
-  N.Ib = { type: "lines", amb: true, lines: [L("bouquiniste", "Je n'ai encore rien payé.")], next: "RESUME" };
+  N.Ir = { type: "lines", amb: true, lines: [L("marcel", "Chloé a les photos entières. Moi, j'ai seulement de bons souvenirs.")], next: "RESUME" };
+  N.Ib = { type: "lines", amb: true, lines: [L("bouquiniste", "Je n'ai encore rien payé. Et sans preuves, je ne paie pas.")], next: "RESUME" };
 
   /* Mittag: sichtbarer Zeitsprung, sobald Pont und Invalides erledigt sind */
   N.LUNCH = { type: "cut", bg: "cut_dejeuner", lines: [
@@ -637,7 +637,7 @@ window.GAME = (function () {
       ],
       success: L("bouquiniste", "Merci ! À quatorze heures quarante-cinq, chez le vendeur.", { sms: true }) },
     effects: { flag: "W1_done" }, next: "MAP" };
-  N.Cr = { type: "lines", amb: true, lines: [L("chloe", "Les trois photos sont dans ce dossier.")], next: "RESUME" };
+  N.Cr = { type: "lines", amb: true, lines: [L("chloe", "Les trois photos sont dans ce dossier. Entières, avec les bords.")], next: "RESUME" };
 
   /* ===== 7 Finale am Stand von Delmas (Lino ermittelt, Marie hilft) ===== */
   N.F00 = { type: "cut", bg: "bg_orsay", lines: [
@@ -647,12 +647,12 @@ window.GAME = (function () {
     L("bouquiniste", "Avant de payer, je veux écouter ces deux jeunes."),
     lino("Le livre est peut-être vieux. Mais les photos ont notre âge. Enfin, non : elles sont plus jeunes."),
     marie("Elles ont un an."),
-    L("delmas", "« Paris 1900 », c'est une ambiance. Je n'ai jamais dit : les photos sont de 1900.")
+    L("delmas", "« Paris 1900 », c'est une ambiance. Je n'ai jamais écrit : les photos sont de 1900.")
   ], effects: { flag: "F_started" }, next: "F01" };
   N.F01 = { type: "task", title: "Les preuves", help: "F01", diag: "D_F01",
     task: { kind: "proofs", n: 3, intro: "Montrez trois preuves. Pour chaque preuve, dites ce qu'elle montre.",
       distinct: "Trois preuves différentes, s'il vous plaît.",
-      required: "fiche_vente", requiredLine: marie("Il dit qu'il n'a rien écrit. Montre ses mots."),
+      required: "fiche_vente", requiredLine: marie("Il dit qu'il n'a jamais écrit ça. Montre ses mots."),
       items: [
         { id: "fiche_vente", sentence: "s_d1", reply: [marie("Vous avez écrit : « Trois photographies prises en 1900. Photos originales, pas des copies. » Ce n'est pas une ambiance."), L("delmas", "Une erreur sur la fiche, alors.")] },
         { id: "photos_entieres", sentence: "s_d5", reply: [L("chloe", "Ce sont mes photos. Ici, on voit le téléphone. Et ici, la date sur le clap.")] },
@@ -695,6 +695,7 @@ window.GAME = (function () {
       wrong: marie("Pas encore.") },
     after: [
       L("bouquiniste", "Je voulais des photos de 1900. Ce n'est pas ça. Je n'achète pas."),
+      narr("Le responsable de la brocante arrive au stand."),
       L("nowak", "Bonjour, monsieur. Voici la fiche du vendeur et la fiche de la photographe. Vous pouvez parler avec monsieur Delmas ?"),
       L("responsable", "Bien sûr. Monsieur Delmas, je regarde votre fiche avec vous.")
     ],
@@ -738,7 +739,7 @@ window.GAME = (function () {
       } },
     next: "END_SCREEN" };
   N.END_SCREEN = { type: "end" };
-  N.Fr = { type: "lines", amb: true, lines: [L("delmas", "Tout est sur la nouvelle fiche.")], next: "RESUME" };
+  N.Fr = { type: "lines", amb: true, lines: [L("delmas", "Tout est sur la nouvelle fiche. Cette fois, avec la bonne date.")], next: "RESUME" };
 
   /* ===== Abfragen unterwegs (Tore): getippt, ohne Auswahl, nur mit Hinweis, wo man nachsehen kann ===== */
   N.R1 = { type: "task", gate: true, title: "Le musée", diag: "D_R1",
@@ -830,7 +831,7 @@ window.GAME = (function () {
     C01: ["Le vendeur n'a pas montré toute la photo.", { fr: "Regarde les personnes sur les photos entières.", action: "material" }, { fr: "Regarde où est la photo de l'album sur la photo entière.", action: "material" }, "Regarde les personnes : même place, même manteau. Au bord, il y a des choses modernes."],
     C02: ["La date, le titre ou le prix ?", { fr: "Regarde la fiche de Chloé et la fiche de vente.", action: "material" }, { fr: "Voici les mots de Chloé.", action: "transcript" }, "Septembre 2025, c'est la date. « Paris 1900 », c'est le titre. 18 €, ce sont les trois copies. 180 €, c'est l'album."],
     W1: ["Trois phrases : la date, le titre, ce que vous pouvez montrer.", "Chloé a pris les photos quand ? « Paris 1900 », c'est quoi ?", "Tu peux commencer : Chloé a pris les photos en…", "La date et le titre sont sur la fiche de Chloé. Et ce que vous pouvez montrer, c'est dans l'inventaire."],
-    F01: ["Il dit : je n'ai rien écrit. Qu'est-ce qu'il a écrit ?", { fr: "Regarde la fiche de vente, les photos entières et la fiche de Chloé.", action: "material" }, "Sa fiche, les mêmes photos, la vraie date.", "Le titre ne montre rien. Compare la fiche de vente et les documents."],
+    F01: ["Il dit : je n'ai jamais écrit ça. Qu'est-ce qu'il a écrit ?", { fr: "Regarde la fiche de vente, les photos entières et la fiche de Chloé.", action: "material" }, "Sa fiche, les mêmes photos, la vraie date.", "Le titre ne montre rien. Compare la fiche de vente et les documents."],
     F03: ["Commence par la séance photo.", "D'abord Chloé, puis le vendeur.", "Après l'achat, il a coupé. Puis il a collé.", "Septembre 2025 : les photos. Avant-hier : les copies. Puis : couper, coller, écrire la fiche."],
     F03b: ["Pense à l'album et aux photos.", "L'album est vieux. Et les photos ?", "Les photos sont de 2025. Et la fiche de vente dit : 1900.", "L'album est ancien, mais les photos sont récentes. Alors, la fiche de vente est fausse."],
     F04: ["Une fiche juste dit la vérité sur l'album et sur les photos.", "L'album est vieux. Les photos sont des copies.", "Les photos sont de 2025. « Paris 1900 », c'est le titre de la série.", "Album ancien. Copies de photos prises en 2025. Série en costumes « Paris 1900 »."],
@@ -901,7 +902,15 @@ window.GAME = (function () {
     ["le clap", "die Filmklappe"],
     ["la couverture", "der Einband (eines Buchs)"],
     ["le bord, les bords", "der Rand, die Ränder"],
-    ["ramasser, ramasse, ramassé, ramassée", "aufheben (vom Boden)"]
+    ["ramasser, ramasse, ramassé, ramassée", "aufheben (vom Boden)"],
+    ["promettre, promet, la promesse", "versprechen; das Versprechen"],
+    ["se souvenir, se souvient, le souvenir", "sich erinnern; die Erinnerung"],
+    ["la vérité", "die Wahrheit"],
+    ["récent, récente, récentes", "neu, aus jüngster Zeit"],
+    ["vieillir, vieillit", "alt werden"],
+    ["n'importe quoi", "Unsinn"],
+    ["l'ambiance (f)", "die Stimmung"],
+    ["le pansement, les pansements", "das Pflaster"]
   ];
 
   return G;

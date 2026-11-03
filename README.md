@@ -179,6 +179,14 @@ Alle Spieltexte liegen in `js/data.js`. Figurentexte sind `fr`, Linos umschaltba
 
 Lino und Marie in beiden Teilen: Lino ist in der 10b in Erfurt, Marie wohnt in Paris und verbringt die Tage mit der Klasse. Die beiden sind befreundet, aber kein Paar; sie kennen sich aus einem deutsch-französischen Ferienlager. Deshalb heißt es im Französischen « une amie de Lino », nie « sa copine » oder « sa petite amie » (das wäre die feste Freundin), und im Deutschen „eine Freundin von Lino“ statt „seine Freundin“. Was Marie über Pariser Orte erzählt, kommt aus ihrer Ortskenntnis (« Je connais bien Montmartre », « C'est ma ville »).
 
+Sprachniveau A2 in allen drei Teilen:
+
+- Fragen mit « est-ce que » oder nur mit der Stimme, keine Inversion (« Où est-ce qu'il va ? », nicht « Où va-t-il ? »).
+- Kein Futur antérieur, kein Conditionnel passé, kein Passiv. Für die Zukunft « aller + Infinitiv ». Feste Wendungen wie « je voudrais » und « on pourrait » sind erlaubt.
+- Anrede: Marie und Lino duzen die Spieler, also auch in den Pausen- und Hilfetexten (`G.ui.recall`, `G.ui.guess`). Die anderen Figuren siezen die Gruppe. M. Nowak duzt einen einzelnen Schüler und sagt « vous », wenn er mehrere anspricht. Die Systemtexte von Teil 3 siezen die Spieler (« Cliquez … », « Vous avez sauté un passage »).
+- Wörter über A2, die öfter vorkommen oder für eine Aufgabe wichtig sind, stehen im Glossar des jeweiligen Teils (`G.glossary`).
+- Die Hörtext-Skripte (`G.audio`) entsprechen den Aufnahmen Wort für Wort. Wer ein Skript ändert, muss die Aufnahme neu machen.
+
 ## Teil 2: Le guide fantôme
 
 Zweiter Fall, unabhängig von Teil 1 spielbar: Vor Notre-Dame kassiert ein falscher Stadtführer, « M. Beaumont », die Anzahlung der Klasse und verschwindet. Die Lernenden spielen Marie, eine Freundin von Lino aus Paris; Lino begleitet sie und gibt die Hilfe, in vier Stufen und nur auf Französisch (das Glossar bleibt französisch-deutsch). Stationen: Auftakt an Notre-Dame, Galeries Lafayette, Tour Eiffel, freiwillig die Bouquinisten, Finale am Service des retours, nach den Bouquinisten ein kurzes Nachspiel, zum Schluss der Rapport. Grundlage sind das Spielkonzept und das Drehbuch Teil 2; die Kennungen (N03, G04, E02, R1 …) stimmen mit dem Drehbuch überein.

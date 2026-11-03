@@ -43,8 +43,8 @@ window.GAME = (function () {
     },
     recall: {
       check: "Vérifier", later: "Revenir plus tard",
-      pause: "Là, vous devinez. Allez vérifier, puis revenez après la pause.",
-      paused: "Pas maintenant. Vérifiez d'abord, puis revenez dans {s} secondes.",
+      pause: "Là, tu devines. Va vérifier, puis reviens après la pause.",
+      paused: "Pas maintenant. Vérifie d'abord, puis reviens dans {s} secondes.",
       wrong: "Non, ce n'est pas ça.", unknown: "Tu ne sais plus ? Va revoir, puis reviens.",
       intro: "Réponds de mémoire ou avec ta feuille.", empty: "Écris d'abord une réponse."
     },
@@ -388,7 +388,7 @@ window.GAME = (function () {
     after: [lino("Le parapluie, il peut le fermer. Le manteau, il peut le rendre. La moustache… c'est plus difficile.")],
     effects: { item: "fiche", flag: "N07_done" }, next: "N08" };
   N.N08 = { type: "task", title: "Où est-ce qu'on va ?", help: "N08", diag: "D_N08",
-    task: { kind: "sort", intro: "Chaque indice montre un lieu. Où est-ce qu'il mène ?",
+    task: { kind: "sort", intro: "Chaque indice montre un lieu. Quel lieu ?",
       slots: [
         { id: "etiquette", label: "l'étiquette sur la manche", answer: "lafayette" },
         { id: "sac", label: "le sac", answer: "lafayette" },
@@ -549,7 +549,7 @@ window.GAME = (function () {
   N.E04 = { type: "task", title: "Dit, déduit, utile", audio: "au_telephone", noReplay: true, listenFirst: true, help: "E04", diag: "D_E04",
     task: { kind: "cols", legend: true, intro: "Range les phrases. Qu'est-ce qu'il a dit ? Qu'est-ce qu'on peut en déduire ? Qu'est-ce qui nous aide ? Et qu'est-ce qui est faux ?",
       columns: [
-        { id: "dit", label: "Ce qui a été dit" }, { id: "deduit", label: "Ce qu'on peut en déduire" },
+        { id: "dit", label: "Ce qu'il a dit" }, { id: "deduit", label: "Ce qu'on peut en déduire" },
         { id: "utile", label: "Ce qui nous aide" }, { id: "faux", label: "C'est faux" }
       ],
       cards: [
@@ -591,7 +591,7 @@ window.GAME = (function () {
     prompt: L("bouquiniste", "Bonjour ! Vous cherchez quelque chose ? Un livre, une affiche ?"),
     choices: [
       { fr: "On cherche un homme. Vous avez vu ce monsieur ? (Marie montre la photo de groupe.)", kind: "ok" },
-      { fr: "Vous avez vendu un vieux guide à huit euros ce matin ?", kind: "ok", onlyIf: "prix_vu", reply: [L("bouquiniste", "Huit euros, oui ! Il n'a même pas discuté le prix.")] },
+      { fr: "Vous avez vendu un vieux guide à huit euros ce matin ?", kind: "ok", onlyIf: "prix_vu", reply: [L("bouquiniste", "Huit euros, oui ! Il n'a même pas demandé de réduction.")] },
       { fr: "Vous avez des livres sur Paris ?", kind: "repair", reply: [L("bouquiniste", "Sur Paris ? J'en ai trois cents. Vous cherchez lequel ?")] },
       { fr: "Combien coûte ce livre ?", kind: "repair", reply: [L("bouquiniste", "Lequel ? Ici, il y a mille livres.")] }
     ],
@@ -608,7 +608,7 @@ window.GAME = (function () {
       wrong: lino("Pas encore. Écoute bien les heures.") },
     next: "B03" };
   N.B03 = { type: "task", title: "Mot pour mot ?", audio: "au_beaumont", help: "B03", diag: "D_B03",
-    task: { kind: "cols", intro: "La bouquiniste ouvre l'autre livre. Compare avec la visite de M. Beaumont. Range ses phrases.",
+    task: { kind: "cols", intro: "La bouquiniste ouvre son deuxième « Paris insolite ». Compare avec la visite de M. Beaumont. Range ses phrases.",
       docs: [
         { label: "Paris insolite, page 27 : la rue Chanoinesse", text: "« Regardez cette petite porte. Au Moyen Âge, c'était l'entrée des livraisons. Les marchands passaient par là, la nuit. » (Sous l'image : Entrée de livraison.)", cls: "book" },
         { label: "Paris insolite, page 41 : le quai aux Fleurs", text: "« Ici, il y avait une boulangerie. Le boulanger vendait un pain très léger : il était plein d'air. Un jour, les clients ont compris. »", cls: "book" }
@@ -667,7 +667,7 @@ window.GAME = (function () {
     ],
     effects: { flag: "B06_done" }, next: "B06e" };
   N.B06e = { type: "lines", lines: [
-    marie("D'abord le manteau, après la visite."),
+    marie("D'abord le manteau, ensuite la visite."),
     L("marie", "Mais pour le magasin, il nous manque encore une piste.", { onlyIf: "!R2_done" }),
     L("marie", "Mais pour le magasin, il nous manque encore une piste.", { onlyIf: ["R2_done", "!R3b_done"] })
   ], effects: { flag: "B_done" }, next: "MAP" };
@@ -788,7 +788,7 @@ window.GAME = (function () {
         notreDame: "Notre-Dame, c'est à 15 heures. Lui, il est ici maintenant."
       },
       success: L("nowak", "J'arrive avec la classe et la police. Ne le laissez pas partir !", { sms: true }) },
-    after: [lino("Nous, non. Le monsieur de la sécurité, peut-être.")],
+    after: [lino("Nous, on ne peut pas. Mais le monsieur de la sécurité, oui.")],
     next: "F07" };
   N.F07 = { type: "lines", lines: [
     L("agent", "Monsieur, vous venez avec moi, s'il vous plaît."),
@@ -1042,7 +1042,8 @@ window.GAME = (function () {
     ["le sommaire", "das Inhaltsverzeichnis"], ["oublier, oublié", "vergessen"], ["le malentendu", "das Missverständnis"], ["l'agent de sécurité (m)", "der Sicherheitsmann"],
     ["la preuve", "der Beweis"], ["l'erreur d'impression (f)", "der Druckfehler"], ["je vous en prie", "bitte sehr, gern geschehen"], ["la policière", "die Polizistin"],
     ["le compte est bon", "es ist alles da"], ["le lycée", "das Lycée: die Schule für die Klassen 10 bis 12 (etwa: die gymnasiale Oberstufe)"], ["le journal", "die Zeitung"], ["prévenir, préviens", "warnen"],
-    ["démasquer, démasqué", "entlarven"]
+    ["démasquer, démasqué", "entlarven"], ["fier, fière", "stolz"], ["cacher, cache", "verdecken, verstecken"], ["rembourser, remboursée", "zurückerstatten"],
+    ["l'offre (f)", "das Angebot"], ["collé", "geklebt (coller: kleben)"], ["tout bas", "ganz leise"]
   ];
 
   return G;
