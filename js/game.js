@@ -106,38 +106,25 @@
     return p;
   }
 
-  /* Audio mit Sprachsynthese-Fallback */
-  let currentAudio = null, frVoice = null;
-  function pickVoice() { const vs = speechSynthesis.getVoices(); frVoice = vs.find(v => /^fr[-_]FR/i.test(v.lang)) || vs.find(v => /^fr/i.test(v.lang)) || null; }
-  if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-  function stopAudio() { if (currentAudio) { currentAudio.pause(); currentAudio = null; } if ("speechSynthesis" in window) speechSynthesis.cancel(); $$(".playing").forEach(e => e.classList.remove("playing")); }
-  /* onEnded: die Aufnahme ist einmal ganz gelaufen (oder kann gar nicht laufen) */
-  function playAudio(id, btn, onBlocked, onEnded) {
-    stopAudio();
+  /* Audio: gemeinsamer Player aus js/audioplayer.js (Pause, 5 s zurück und vor, Tempo bis 80 %); fehlt die Aufnahme, liest der Browser vor */
+  function stopAudio() { if (window.PPAudio) PPAudio.stopAll(); }
+  /* Ein Player für den Hörtext id. opts: again (Knopf heißt gleich „Rejouer“), onHeard (einmal ganz gehört), mustHear (Hinweis, wenn etwas übersprungen wurde), seek: false (nur Pause und Tempo) */
+  function audioPlayer(id, opts) {
+    opts = opts || {};
     const a = G.audio[id];
-    if (!a) return;
-    S.replays[id] = (S.replays[id] || 0) + 1; save();
-    if (btn) btn.classList.add("playing");
-    const done = () => { if (btn) btn.classList.remove("playing"); };
-    const ended = () => { done(); if (onEnded) onEnded(); };
-    const tts = () => {
-      if (!("speechSynthesis" in window)) { ended(); return; }
-      const u = new SpeechSynthesisUtterance(a.text);
-      u.lang = "fr-FR"; u.rate = 0.88; if (frVoice) u.voice = frVoice;
-      u.onend = ended; u.onerror = e => { if (e && (e.error === "interrupted" || e.error === "canceled")) done(); else ended(); };
-      speechSynthesis.speak(u);
-    };
-    const au = new Audio("assets/audio/" + id + ".mp3");
-    currentAudio = au;
-    au.onended = ended;
-    au.onerror = () => { if (currentAudio === au) { currentAudio = null; tts(); } };
-    au.play().catch(err => {
-      if (currentAudio !== au) return;
-      currentAudio = null;
-      // Handy-Browser spielen ohne Antippen nichts ab: dann wartet der Knopf, statt die Computerstimme zu starten
-      if (err && err.name === "NotAllowedError") { S.replays[id]--; save(); done(); if (onBlocked) onBlocked(); return; }
-      tts();
-    });
+    return PPAudio.create(Object.assign({}, opts, {
+      src: "assets/audio/" + id + ".mp3", text: a.text, lang: "fr-FR", ttsRate: 0.88, labels: G.ui.player,
+      onStart: () => { S.replays[id] = (S.replays[id] || 0) + 1; save(); if (opts.onStart) opts.onStart(); },
+      // Handy-Browser spielen ohne Antippen nichts ab: dann wartet der Knopf, das zählt nicht als Hören
+      onBlocked: () => { S.replays[id]--; save(); if (opts.onBlocked) opts.onBlocked(); },
+      onHeard: () => { S.heard = S.heard || {}; S.heard[id] = true; save(); if (opts.onHeard) opts.onHeard(); }
+    }));
+  }
+  /* Hilfe „Écoute encore“: der Player der Aufgabe spielt von vorn; hat die Aufgabe keinen, erscheint einer in der Hilfe */
+  function replayHelp(ctx, box) {
+    if (ctx.player) { ctx.player.start(); return; }
+    const p = audioPlayer(ctx.audio, { seek: false, onHeard: ctx.onHeard });
+    box.appendChild(p.el); p.start();
   }
 
   /* ---------- Wirkungen (Flags, Gegenstände, Mission) ---------- */
@@ -237,7 +224,7 @@
       bubble.appendChild(portrait("marie"));
       bubble.appendChild(el("div", "body", '<div class="who">Marie · ' + level + "/4</div><div class=\"text" + (level === 4 ? " de" : "") + '">' + (level === 4 ? esc(txt) : gl(txt)) + "</div>"));
       if (typeof L === "object") {
-        if (L.action === "replay" && ctx.audio) playAudio(ctx.audio, null);
+        if (L.action === "replay" && ctx.audio) replayHelp(ctx, bubble.lastChild);
         if (L.action === "transcript" && ctx.showTranscript) ctx.showTranscript();
         if (L.action === "material" && ctx.material) ctx.material();
       }
@@ -345,19 +332,17 @@
 
   function runAudio(id, n, finish) {
     const a = G.audio[n.audio];
-    const body = openModal("audio");
-    body.appendChild(el("h2", "", esc(G.chars[a.who].name)));
-    const row = el("div", "audio-row"); row.appendChild(portrait(a.who));
-    const play = el("button", "btn play", "▶ " + G.ui.verbs.ecouter);
-    const start = onBlocked => { play.textContent = "▶ " + G.ui.btn.rejouer; playAudio(n.audio, play, onBlocked, heard); };
-    play.addEventListener("click", () => start());
-    row.appendChild(play);
+    const body = openModal("audio nocl");   // kein ×: Effekte und next laufen nur über „Continuer“
+    /* Porträt neben dem Namen, der Player bekommt die volle Breite (auch auf dem Handy) */
+    const head = el("h2", "speaker"); head.appendChild(portrait(a.who)); head.appendChild(document.createTextNode(G.chars[a.who].name)); body.appendChild(head);
+    const player = audioPlayer(n.audio, { onHeard: heard, mustHear: () => b.disabled });
     const tr = el("button", "btn", G.ui.btn.transcription);
     const trBox = el("div", "paper transcript", gl(a.text)); trBox.hidden = true;
     const canTranscript = PROF || (S.helpUsed[n.transcriptHelp] || 0) >= 3;
     tr.hidden = !canTranscript;
     tr.addEventListener("click", () => { trBox.hidden = !trBox.hidden; S.transcripts[n.audio] = true; save(); });
-    row.appendChild(tr); body.appendChild(row); body.appendChild(trBox);
+    const tools = el("div", "tools"); tools.appendChild(tr); tools.hidden = tr.hidden;
+    body.appendChild(player.el); body.appendChild(tools); body.appendChild(trBox);
     body.appendChild(el("p", "hint", "Tu peux écouter plusieurs fois."));
     const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.btn.continuer);
     b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(n.next); });
@@ -367,7 +352,7 @@
     function heard() { S.heard[n.audio] = true; save(); b.disabled = false; wait.remove(); }
     if (!S.heard[n.audio] && !PROF && !(TEST && QS.get("listen") !== "1")) { b.disabled = true; body.appendChild(wait); }
     bar.appendChild(b); body.appendChild(bar);
-    setTimeout(() => start(() => { play.textContent = "▶ " + G.ui.verbs.ecouter; }), 300);
+    setTimeout(() => { if (player.el.isConnected) player.start(); }, 300);
   }
 
   /* ---------- Aufgaben ---------- */
@@ -405,9 +390,8 @@
     const tools = el("div", "tools");
     if (n.audio) {
       const a = G.audio[n.audio];
-      const play = el("button", "btn play", "▶ " + G.ui.btn.rejouer);
-      play.addEventListener("click", () => playAudio(n.audio, play));
-      tools.appendChild(play);
+      st.player = audioPlayer(n.audio, { again: true });
+      tools.appendChild(st.player.el);
       trBox.innerHTML = gl(a.text);
       const tr = el("button", "btn", G.ui.btn.transcription);
       const can = () => PROF || (S.helpUsed[n.help] || 0) >= 3;
@@ -417,7 +401,7 @@
       st.showTranscript = () => { tr.hidden = false; trBox.hidden = false; st.transcript = true; };
     }
     if (n.help) {
-      hc = helpCtl(n.help, { wrongs: () => st.wrongs, audio: n.audio, showTranscript: () => st.showTranscript && st.showTranscript(), material: () => body.classList.add("material") });
+      hc = helpCtl(n.help, { wrongs: () => st.wrongs, audio: n.audio, player: st.player, showTranscript: () => st.showTranscript && st.showTranscript(), material: () => body.classList.add("material") });
       tools.appendChild(hc.btn);
     }
     body.appendChild(tools);

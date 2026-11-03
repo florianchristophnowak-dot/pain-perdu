@@ -14,37 +14,33 @@ const R = String.raw;
 const PATCHES = [
   [R`const SAVE_KEY = "pp_save_v1", RESULTS_KEY = "pp_results_v1";`, R`const SAVE_KEY = "pp_de_save_v1", RESULTS_KEY = "pp_de_results_v1";`],
   [R`(i === 0 ? "Joueur 1" : "Joueur 2")`, R`(i === 0 ? "Spieler 1" : "Spieler 2")`],
-  [R`frVoice = vs.find(v => /^fr[-_]FR/i.test(v.lang)) || vs.find(v => /^fr/i.test(v.lang)) || null;`, R`frVoice = vs.find(v => /^de[-_]DE/i.test(v.lang)) || vs.find(v => /^de/i.test(v.lang)) || null;`],
-  [R`u.lang = "fr-FR";`, R`u.lang = "de-DE";`],
+  [R`text: a.text, lang: "fr-FR",`, R`text: a.text, lang: "de-DE",`],
   [R`toast("Inventaire : " + G.items[id].name)`, R`toast("Inventar: " + G.items[id].name)`],
   [R`toast("Marie : " + G.ui.marie.afterHelp)`, R`toast("Marie: " + G.ui.marie.afterHelp)`],
   [R`toast("Marie : " + (p.lockedMsg`, R`toast("Marie: " + (p.lockedMsg`],
   [R`'<div class="who">Marie · ' + level + "/4</div><div class=\"text" + (level === 4 ? " de" : "") + '">' + (level === 4 ? esc(txt) : gl(txt)) + "</div>"`, R`'<div class="who">Marie · ' + level + '/4</div><div class="text">' + gl(txt) + "</div>"`],
-  [R`    body.appendChild(el("h2", "", esc(G.chars[a.who].name)));
-    const row = el("div", "audio-row"); row.appendChild(portrait(a.who));
-    const play = el("button", "btn play", "▶ " + G.ui.verbs.ecouter);
-    const start = onBlocked => { play.textContent = "▶ " + G.ui.btn.rejouer; playAudio(n.audio, play, onBlocked, heard); };
-    play.addEventListener("click", () => start());
-    row.appendChild(play);
+  [R`    /* Porträt neben dem Namen, der Player bekommt die volle Breite (auch auf dem Handy) */
+    const head = el("h2", "speaker"); head.appendChild(portrait(a.who)); head.appendChild(document.createTextNode(G.chars[a.who].name)); body.appendChild(head);
+    const player = audioPlayer(n.audio, { onHeard: heard, mustHear: () => b.disabled });
     const tr = el("button", "btn", G.ui.btn.transcription);
     const trBox = el("div", "paper transcript", gl(a.text)); trBox.hidden = true;
     const canTranscript = PROF || (S.helpUsed[n.transcriptHelp] || 0) >= 3;
     tr.hidden = !canTranscript;
     tr.addEventListener("click", () => { trBox.hidden = !trBox.hidden; S.transcripts[n.audio] = true; save(); });
-    row.appendChild(tr); body.appendChild(row); body.appendChild(trBox);
+    const tools = el("div", "tools"); tools.appendChild(tr); tools.hidden = tr.hidden;
+    body.appendChild(player.el); body.appendChild(tools); body.appendChild(trBox);
     body.appendChild(el("p", "hint", "Tu peux écouter plusieurs fois."));`, R`    /* deutsche Fassung: der Hörtext erscheint als Lesetext, das Porträt steht neben dem Namen (auf dem Handy bleibt die volle Breite für den Text) */
     const head = el("h2", "readhead"); head.appendChild(portrait(a.who)); head.appendChild(document.createTextNode(G.chars[a.who].name)); body.appendChild(head);
     body.appendChild(el("div", "paper transcript readtext", gl(a.text)));
     S.transcripts[n.audio] = true; save();
     body.appendChild(el("p", "hint", "Lies genau: Diese Infos brauchst du gleich."));`],
   [R`    bar.appendChild(b); body.appendChild(bar);
-    setTimeout(() => start(() => { play.textContent = "▶ " + G.ui.verbs.ecouter; }), 300);
+    setTimeout(() => { if (player.el.isConnected) player.start(); }, 300);
   }`, R`    bar.appendChild(b); body.appendChild(bar);
     if (b.disabled) setTimeout(() => { if (b.isConnected) heard(); }, Math.max(3000, a.text.length * 40));   // statt „ganz anhören“: weiter nach einer Mindest-Lesezeit
   }`],
-  [R`      const play = el("button", "btn play", "▶ " + G.ui.btn.rejouer);
-      play.addEventListener("click", () => playAudio(n.audio, play));
-      tools.appendChild(play);
+  [R`      st.player = audioPlayer(n.audio, { again: true });
+      tools.appendChild(st.player.el);
       trBox.innerHTML = gl(a.text);
       const tr = el("button", "btn", G.ui.btn.transcription);
       const can = () => PROF || (S.helpUsed[n.help] || 0) >= 3;
@@ -138,6 +134,7 @@ function offline(zipFile) {
   fs.copyFileSync(path.join(ROOT, 'css/style.css'), path.join(out, 'css/style.css'));
   fs.copyFileSync(path.join(ROOT, 'de/css/de.css'), path.join(out, 'css/de.css'));
   fs.copyFileSync(path.join(ROOT, 'js/prof.js'), path.join(out, 'js/prof.js'));
+  fs.copyFileSync(path.join(ROOT, 'js/audioplayer.js'), path.join(out, 'js/audioplayer.js'));
   fs.copyFileSync(path.join(ROOT, 'de/js/data.js'), path.join(out, 'js/data.js'));
   fs.writeFileSync(path.join(out, 'js/game.js'), engine('assets/'));
   fs.copyFileSync(path.join(ROOT, 'de/zettel.html'), path.join(out, 'zettel.html'));

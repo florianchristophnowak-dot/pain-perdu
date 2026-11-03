@@ -162,7 +162,46 @@ h1, h2, h3 { font-family: var(--serif); margin: 0 0 .5rem; }
 .proof .line { margin-bottom: .4rem; }
 .feedback.ok .line { background: #dcefe3; border-radius: 8px; padding: .5rem; }
 .feedback.no .line { background: #f8dcdc; border-radius: 8px; padding: .5rem; }
-.audio-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin: .6rem 0; }
+/* Audioplayer der Hörtexte (js/audioplayer.js): Abspielen/Pause, 5 s zurück und vor, Fortschritt, Tempo */
+.ap { flex: 1 1 100%; min-width: 0; display: grid; grid-template-columns: auto auto minmax(90px, 1fr) auto auto; grid-template-areas: "play back seek fwd time" "rates rates rates rates rates" "note note note note note"; align-items: center; gap: .45rem .55rem; padding: .5rem .65rem; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; color: var(--ink); }
+.modal h2.speaker { display: flex; align-items: center; gap: .65rem; }
+h2.speaker .pt { width: 48px; height: 48px; font-size: 1rem; }
+.modal.audio .ap { margin: .5rem 0 .3rem; }
+.ap .ap-i { width: 22px; height: 22px; fill: currentColor; flex: none; }
+.ap .ap-play { grid-area: play; display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; min-width: 8.2em; padding: .35rem .85rem .35rem .6rem; background: var(--accent-2); border-color: var(--accent-2); color: #fff; font-weight: 600; white-space: nowrap; }
+.ap .ap-play:hover { background: #245d93; }
+.ap.on .ap-play { animation: pulse 1.6s infinite; }
+.ap .ap-skip { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; background: #fff; color: var(--accent-2); }
+.ap .ap-skip .ap-i { width: 30px; height: 30px; }
+.ap .ap-back { grid-area: back; }
+.ap .ap-fwd { grid-area: fwd; }
+.ap-time { grid-area: time; font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ap-seek { grid-area: seek; --p: 0%; -webkit-appearance: none; appearance: none; width: 100%; min-width: 0; height: 30px; margin: 0; padding: 0; background: transparent; cursor: pointer; touch-action: none; }
+.ap-seek:focus { outline: none; }
+.ap-seek:focus-visible { outline: 2px solid rgba(44,111,173,.45); outline-offset: 2px; border-radius: 4px; }
+.ap-seek::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, var(--accent-2) var(--p), #dccfb6 var(--p)); }
+.ap-seek::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; margin-top: -7px; border-radius: 50%; background: #fff; border: 3px solid var(--accent-2); box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.ap-seek::-moz-range-track { height: 6px; border-radius: 3px; background: #dccfb6; }
+.ap-seek::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--accent-2); }
+.ap-seek::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid var(--accent-2); box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.ap-seek:disabled { cursor: default; }
+.ap-seek:disabled::-webkit-slider-thumb { visibility: hidden; }
+.ap-seek:disabled::-moz-range-thumb { visibility: hidden; }
+.ap-rates { grid-area: rates; display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .5rem; min-width: 0; }
+.ap-rl { font-size: .85rem; color: var(--muted); }
+.ap-seg { display: inline-flex; flex: 0 1 auto; min-width: 0; background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.ap-rate { flex: 1 1 0; min-width: 0; min-height: 36px; padding: .2rem .6rem; border: 0; border-left: 1px solid var(--line); background: none; color: var(--ink); font-size: .85rem; font-variant-numeric: tabular-nums; white-space: nowrap; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.ap-rate:first-child { border-left: 0; }
+.ap-rate:hover { background: #f1e8d6; }
+.ap-rate.on { background: var(--accent-2); color: #fff; font-weight: 700; }
+.ap-note { grid-area: note; margin: 0; font-size: .85rem; font-weight: 600; color: var(--no); }
+/* Begrenztes Hören (Telefonat in Teil 2): ohne Spulen, der Balken zeigt nur den Fortschritt */
+.ap.noseek { grid-template-columns: auto minmax(90px, 1fr) auto; grid-template-areas: "play seek time" "rates rates rates" "note note note"; }
+/* Vorlesen statt Aufnahme: kein Balken, keine Zeit */
+.ap.tts .ap-seek, .ap.tts .ap-skip, .ap.tts .ap-time { display: none; }
+.ap.tts { grid-template-columns: auto 1fr; grid-template-areas: "play ." "rates rates" "note note"; }
+.help-bubble > .body, .marie-bubble > .body { flex: 1; min-width: 0; }
+.help-bubble .ap, .marie-bubble .ap { margin-top: .45rem; }
 
 /* Aufgaben */
 .doccard { border: 1px solid var(--line); border-radius: 8px; padding: .6rem .8rem; margin: .5rem 0; background: var(--paper); }
@@ -394,4 +433,26 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
   .start-card { padding: 1.1rem 1.4rem; max-width: 560px; }
   .start-card .sub { margin-bottom: .6rem; }
   .start-card label { margin: .35rem 0; }
+}
+
+/* Audioplayer auf dem Handy: Knöpfe oben, Balken darunter über die ganze Breite, Tempo in der dritten Zeile */
+@media (max-width: 560px) {
+  .ap { grid-template-columns: auto auto auto 1fr; grid-template-areas: "play back fwd time" "seek seek seek seek" "rates rates rates rates" "note note note note"; gap: .35rem .45rem; padding: .45rem .5rem; }
+  .ap .ap-time { justify-self: end; }
+  .ap.noseek { grid-template-columns: auto 1fr; grid-template-areas: "play time" "seek seek" "rates rates" "note note"; }
+  .ap .ap-play { min-width: 0; }
+  .ap-seg { flex: 1 1 auto; }
+  .ap-rate { padding: .2rem .25rem; font-size: .8rem; }
+  h2.speaker .pt { width: 38px; height: 38px; }
+}
+/* Ganz schmal: Abspielknopf nur mit Symbol (die Beschriftung steht im aria-label) */
+@media (max-width: 380px) {
+  .ap .ap-play { width: 56px; justify-content: center; padding: 0; }
+  .ap .ap-play span { display: none; }
+}
+@media (pointer: coarse) {
+  .ap-seek { height: 36px; }
+  .ap-seek::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -9px; }
+  .ap-seek::-moz-range-thumb { width: 18px; height: 18px; }
+  .ap-rate { min-height: 40px; }
 }
