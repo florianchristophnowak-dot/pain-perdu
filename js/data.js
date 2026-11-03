@@ -89,10 +89,11 @@ window.GAME = (function () {
     mapQuestion: "Question sur place :",
     locked: "fermé",
     done: "fait",
-    /* Startmenü mit zwei Teilen und Schlüsselwort für Teil 2 */
+    /* Startmenü mit drei Teilen und Schlüsselwörtern für Teil 2 und 3 ({n}: der gesperrte Teil, {m}: der Teil davor) */
     parts: {
+      ask: "La partie {n} s'ouvre à la fin de la partie {m}. Tu as le mot de passe ?",
       wrong: "Ce n'est pas le bon mot de passe.",
-      ok: "La partie 2 est ouverte !",
+      ok: "La partie {n} est ouverte !",
       endTitle: "Le mot de passe pour la partie 2",
       endNote: "Note-le bien : avec ce mot de passe, tu ouvres la partie 2, aussi sur un autre appareil.",
       endGo: "Jouer la partie 2 ▸"
@@ -109,6 +110,19 @@ window.GAME = (function () {
     href: "guide-fantome/index.html",
     store: "pp_partie2",
     save: "pg_save_v1"
+  };
+
+  /* ---------- Teil 3 « Le voyageur de 1900 » (Ordner voyageur/) ----------
+     Wie Teil 2: gesperrt, bis Teil 2 geschafft ist (Spielstand oder Ergebnisse unter after) oder jemand das Schlüsselwort
+     eingibt. Das Ende von Teil 2 zeigt das Schlüsselwort (G.next in guide-fantome/js/data.js). */
+  G.part3 = {
+    title: "Le voyageur de 1900",
+    subtitle: "Une enquête de Lino et Marie à Paris",
+    key: "Orsay",
+    href: "voyageur/index.html",
+    store: "pp_partie3",
+    save: "pv_save_v1",
+    after: { save: "pg_save_v1", results: "pg_results_v1" }
   };
 
   /* ---------- Freie Texte: häufige Wörter der Spielsprache (own) und typische Wörter anderer Sprachen (foreign),

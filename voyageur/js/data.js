@@ -8,6 +8,9 @@ window.GAME = (function () {
   const G = {};
 
   G.version = "3.0.0";
+  /* Teil 3 startet aus dem gemeinsamen Startmenü (../index.html, Schlüsselwort « Orsay » am Ende von Teil 2), wie Teil 2.
+     Das eigene Startmenü gibt es nur noch in der Lehrkraft-Ansicht und für die automatischen Tests. */
+  G.hub = true;
 
   /* ---------- Figuren (Porträts ohne Pfad liegen in voyageur/assets/img/, mit Pfad kommen sie aus Teil 1 und Teil 2) ---------- */
   const T1 = "../assets/img/", T2 = "../guide-fantome/assets/img/";

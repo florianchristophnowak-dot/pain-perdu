@@ -1012,6 +1012,15 @@ window.GAME = (function () {
   ];
   G.profUnlock = ["N04_done", "N05_done", "badge_faux", "N06_done", "carte_peeled", "N07_done", "N08_done", "R1_done", "G01_done", "G02_done", "G03_done", "G05_done", "G06_done", "R2_done", "E03_done", "E04_done", "E05_done", "R3_done", "R3b_done", "B04_done", "B05_done", "R4_done", "B06_done", "B_done", "prix_vu"];
 
+  /* ---------- Teil 3: Der Endbildschirm zeigt das Schlüsselwort (wie Teil 1 für Teil 2) und öffnet Teil 3 auf diesem Gerät.
+     key und store wie G.part3 in js/data.js; der Knopf führt ins gemeinsame Startmenü zum Intro von Teil 3. ---------- */
+  G.next = {
+    part: 3, key: "Orsay", store: "pp_partie3",
+    title: "Le mot de passe pour la partie 3",
+    note: "Note-le bien : avec ce mot de passe, tu ouvres la partie 3, aussi sur un autre appareil.",
+    go: "Jouer la partie 3 ▸"
+  };
+
   /* ---------- Abspann ---------- */
   G.credits = {
     title: "Le guide fantôme",
