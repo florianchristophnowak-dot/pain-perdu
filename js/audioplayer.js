@@ -3,7 +3,7 @@
    Das gewählte Tempo gilt für alle Hörtexte auf diesem Gerät (localStorage pp_audio_rate), die Tonhöhe bleibt gleich.
    „Gehört“ (onHeard) meldet der Player erst, wenn mindestens 90 % der Aufnahme wirklich gelaufen sind:
    Wer vorspult, muss den übersprungenen Teil noch hören. Fehlt die Aufnahme, liest der Browser den Text vor
-   (dann mit Pause und Tempo, aber ohne Spulen).
+   (dann mit Tempo und, außer auf Android, mit Pause, aber ohne Spulen).
    Aufruf: const p = PPAudio.create({ src, text, lang, ttsRate, seek, again, labels, canStart, onStart, onBlocked, onHeard, mustHear });
            element p.el einhängen; p.start() spielt von vorn, p.stop() hält an. PPAudio.stopAll() hält alle Player an. */
 (function () {
@@ -32,6 +32,10 @@
   const pct = r => Math.round(r * 100) + " %";
   const hasTts = "speechSynthesis" in window;
   if (hasTts) { try { speechSynthesis.getVoices(); } catch (e) { /* lädt die Stimmen schon einmal */ } }
+  /* Android (Chrome und andere): speechSynthesis.pause() bricht das Vorlesen ab, resume() setzt nicht fort, und es kommt kein „end“.
+     Dort gibt es beim Vorlesen deshalb keine Pause: Der Knopf ruht, bis der Text zu Ende ist. */
+  const ua = navigator.userAgentData;
+  const ttsPause = !/Android/i.test(navigator.userAgent || "") && !(ua && /Android/i.test(ua.platform || ""));
   function voiceFor(lang) {
     if (!hasTts) return null;
     const vs = speechSynthesis.getVoices(), want = lang.toLowerCase().replace("_", "-"), base = want.slice(0, 2);
@@ -110,7 +114,7 @@
       const lab = playing ? L.pause : state === "paused" ? L.reprendre : (started || o.again) ? L.rejouer : L.ecouter;
       playBtn.innerHTML = svg(playing ? "pause" : state === "ended" ? "again" : "play") + "<span>" + esc(lab) + "</span>";
       playBtn.setAttribute("aria-label", lab);
-      playBtn.disabled = !playing && state !== "paused" && !!o.canStart && !o.canStart();
+      playBtn.disabled = playing ? tts && !ttsPause : state !== "paused" && !!o.canStart && !o.canStart();
       const canJump = seekOk && !tts && !!dur() && state !== "idle";
       seek.disabled = !canJump;
       if (back) back.disabled = !canJump;
@@ -183,7 +187,7 @@
       if (!raf) raf = requestAnimationFrame(loop);
     }
     function pause() {
-      if (state !== "playing") return;
+      if (state !== "playing" || tts && !ttsPause) return;
       state = "paused";
       if (tts) { if (hasTts) speechSynthesis.pause(); } else au.pause();
       render(); checkHeard(false);
