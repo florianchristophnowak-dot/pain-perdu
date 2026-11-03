@@ -18,6 +18,7 @@ const PATCHES = [
   [R`u.lang = "fr-FR";`, R`u.lang = "de-DE";`],
   [R`toast("Inventaire : " + G.items[id].name)`, R`toast("Inventar: " + G.items[id].name)`],
   [R`toast("Marie : " + G.ui.marie.afterHelp)`, R`toast("Marie: " + G.ui.marie.afterHelp)`],
+  [R`toast("Marie : " + G.ui.marie.read)`, R`toast("Marie: " + G.ui.marie.read)`],
   [R`toast("Marie : " + (p.lockedMsg`, R`toast("Marie: " + (p.lockedMsg`],
   [R`'<div class="who">Marie · ' + level + "/4</div><div class=\"text" + (level === 4 ? " de" : "") + '">' + (level === 4 ? esc(txt) : gl(txt)) + "</div>"`, R`'<div class="who">Marie · ' + level + '/4</div><div class="text">' + gl(txt) + "</div>"`],
   [R`    body.appendChild(el("h2", "", esc(G.chars[a.who].name)));

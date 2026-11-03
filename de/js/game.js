@@ -249,7 +249,13 @@
   }
 
   /* ---------- Knoten ausführen ---------- */
+  /* Nachspann einer gelösten Aufgabe (after): Solange er läuft, führen weder Hotspots noch Karte daran vorbei. Sonst bricht
+     die Kette ab, obwohl die Effekte schon gelten (nach V03q waren Finale, Rapport und Ende nicht mehr erreichbar, nach B04
+     fehlten Kevins SMS und die Nachricht an M. Nowak). Jeder neue Knoten und jeder Szenenwechsel hebt die Sperre auf. */
+  let afterRun = false;
+  function afterBusy() { if (afterRun) toast("Marie: " + G.ui.marie.read); return afterRun; }
   function goNode(id) {
+    afterRun = false;
     if (!id) { dlg.innerHTML = ""; dlg.classList.remove("active"); return; }
     if (id === "END") { dlg.innerHTML = ""; dlg.classList.remove("active"); return; }
     if (id === "MAP") { openMap(); return; }
@@ -373,7 +379,8 @@
         applyEffects(n.effects, id);
         if (n.task.kind === "write") { S.cards[id] = results.map(r => ({ player: r.player, text: r.text })); save(); }
         closeModal();
-        showLines(n.after, () => { finish(); goNode(n.next); });
+        afterRun = true;
+        showLines(n.after, () => { afterRun = false; finish(); goNode(n.next); });
         return;
       }
       const pi = idxs[k++];
@@ -967,12 +974,13 @@
       if (h.showIf && !cond(h.showIf)) return;
       const b = el("button", "hotspot", "<span>" + esc(h.label) + "</span>");
       b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.style.width = h.w + "%"; b.style.height = h.h + "%";
-      b.addEventListener("click", e => { e.stopPropagation(); verbMenu(h, b); });
+      b.addEventListener("click", e => { e.stopPropagation(); if (!afterBusy()) verbMenu(h, b); });
       stage.appendChild(b);
     });
   }
   function enterScene(id, runEnter) {
     const sc = G.scenes[id];
+    afterRun = false;
     S.scene = id; if (!S.visited.includes(id)) S.visited.push(id); save();
     $("#start").hidden = true; $("#game").hidden = false;
     setBg(stage, sc.bg);
@@ -1261,7 +1269,7 @@
     /* Solange eine Aufgabe, Zwischensequenz oder Fahrt offen ist, führt kein Knopf daran vorbei (auch nicht per Tastatur) */
     const busy = () => !modal.hidden && modal.classList.contains("nocl");
     $("#btn-carnet").addEventListener("click", () => { if (!busy()) openCarnet(); });
-    $("#btn-map").addEventListener("click", () => { if (!busy()) openMap(); });
+    $("#btn-map").addEventListener("click", () => { if (!busy() && !afterBusy()) openMap(); });
     $("#btn-inv").addEventListener("click", () => { if (!busy()) openInventory(); });
     $("#btn-gloss").addEventListener("click", () => { if (!busy()) openGlossary(); });
     $("#btn-lang").addEventListener("click", () => { S.linoLang = S.linoLang === "fr" ? "de" : "fr"; save(); toast("Lino : " + (S.linoLang === "fr" ? G.ui.start.fr : G.ui.start.de)); });

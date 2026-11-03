@@ -107,6 +107,8 @@ Damit niemand Stationen überspringt, geht jede erst auf, wenn die Information d
 - Die Buchhandlung erscheint erst nach Marcels Nachricht bei Nora (`B03`); die Tür im Marais bleibt bis dahin nur eine Tür.
 - Lenoir zeigt die Aushänge erst nach dem Nachnamen, der Stempeltisch kommt nach dem richtigen Aushang, Marcels Karte nach dem Stempel.
 - Die Assistentin am Louvre lässt erst nach dem richtigen Aushang durch und fragt Name und Uhrzeit ab; Marcel fragt am Ende den Inhalt des Rucksacks ab.
+- Solange nach einer gelösten Aufgabe der Nachspann läuft (die Zeilen unter `after`), öffnen weder Hotspots noch die Karte etwas; Marie sagt « Doucement. Lis d'abord. ». Die Effekte gelten dann schon, die Kette dahinter aber noch nicht: Früher endete das Spiel nach einem Klick im Nachspann von `V03q` ohne Finale und Rapport, und nach `B04` kam man ohne Kevins SMS und ohne Nachricht an Nowak in die Buchhandlung. Wer schon so festsaß, kommt über Marcel zum Finale (`V04`). Dieselbe Sperre gilt in Teil 2 und 3.
+- Plan, Bank und Noras Telefon starten gelöste Aufgaben nicht neu: der Plan sagt nur noch den Weg (`P04r`), die Bank führt zu Chloés Angebot (`P06c`, nach der Probe `P05r`), das Telefon spielt nur die Nachricht (`B03r`).
 
 Frage 3 im Carnet („Voleur ou erreur ?“) gilt als geklärt, sobald Chloés Foto (`P06`) und Marcels Nachricht (`B04`) verstanden sind.
 
@@ -116,7 +118,7 @@ Die Nebenwege aus Abschnitt 10 des Drehbuchs sind eingebaut und freiwillig: die 
 
 ## Test
 
-`tools/playthrough.js` spielt beide Phasen automatisch durch (Playwright, Chromium) und meldet am Ende die Diagnosezeilen. Vorher `npm i -D playwright` und einen lokalen Server starten (`npx http-server -p 8765 .`), dann `node tools/playthrough.js` (öffnet `index.html?intro=0&test=1`). Nach Änderungen an Texten oder Code zeigt ein fehlgeschlagener Durchlauf schnell, wo etwas klemmt. `node tools/raten.js` (bzw. `node tools/raten.js de`) spielt wie jemand, der nur rät, und prüft die Bremsen aus „Gegen Raten und Durchklicken“.
+`tools/playthrough.js` spielt beide Phasen automatisch durch (Playwright, Chromium) und meldet am Ende die Diagnosezeilen. Vorher `npm i -D playwright` und einen lokalen Server starten (`npx http-server -p 8765 .`), dann `node tools/playthrough.js` (öffnet `index.html?intro=0&test=1`). Nach Änderungen an Texten oder Code zeigt ein fehlgeschlagener Durchlauf schnell, wo etwas klemmt. `node tools/raten.js` (bzw. `node tools/raten.js de`) spielt wie jemand, der nur rät, und prüft die Bremsen aus „Gegen Raten und Durchklicken“. `node tools/sackgassen.js` prüft in allen drei Teilen die früheren Sackgassen und Abkürzungen: Klicks im Nachspann einer Aufgabe, ein unterbrochenes Gespräch (Teil 3, `P02`), die Wiederholungen an Plan, Bank und Telefon und die Fiche de signalement in Teil 2.
 
 ## Schrift
 

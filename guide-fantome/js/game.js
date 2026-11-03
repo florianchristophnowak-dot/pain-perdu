@@ -329,7 +329,13 @@
   }
 
   /* ---------- Knoten ausführen ---------- */
+  /* Nachspann einer gelösten Aufgabe (after): Solange er läuft, führen weder Hotspots noch Karte daran vorbei. Sonst begann die
+     schon gelöste Aufgabe beim Zurückkommen von vorn (die Station merkt sich die Aufgabe, bis der Nachspann fertig ist).
+     Jeder neue Knoten und jeder Szenenwechsel hebt die Sperre auf. */
+  let afterRun = false;
+  function afterBusy() { if (afterRun) toast("Lino : " + G.ui.tempo.read); return afterRun; }
   function goNode(id) {
+    afterRun = false;
     if (!id || id === "END") { dlg.innerHTML = ""; dlg.classList.remove("active"); return; }
     if (id === "MAP") { openMap(); return; }
     if (id === "RESUME") { const at = S.at[S.scene]; if (at) goNode(at); else { dlg.innerHTML = ""; dlg.classList.remove("active"); } return; }
@@ -392,6 +398,7 @@
       box.innerHTML = ""; box.classList.add("active");
       if (n.question) box.appendChild(el("p", "q", gl(n.question)));
       const avail = n.choices.filter(ch => !ch.onlyIf || cond(ch.onlyIf));
+      if (!avail.length) { applyEffects(n.effects, id); done(); return; }   // keine Antwort mehr übrig: weiter
       const list = avail.some(ch => ch.kind !== "ok") ? shuffled(avail) : avail;
       let extra = null;
       if (n.help) {
@@ -427,6 +434,9 @@
     function ask() {
       const lines = first ? n.lines : null; first = false;   // Einleitung nur beim ersten Mal
       showLines(lines, () => {
+        /* Keine Antwort mehr übrig (Teil 3, P02b: nach einer Unterbrechung waren beide Fragen schon gestellt): weiter statt ohne Knopf */
+        const avail = n.choices.filter(ch => !ch.onlyIf || cond(ch.onlyIf));
+        if (!avail.length) { applyEffects(n.effects, id); finish(); goNode(resolve(n.next)); return; }
         dlg.innerHTML = ""; dlg.classList.add("active"); dlg.classList.remove("pending");
         if (n.prompt) dlg.appendChild(lineEl(n.prompt));
         else { const row = el("div", "line"); row.appendChild(portrait(n.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[n.who].name) + "</div>")); dlg.appendChild(row); }
@@ -435,7 +445,6 @@
           if (!hc) hc = helpCtl(n.help, { wrongs: () => st.wrongs, material: () => { $$(".choice", dlg).forEach(b => b.classList.add("hl")); } });
           extra = el("div", "help-row"); extra.appendChild(hc.btn); hc.update();
         }
-        const avail = n.choices.filter(ch => !ch.onlyIf || cond(ch.onlyIf));
         const choices = avail.some(ch => ch.kind !== "ok") ? shuffled(avail) : avail;   // gibt es eine falsche Antwort, jedes Mal neu gemischt
         renderChoices(dlg, choices, ch => {
           if (st.first === null) st.first = ch.fr;
@@ -505,7 +514,8 @@
         if (n.task.kind === "write") { S.cards[id] = results.map(r => ({ player: r.player, text: r.text })); save(); }
         closeModal();
         const after = results.flatMap(r => r.after || []).concat(n.after || []);
-        showLines(after, () => { finish(); goNode(resolve(n.next)); });
+        afterRun = true;
+        showLines(after, () => { afterRun = false; finish(); goNode(resolve(n.next)); });
         return;
       }
       const pi = idxs[k++];
@@ -638,6 +648,7 @@
     const box = el("div", "matbox");
     (T.matImgs || []).forEach(i => box.appendChild(docImg(i)));
     if (T.matText) box.appendChild(el("div", "paper small", gl(T.matText)));
+    if (T.matFiche) box.appendChild(el("div", "paper small", "<b>" + esc(G.items.fiche.name) + "</b><br>" + gl(G.items.fiche.desc)));   // der Text aus N07a
     if (T.matFiche) (S.cards.N07b || []).forEach(c => box.appendChild(el("div", "paper small", "<b>" + esc(G.items.fiche.name) + " · " + esc(c.player) + "</b><br>" + esc(c.text))));
     if (T.matInv) box.appendChild(el("div", "paper small", T.matInv.filter(i => S.inv.includes(i)).map(i => "<b>" + esc(G.items[i].name) + "</b> : " + gl(itemDesc(i))).join("<br>")));
     body.insertBefore(box, area);
@@ -1498,12 +1509,13 @@
       if ((h.showIf && !cond(h.showIf)) || (h.hideIf && cond(h.hideIf))) return;
       const b = el("button", "hotspot", "<span>" + esc(h.label) + "</span>");
       b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.style.width = h.w + "%"; b.style.height = h.h + "%";
-      b.addEventListener("click", e => { e.stopPropagation(); verbMenu(h, b); });
+      b.addEventListener("click", e => { e.stopPropagation(); if (!afterBusy()) verbMenu(h, b); });
       stage.appendChild(b);
     });
   }
   function enterScene(id, runEnter) {
     const sc = G.scenes[id];
+    afterRun = false;
     S.scene = id; if (!S.visited.includes(id)) S.visited.push(id); save();
     $("#start").hidden = true; $("#game").hidden = false;
     setBg(stage, sc.bg);
@@ -1710,7 +1722,7 @@
     const opened = () => PROF || cond(G.openAfter);
     const notYet = () => toast("Lino : " + G.ui.lino.locked);
     $("#btn-carnet").addEventListener("click", () => { if (busy()) return; if (!opened()) notYet(); else openCarnet(); });
-    $("#btn-map").addEventListener("click", () => { if (busy()) return; if (!opened()) notYet(); else if (!PROF && G.mapLock && cond(G.mapLock)) toast("Lino : " + G.ui.lino.finale); else openMap(); });
+    $("#btn-map").addEventListener("click", () => { if (busy() || afterBusy()) return; if (!opened()) notYet(); else if (!PROF && G.mapLock && cond(G.mapLock)) toast("Lino : " + G.ui.lino.finale); else openMap(); });
     $("#btn-inv").addEventListener("click", () => { if (!busy()) openInventory(); });
     $("#btn-gloss").addEventListener("click", () => { if (!busy()) openGlossary(); });
     setupMobile();
