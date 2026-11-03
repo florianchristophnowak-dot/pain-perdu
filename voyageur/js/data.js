@@ -89,6 +89,7 @@ window.GAME = (function () {
     listenMore: "Vous pouvez écouter plusieurs fois.",
     audioLeft: "Encore {n} fois.",
     audioLast: "Vous ne pouvez plus écouter.",
+    player: { skipped: "Vous avez sauté un passage. Écoutez-le aussi." },   // Audioplayer (js/audioplayer.js), sonst gelten dessen Standardtexte
     loupe: {
       found: "Trouvé : {n} sur {m}",
       odd: "Choses bizarres : {n} sur {m}",

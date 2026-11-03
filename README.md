@@ -15,6 +15,7 @@ Ein Point-and-Click-Abenteuer auf Französisch (Niveau A2) für die Klasse 10: E
 | `js/data.js` | Alle Texte und Spieldaten: Szenen, Hotspots, Dialogknoten (S02 … V06), Aufgaben, Hilfestufen, Glossar. Kennungen wie im Drehbuch. |
 | `js/game.js` | Spiel-Engine: Szenen, Dialoge, Aufgabentypen, Carnet, Karte, Inventar, Hilfe, Speichern, Export, Lehrkraft-Ansicht |
 | `js/prof.js` | Code-Abfrage für Lehrkraft-Ansicht und Quiz-Lösungen (im Quelltext steht nur eine Prüfsumme) |
+| `js/audioplayer.js` | Audioplayer der Hörtexte für alle Teile: Pause, 5 s zurück und vor, Tempo bis 80 % (siehe [Hörtexte: Audioplayer](#hörtexte-audioplayer)) |
 | `assets/img/` | Hintergründe, Zwischensequenzen, Porträts |
 | `assets/audio/` | Hörtexte (MP3) |
 
@@ -73,10 +74,24 @@ Das Spiel läuft auch auf Handys, am besten im Querformat: Dann füllt das Bild 
 - Kopfzeile: eine Zeile mit Symbolen (Carnet, Carte, Inventaire, Glossaire, Lino FR/DE), im Querformat mit kurzer Beschriftung. Auf Android und Tablets gibt es zusätzlich „Plein écran“.
 - Bühne: Im Hochformat stehen die Beschriftungen erst im Menü, das beim Antippen erscheint („la dame du kiosque · Parler · Montrer“). Das Menü bleibt immer ganz im Bild, kleine Hotspots haben eine Tippfläche von mindestens 44 px.
 - Fenster nutzen fast den ganzen Bildschirm; Zwischensequenzen stehen im Querformat neben dem Text, die Karte links neben dem Titel.
-- Hörtexte: Handys spielen Ton erst nach Antippen ab. Startet die Aufnahme nicht von selbst, wartet der Knopf „Écouter“; die Computerstimme springt nur ein, wenn die Datei fehlt.
+- Hörtexte: Handys spielen Ton erst nach Antippen ab. Startet die Aufnahme nicht von selbst, wartet der Knopf „Écouter“; die Computerstimme springt nur ein, wenn die Datei fehlt. Der Player steht auf dem Handy in drei Zeilen (Knöpfe, Balken, Tempo); auf sehr schmalen Geräten zeigt der Abspielknopf nur das Symbol.
 - Abfragen: keine Autokorrektur, für die Telefonnummer das Ziffernfeld; die Tastatur öffnet sich erst, wenn man ins Feld tippt.
 - Export: Auf Handy und Tablet öffnet „Exporter le carnet“ das Teilen-Menü mit beiden Dateien (Mail, AirDrop, Teams …); geht das nicht, werden die Dateien heruntergeladen.
 - Zum Home-Bildschirm hinzufügen (Safari: Teilen → „Zum Home-Bildschirm“, Chrome: Menü → „App installieren“) startet das Spiel ohne Browserleiste, mit Bernd als Symbol (`manifest.webmanifest`, `assets/icons/`). Achtung iPhone: Die Home-Bildschirm-Version hat einen eigenen Spielstand, getrennt von Safari.
+
+## Hörtexte: Audioplayer
+
+Alle Hörtexte in Teil 1, 2 und 3 laufen über denselben Player (`js/audioplayer.js`, Stile in `css/style.css` unter „Audioplayer“): im Hörtext-Fenster (startet von selbst), in den Aufgaben zum Hörtext (startet erst auf Antippen) und in der Hilfe « Écoute encore … » (spielt den Player der Aufgabe von vorn).
+
+- **Abspielen und Pause:** Der große Knopf wechselt zwischen « Écouter », « Pause », « Reprendre » und am Ende « Rejouer » (von vorn).
+- **5 Sekunden zurück und vor:** zwei Knöpfe neben dem Balken; den Balken kann man auch ziehen oder antippen. Am Ende spielt « 5 s zurück » das letzte Stück gleich noch einmal.
+- **Tempo:** « Vitesse » 100 %, 95 %, 90 %, 85 % oder 80 %; die Tonhöhe bleibt gleich. Das Tempo gilt für alle Hörtexte und alle drei Teile auf diesem Gerät (`localStorage` `pp_audio_rate`). Liest der Browser vor (Aufnahme fehlt), gilt das Tempo ab dem nächsten Start.
+- **Erst ganz hören:** „Continuer“ im Hörtext-Fenster und die Antworten bei `listenFirst` gehen erst auf, wenn mindestens 90 % der Aufnahme wirklich gelaufen sind (`S.heard`). Wer vorspult und das Ende erreicht, bekommt den Hinweis « Tu as sauté un passage. Écoute-le aussi. » (Teil 3: « Vous avez … », `G.ui.player`).
+- **Begrenztes Hören:** Beim Telefonat in Teil 2 (`E03`, `maxPlays: 2`) gibt es Pause und Tempo, aber kein Spulen, sonst wäre die Grenze wirkungslos; « Encore 1 fois » zählt nur neue Durchgänge von vorn. In `E04` (`noReplay`) bringt Linos Hilfe « Écoute encore le téléphone » einen eigenen Player ohne Spulen mit.
+- **Zählung im Export:** „Wiederholungen“ (`S.replays`) zählt wie bisher jeden Start von vorn, nicht Pausen oder Sprünge.
+- **Server ohne Teilstücke:** Manche Server (z. B. `python3 -m http.server`) liefern keine Range-Anfragen; dann springt der Browser beim Spulen an den Anfang. Der Player lädt die Datei in diesem Fall einmal ganz (Blob) und springt dann richtig. GitHub Pages und das Offline-Paket (Datei direkt geöffnet) brauchen das nicht.
+- Texte der Knöpfe: Standard in `js/audioplayer.js` (`L0`), einzelne Texte lassen sich je Teil über `G.ui.player` ersetzen. Die deutsche Fassung zeigt die Hörtexte weiter als Lesetexte, ohne Player.
+- **Test:** `node tools/hoeren.js` (lokaler Server wie unter „Test“, Bildschirmfotos in `test-shots/hoeren/`) prüft Pause, Spulen, Tempo, die 90-%-Regel, die Grenze beim Telefonat, die Hilfe und die Darstellung auf Computer und Handy (hoch, quer, 320 px).
 
 ## Herunterladen und offline spielen
 
@@ -93,7 +108,7 @@ Wer kein Französisch kann und nur klickt, soll nicht durchkommen. Auswahlaufgab
 - **Nur die Anzahl:** Bei Lücken und Zuordnungen (`M04`, `M04b`, `C03`, `V02b`) sagt das Spiel nach einem Fehlversuch nur noch „Juste : 2 sur 4.“ und markiert keine einzelne Lücke mehr. Sonst wäre Durchprobieren in zwei Klicks erledigt.
 - **Aushang begründen:** Nach dem richtigen Aushang (`L02`) fragt Lenoir nach zwei Belegen (Name und Fassung, `task.proof`), wie im Konzept vorgesehen („den aktuellen Eintrag mit zwei Belegen begründen“). „17 h“, der Titel und „eine Cour“ zählen nicht, weil sie auf mehreren Aushängen stehen.
 - **Freie Texte:** Die eigenen Wörter müssen französisch sein (`G.writeLang`: mindestens 20 % häufige französische Wörter, ab drei deutschen oder englischen Wörtern lehnt Marie ab) und mindestens zwei (`B06`) bzw. drei (`V05`) Wörter zur Geschichte enthalten (`task.topic`, Wortanfänge). Einfügen (etwa aus einem Übersetzer) ist gesperrt.
-- **Hörtexte nicht wegklicken:** Beim ersten Mal geht „Continuer“ erst, wenn die Aufnahme ganz gelaufen ist (`S.heard`). In der deutschen Fassung gilt stattdessen eine Mindest-Lesezeit, und die freien Texte müssen deutsch sein.
+- **Hörtexte nicht wegklicken:** Beim ersten Mal geht „Continuer“ erst, wenn die Aufnahme ganz gelaufen ist (`S.heard`; mindestens 90 % wirklich gehört, Vorspulen zählt nicht, siehe [Audioplayer](#hörtexte-audioplayer)). In der deutschen Fassung gilt stattdessen eine Mindest-Lesezeit, und die freien Texte müssen deutsch sein.
 - **Hilfe ohne fertige Lösung:** Die deutsche Stufe 4 erklärt bei `M04` und `P04`, worauf man im Transkript achten muss, statt die Zuordnung zu verraten; Stufe 3 bei `M03` zitiert die richtige Frage nicht mehr.
 - **Keine Abkürzungen:** Fenster, nach denen es weitergeht (z. B. Kevins SMS vor der Nachricht an Nowak), haben kein ×, und Carnet, Karte, Inventar und Glossar öffnen sich nicht, solange eine Aufgabe offen ist (auch nicht per Tastatur).
 

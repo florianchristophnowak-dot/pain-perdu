@@ -10,6 +10,9 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
 (async () => {
   const browser = await chromium.launch(Object.assign({ headless: true }, process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {}));
   const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+  /* Fehlt eine Aufnahme, liest der Browser vor. Headless-Chromium hat keine Stimme: Das Vorlesen scheitert sofort und zählt dann
+     (absichtlich, damit niemand hängen bleibt) als gehört. Für die Prüfungen „erst hören“ liest der Browser hier endlos vor. */
+  await page.addInitScript(() => { if (window.speechSynthesis) speechSynthesis.speak = () => {}; });
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   const modalText = async () => (await page.locator('#modal-body').innerText()).replace(/\s+/g, ' ');
