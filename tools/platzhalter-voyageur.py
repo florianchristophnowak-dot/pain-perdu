@@ -1,7 +1,9 @@
 # Platzhalter für Teil 3 (voyageur/assets/ph/*.svg): einfache Skizzen, die Fundpunkte liegen an denselben Stellen wie in voyageur/js/data.js
-# (Koordinaten in % des Bildes). Aufruf: python3 tools/platzhalter-voyageur.py
-import os
+# (Koordinaten in % des Bildes). Aufruf: python3 tools/platzhalter-voyageur.py [Name ...]
+# Ohne Namen entstehen alle Skizzen; mit Namen nur diese, z. B. python3 tools/platzhalter-voyageur.py bg_petitpalais doc_1900
+import os, sys
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "voyageur", "assets", "ph")
+os.makedirs(OUT, exist_ok=True)
 
 class S:
     def __init__(s, W, H, bg):
@@ -191,6 +193,59 @@ def cut_photo_classe():
     for i in range(11): person(s, 3 + i * 8.8, 7, 34 + (i % 2) * 6, 88, ["#6b5a45", "#8a7357", "#5a4a3a"][i % 3], hair="#6b5642")
     s.save("cut_photo_classe", sepia=True)
 
-p17("doc_p17"); p17("doc_p16", decoy=True); p18(); pont_today(); p19(); baguette()
-bg_orsay(); bg_pont(); bg_invalides(); cut_dejeuner(); cut_photo_classe()
+# ---------- Nebenweg Petit Palais (Fassung 1.3): Ausstellungssaal und das echte Foto von 1900 ----------
+def bg_petitpalais():
+    s = S(1600, 900, "#eadcc0")                                                 # Saal mit hellen Wänden
+    for i in range(4): s.ell(12 + i * 25, 2, 13, 9, "#d9bf78", f'stroke="{INK}" stroke-width="3"')   # Bögen mit Gold
+    s.rect(0, 74, 100, 26, "#c9b48e")                                           # Mosaikboden
+    for i in range(12): s.line(i * 9, 74, i * 9 - 6, 100, "#b59f78", 2)
+    s.rect(6, 22, 18, 40, "#f3ead6", f'stroke="{INK}" stroke-width="3"')         # Panneau « Paris en 1900 » (Titel vom Spiel)
+    s.rect(7.5, 24, 15, 7, "#fbf6ea", f'stroke="{INK}" stroke-width="2"')        # leere Titelfläche
+    for k in range(3): s.rect(8 + k * 5, 35, 4, 5, "#b89c70")                    # kleine Fotos ohne Text
+    for k in range(4): s.line(8, 44 + k * 4, 22, 44 + k * 4, "#c7b89a", 4)
+    s.rect(14, 62, 2, 12, "#6b5a45")
+    s.rect(38, 62, 23, 16, "#7a5a36", f'stroke="{INK}" stroke-width="3"')        # Vitrine: Holzsockel
+    s.rect(37, 38, 25, 24, "#dfeaea", f'stroke="{INK}" stroke-width="3" opacity=".9"')   # Glaskasten
+    s.rect(42.5, 42, 14, 15, "#e2d3b0", f'stroke="{INK}" stroke-width="2"')      # Karton
+    s.rect(44, 43.5, 11, 10, "#a98a5e")                                          # das Foto von 1900 (braun)
+    s.rect(67, 40, 10, 11, "#8a6a3e", f'stroke="{INK}" stroke-width="3"')        # Appareil photo aus Holz
+    s.poly([(77, 42), (80.5, 43.5), (80.5, 47.5), (77, 49)], "#4a3b30", f'stroke="{INK}" stroke-width="2"')   # Objektiv
+    s.line(72, 51, 67, 82, INK, 5); s.line(72, 51, 72, 82, INK, 5); s.line(72, 51, 77, 82, INK, 5)           # Stativ
+    s.rect(83, 6, 16, 56, "#a9c7dc", f'stroke="{INK}" stroke-width="4"')         # Fenster mit Blick auf den Pont
+    s.ell(91, 6, 8, 5, "#a9c7dc", f'stroke="{INK}" stroke-width="4"')
+    s.rect(88, 26, 4, 30, "#b59a68"); s.poly([(86, 26), (90, 17), (94, 26)], "#d6b04a")   # Pylon mit goldener Statue
+    s.rect(83, 50, 16, 3, "#c2a878")                                            # Brückengeländer
+    s.line(91, 6, 91, 62, INK, 3); s.line(83, 32, 99, 32, INK, 3)                # Fensterkreuz
+    person(s, 27, 6, 46, 76, "#5a6b7a", hair="#6a5a4a")                          # zwei Besucher hinten links
+    person(s, 31, 6, 47, 76, "#8a3b3b", hair="#3d2d22")
+    s.save("bg_petitpalais")
+
+def doc_1900():
+    s = S(1500, 1000, "#d8c3a0")
+    s.rect(0, 0, 100, 40, "#e3d4b4")                                            # Himmel
+    for i, (x, w, h) in enumerate([(2, 16, 14), (22, 12, 18), (38, 20, 12), (62, 14, 20), (80, 18, 15)]):   # Pavillons der Ausstellung
+        s.rect(x, 44 - h, w, h, "#bba57d", f'stroke="{INK}" stroke-width="3"')
+        s.ell(x + w / 2, 44 - h, w / 3, 4, "#a88f63", f'stroke="{INK}" stroke-width="3"')
+    s.rect(0, 44, 100, 8, "#a7b2a0")                                            # die Seine
+    s.rect(0, 52, 100, 10, "#c2a878")                                           # Geländer der Brücke
+    for i in range(26): s.rect(i * 4 + 0.6, 54, 1.4, 8, "#8f774f")
+    s.rect(0, 62, 100, 38, "#cdb795")                                           # Fahrbahn
+    for lx in (14, 70):                                                         # Lampadaires
+        s.rect(lx, 22, 1.6, 40, "#3f3a33")
+        for d in (-2.2, 0, 2.2): s.ell(lx + 0.8 + d, 20, 1.3, 2.2, "#f0e3b8", f'stroke="{INK}" stroke-width="2"')
+    import random
+    rnd = random.Random(1900)
+    for k in range(34):                                                         # viele Besucher mit Hüten, niemand posiert
+        x = rnd.uniform(1, 95); top = rnd.uniform(56, 70); h = rnd.uniform(18, 26)
+        person(s, x, 4.2, top, min(top + h, 99), rnd.choice(["#4a3b30", "#6b5a45", "#3d3530", "#7d6a58"]), hair="#5a4636", hat=rnd.choice(["melon", None, "melon"]))
+    s.rect(0, 0, 100, 100, "#9a6a36", 'opacity=".3"')                          # braun getönt wie die Fotos von 1900
+    s.raw(f'<rect x="{s.X(22)}" y="{s.Y(91.5)}" width="{s.X(56)}" height="{s.Y(6)}" fill="#f3ead6" opacity=".85"/>')
+    s.raw(f'<text x="{s.X(50)}" y="{s.Y(95.8)}" font-family="Georgia, serif" font-size="30" text-anchor="middle" fill="{INK}">Esquisse : la photo originale de 1900 arrive bientôt.</text>')
+    s.save("doc_1900", sepia=True)
+
+ALL = {"doc_p17": lambda: p17("doc_p17"), "doc_p16": lambda: p17("doc_p16", decoy=True), "doc_p18": p18, "doc_pont": pont_today, "doc_p19": p19,
+       "doc_baguette": baguette, "bg_orsay": bg_orsay, "bg_pont": bg_pont, "bg_invalides": bg_invalides, "cut_dejeuner": cut_dejeuner,
+       "cut_photo_classe": cut_photo_classe, "bg_petitpalais": bg_petitpalais, "doc_1900": doc_1900}
+for name in (sys.argv[1:] or ALL):
+    ALL[name]()
 print(sorted(os.listdir(OUT)))

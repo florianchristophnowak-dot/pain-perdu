@@ -247,7 +247,7 @@
     if (n >= G.formules.length) setFlag("formules_5");
   });
   function renderLine(box, l, onNext, label) {
-    box.innerHTML = ""; box.classList.add("active"); box.classList.remove("pending");
+    box.innerHTML = ""; box.classList.add("active"); box.classList.remove("pending", "idle");
     box.appendChild(lineEl(l));
     if (onNext) { const b = el("button", "btn primary", esc(label || G.ui.btn.continuer)); b.addEventListener("click", onNext); const bar = el("div", "bar"); bar.appendChild(b); box.appendChild(bar); }
   }
@@ -426,7 +426,7 @@
         /* Keine Antwort mehr übrig (Teil 3, P02b: nach einer Unterbrechung waren beide Fragen schon gestellt): weiter statt ohne Knopf */
         const avail = n.choices.filter(ch => !ch.onlyIf || cond(ch.onlyIf));
         if (!avail.length) { applyEffects(n.effects, id); finish(); goNode(resolve(n.next)); return; }
-        dlg.innerHTML = ""; dlg.classList.add("active"); dlg.classList.remove("pending");
+        dlg.innerHTML = ""; dlg.classList.add("active"); dlg.classList.remove("pending", "idle");
         if (n.prompt) dlg.appendChild(lineEl(n.prompt));
         else { const row = el("div", "line"); row.appendChild(portrait(n.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[n.who].name) + "</div>")); dlg.appendChild(row); }
         let extra = null;
@@ -1498,9 +1498,11 @@
   function drawHotspots() {
     const sc = S && S.scene && G.scenes[S.scene]; if (!sc) return;
     $$(".hotspot", stage).forEach(h => h.remove());
+    const lit = hlOn && hlOn.scene === S.scene;
     sc.hotspots.forEach(h => {
       if ((h.showIf && !cond(h.showIf)) || (h.hideIf && cond(h.hideIf))) return;
-      const b = el("button", "hotspot", "<span>" + esc(h.label) + "</span>");
+      const done = h.doneIf && cond(h.doneIf), open = h.doneIf && !done && (!h.openIf || cond(h.openIf));
+      const b = el("button", "hotspot" + (done ? " done" : "") + (lit && open ? " hl" : "") + (h.lab ? " lab-" + h.lab : ""), "<span>" + esc(h.label) + "</span>");   // lab "l"/"r": Beschriftung am Bildrand nach innen
       b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.style.width = h.w + "%"; b.style.height = h.h + "%";
       b.addEventListener("click", e => { e.stopPropagation(); if (!afterBusy()) verbMenu(h, b); });
       stage.appendChild(b);
@@ -1532,7 +1534,7 @@
     m.addEventListener("click", e => e.stopPropagation());
     Object.keys(h.actions).forEach(v => {
       const b = el("button", "btn verb", verbIcon(v) + "<span>" + esc(G.ui.verbs[v] || v) + "</span>");
-      b.addEventListener("click", e => { e.stopPropagation(); m.remove(); const node = resolve(h.actions[v]); if (node) goNode(node); });
+      b.addEventListener("click", e => { e.stopPropagation(); m.remove(); const node = resolve(h.actions[v]); if (node) openFrom(node); });
       m.appendChild(b);
     });
     m.style.left = "0px"; m.style.top = "0px"; m.style.transform = "none";
@@ -1544,6 +1546,48 @@
   }
   document.addEventListener("click", () => $$(".verbs").forEach(v => v.remove()));
 
+  /* ---------- Freie Stationen (free): die Abschnitte einer Station in beliebiger Reihenfolge ----------
+     Angefangenes geht vor: Solange ein Abschnitt offen ist (S.at), führt kein Hotspot daran vorbei. Läuft er gerade im
+     Dialogfeld, sagt Lino „D'abord, on finit ça.“, sonst geht es dort weiter, wo er stand; Nebenbemerkungen (amb) gehen
+     dann trotzdem. Jeder Abschnitt endet mit doneAt, damit die Station danach wieder frei ist. Erledigte Hotspots bekommen
+     ein Häkchen (doneIf), die Szenenhilfe (help) meldet sich im leeren Dialogfeld. */
+  function openFrom(node) {
+    const sc = G.scenes[S.scene], at = S.at[S.scene], n = G.nodes[node];
+    if (sc && sc.free && at) {
+      if (dlg.classList.contains("active") && !dlg.classList.contains("pending")) { toast("Lino : " + G.ui.lino.first); return; }
+      if (!(n && n.amb)) { goNode(at); return; }
+    }
+    goNode(node);
+  }
+  /* Szenenhilfe: help ist ein Schlüssel in G.help oder eine Liste [{ if, key }]; sie gilt nur, solange kein Abschnitt offen ist.
+     Vier Stufen wie bei den Aufgaben, sofort zu haben; die Stufe mit action "material" lässt die offenen Hotspots leuchten
+     (doneIf noch nicht erfüllt, openIf erfüllt). Die Diagnose führt die höchste Stufe unter dem Schlüssel der Hilfe. */
+  let idle = null, hlOn = null;
+  function sceneHelpKey() {
+    const sc = S && S.scene && G.scenes[S.scene];
+    if (!sc || !sc.help || S.at[S.scene]) return null;
+    if (typeof sc.help === "string") return sc.help;
+    const h = sc.help.find(x => cond(x.if)); return h ? h.key : null;
+  }
+  function showIdle() {
+    const key = sceneHelpKey(), tag = key ? S.scene + ":" + key : null;
+    const live = idle && idle.row.isConnected;
+    if (live && idle.tag === tag) return;
+    if (live) dlg.innerHTML = "";
+    dlg.classList.remove("idle"); idle = null;
+    if (hlOn && hlOn.tag !== tag) { hlOn = null; drawHotspots(); }   // das Leuchten gehört zu genau dieser Hilfe
+    if (!key || !G.help[key]) return;
+    const light = () => { hlOn = { scene: S.scene, tag }; drawHotspots(); };
+    const hc = helpCtl(key, { wrongs: () => 99, material: light });
+    const row = el("div", "help-row"); row.appendChild(hc.btn);
+    dlg.classList.add("idle"); dlg.appendChild(row); dlg.appendChild(hc.bubble);
+    hc.bubble.title = G.ui.btn.fermer; hc.bubble.addEventListener("click", e => { if (!e.target.closest(".gl")) hc.bubble.hidden = true; });   // antippen: zu (auf dem Handy liegt sie auf dem Bild)
+    idle = { tag, row };
+    if (G.help[key].slice(0, hc.level()).some(L => L && L.action === "material")) light();   // auch nach Stufe 3 und 4
+    let lv = hc.level();
+    hc.btn.addEventListener("click", () => { if (hc.level() > lv) { lv = hc.level(); record({ id: key, result: "mit Hilfe", help: lv }); } });
+  }
+
   /* ---------- Offene Tore: Wer auf eine Antwort wartet, meldet sich im leeren Dialogfeld ---------- */
   function pendingGate() { return (G.pending || []).find(p => cond(p.if) && !flag(p.unless) && (!p.scene || p.scene === S.scene)); }
   let pendingShown = null;
@@ -1554,7 +1598,8 @@
     const p = pendingGate(), key = p ? p.node : null;
     if (isPending && key === pendingShown) return;
     pendingShown = key;
-    if (!p) { if (isPending) { dlg.innerHTML = ""; dlg.classList.remove("active", "pending"); } return; }
+    if (!p) { if (isPending) { dlg.innerHTML = ""; dlg.classList.remove("active", "pending"); } showIdle(); return; }
+    idle = null; dlg.classList.remove("idle");
     dlg.innerHTML = ""; dlg.classList.add("active", "pending");
     dlg.appendChild(lineEl({ who: p.who, fr: p.fr, sms: p.sms }));
     const b = el("button", "btn primary", esc(G.ui.btn.repondre));
@@ -1698,7 +1743,7 @@
   }
   function init() {
     const saved = loadSave();
-    if (saved && saved.v === 1) { S = saved; refreshResume(); }
+    if (saved && saved.v === 1) { S = saved; if (G.migrate) { G.migrate(S); save(); } refreshResume(); }   // ältere Spielstände an neue Stationen anpassen
     if (HUB) {
       const home = QS.get("home") && sameSite(QS.get("home"));
       if (home) try { sessionStorage.setItem("pg_home", home); } catch (e) { /* privat */ }
@@ -1727,6 +1772,6 @@
       else resumeGame();
     }
   }
-  if (PROF || TEST) window.PP = { get S() { return S; }, goNode, enterScene, openMap, openCarnet, exportAll, flag, save, PROF, goMenu, setFlag };
+  if (PROF || TEST) window.PP = { get S() { return S; }, goNode, enterScene, openMap, openCarnet, exportAll, flag, save, PROF, goMenu, setFlag, saveKey: SAVE_KEY };
   init();
 })();
