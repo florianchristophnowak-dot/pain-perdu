@@ -538,6 +538,7 @@
     if (intro) body.appendChild(el("div", "solo", esc(intro)));
     const who = T.who ? G.chars[T.who].name : null;
     if (T.img && T.kind !== "loupe") body.appendChild(docImg(T.img));
+    if (T.show && RENDER[T.show]) body.appendChild(RENDER[T.show]({ doc: true, item: T }));   // Bilder über der Aufgabe (X03: zwei Fotos)
     if (T.intro) body.appendChild(el("div", "paper intro" + (T.sms ? " sms" : ""), (who ? "<b>" + esc(who) + (T.sms ? " · " + esc(G.ui.sms) : "") + " :</b> " : "") + gl(T.intro)));
     if (T.doc) body.appendChild(el("div", "paper " + (T.docIcon || ""), gl(T.doc)));
     (T.docs || []).forEach(d => { const c = el("div", "doccard" + (d.cls ? " " + d.cls : "")); c.appendChild(el("div", "doclabel", gl(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
@@ -1513,6 +1514,17 @@
       pg.appendChild(cropEl(it.photo, "aphoto"));
       pg.appendChild(el("div", "alegend", esc(ph.legend)));
       return pg;
+    },
+    /* Zwei Fotos nebeneinander (Petit Palais, X03): das echte Foto von 1900 auf seinem Karton, daneben ein Albumfoto */
+    pair(o) {
+      const g = el("div", "pair");
+      (o.item.pair || []).forEach(p => {
+        const f = el("figure", "pfig" + (p.carton ? " carton" : ""));
+        f.appendChild(p.photo ? cropEl(p.photo) : docImg(p.img));
+        f.appendChild(el("figcaption", "", gl(p.caption)));
+        g.appendChild(f);
+      });
+      return g;
     },
     /* Chloés vollständige Fotos (D5) */
     fulls(o) {

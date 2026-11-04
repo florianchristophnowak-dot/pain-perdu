@@ -3,7 +3,8 @@
    I = Invalides (Marcel), C = Chloé am Stand 6, F = Finale am Stand des Händlers, R = Abfragen, W = Schreibaufträge.
    Alle Spieltexte sind französisch und halten A2 (Drehbuch, Abschnitt 2): nur présent, passé composé, imparfait und futur proche;
    Fragen mit est-ce que oder Intonation; Aufgaben für beide mit vous, Schreibaufträge und Hilfen für eine Person mit tu.
-   Die Hilfe gibt an jeder Station die Figur, die dort nicht ermittelt (G.helpBy). Nur das Glossar ist französisch-deutsch. */
+   Die Hilfe gibt an jeder Station die Figur, die dort nicht ermittelt (G.helpBy). Nur das Glossar ist französisch-deutsch.
+   Fassung 1.3: freie Stationen und der freiwillige Nebenweg zum Petit Palais (X, nach dem Tipp der Assistentin am Pont). */
 window.GAME = (function () {
   const G = {};
 
@@ -29,7 +30,7 @@ window.GAME = (function () {
     lucien: { name: "Lucien", pt: T2 + "pt_lucien", initials: "Lu", color: "#7a5a3a" }
   };
   /* Wer an einer Station nicht ermittelt, gibt dort die Hilfe (Drehbuch, Abschnitt 2) */
-  G.helpBy = { orsay: "marie", pont: "lino", invalides: "marie", stand6: "lino", finale: "marie" };
+  G.helpBy = { orsay: "marie", pont: "lino", invalides: "marie", stand6: "lino", petitpalais: "marie", finale: "marie" };
   G.helpDefault = "marie";
   /* Wer in Teil 2 bei den Bouquinisten war, wird in O05q wiedererkannt */
   G.earlier = [{ save: "pg_save_v1", flag: "B_done", as: "t2_B" }];
@@ -174,6 +175,7 @@ window.GAME = (function () {
     programme: { emoji: "📋", name: "le programme", desc: "Les Images de Paris · Aujourd'hui · Pont Alexandre III : information · Esplanade des Invalides : livres et costumes · Marcel Blanchard : accessoires de théâtre, le matin · Chloé : photos, à partir de 14 h, stand 6" },
     photo_baguette: { emoji: "🥖", name: "la photo de la baguette", desc: "La baguette de Marcel aujourd'hui : le bout cassé et trois morceaux de ruban adhésif.", img: "doc_baguette" },
     photos_entieres: { emoji: "📁", name: "les photos entières", desc: "Les photos de Chloé : P17, P18 et P19. On voit aussi les bords.", render: "fulls", photos: ["P17", "P18", "P19"] },
+    carte_1900: { emoji: "🖼️", name: "la carte postale de 1900", desc: "Une carte postale du Petit Palais, gratuite : une vraie photo de 1900. Le pont Alexandre III pendant l'Exposition universelle, avec beaucoup de monde. Et sans boulanger.", img: "doc_1900" },
     fiche_chloe: { emoji: "📝", name: "la fiche de Chloé", desc: "Compagnie Marcel Blanchard · Série « Paris 1900 » · Séance photo en costumes : septembre 2025 · Photographe : Chloé · P17 Orsay · P18 pont Alexandre III · P19 Invalides — Vente du 12 octobre 2026 · Trois copies, photos des coulisses : P17, P18, P19 · 6 € la photo, total : 18 € · Acheteur : Victor Delmas" }
   };
 
@@ -241,6 +243,20 @@ window.GAME = (function () {
         { id: "dossier", label: "le dossier", x: 81.5, y: 58.5, w: 14, h: 13, actions: { regarder: [{ if: "C01_done", node: "Cd" }, { node: "C01" }] }, showIf: "C00_done", doneIf: "C01_done" }
       ]
     },
+    /* Fassung 1.3: freiwilliger Nebenweg nach dem Pont (Tipp der Assistentin, P04). Die Vitrine vergleicht ein echtes Foto von 1900
+       mit der Foto B; danach eine Postkarte als Andenken. Für das Finale braucht man nichts davon. */
+    petitpalais: {
+      name: "Le Petit Palais · « Paris en 1900 »", bg: "bg_petitpalais", free: true,
+      enter: [{ if: "X_done", node: "Xr" }, { if: "X_arr", node: null }, { node: "X00" }],
+      help: [{ if: "!X_done", key: "S_petitpalais" }],
+      labels: [{ x: 15, y: 27.5, text: "Paris en 1900", cls: "paint mid" }],
+      hotspots: [
+        { id: "vitrine", label: "la vitrine", x: 37, y: 38, w: 25, h: 40, actions: { regarder: [{ if: "X_done", node: "Xv" }, { node: "X02" }] }, showIf: "X_arr", doneIf: "X_done" },
+        { id: "panneau", label: "le panneau", x: 6, y: 22, w: 18, h: 40, actions: { lire: "X01" }, showIf: "X_arr", doneIf: "X01_done" },
+        { id: "appareil", label: "l'appareil photo", x: 66, y: 40, w: 12, h: 42, actions: { regarder: "Xa" }, showIf: "X_arr" },
+        { id: "fenetre", label: "la fenêtre", x: 83, y: 6, w: 16, h: 56, actions: { regarder: "Xf" }, showIf: "X_arr", lab: "r" }
+      ]
+    },
     finale: {
       name: "Musée d'Orsay · le stand du vendeur", bg: "bg_orsay", enter: [{ if: "finished", node: "Fr" }, { if: "W2_done", node: "F05" }, { if: "F04_done", node: "W2" }, { node: "F00" }],
       labels: [{ x: 46, y: 26.5, text: "Brocante du quai", cls: "paint big" }],
@@ -250,7 +266,7 @@ window.GAME = (function () {
     }
   };
   /* Station je Knoten (für „hier geht es weiter“ und die Lehrkraftansicht) */
-  G.homeScene = { O: "orsay", P: "pont", I: "invalides", C: "stand6", W1: "stand6", F: "finale", W2: "finale", R1: "orsay", R2: "invalides", R3: "stand6", R4: "finale" };
+  G.homeScene = { O: "orsay", P: "pont", I: "invalides", C: "stand6", X: "petitpalais", W1: "stand6", F: "finale", W2: "finale", R1: "orsay", R2: "invalides", R3: "stand6", R4: "finale" };
   G.startScene = "orsay";
   G.start = "O00";
 
@@ -266,11 +282,14 @@ window.GAME = (function () {
       '<rect x="64" y="28" width="16" height="7" rx="1" fill="#e2dccb" stroke="#b9b29b" stroke-width=".4"/>' +
       '<path d="M44 33 C 52 36, 58 34, 64 32" stroke="#c9bfa5" stroke-width=".7" stroke-dasharray="1.4 1" fill="none"/>' +
       '<path d="M30 36 C 30 42, 31 48, 31 54" stroke="#c9bfa5" stroke-width=".7" stroke-dasharray="1.4 1" fill="none"/>' +
-      '<text x="88" y="21" font-size="2.6" fill="#6f8ea0" font-style="italic">la Seine</text>',
+      '<text x="88" y="21" font-size="2.6" fill="#6f8ea0" font-style="italic">la Seine</text>' +
+      '<rect x="34.5" y="8.5" width="11" height="5" rx="1" fill="#e2dccb" stroke="#b9b29b" stroke-width=".4"/>' +   // Petit Palais (rechtes Ufer)
+      '<path d="M27.5 15.5 C 30 14.5, 32.5 13, 34.5 12" stroke="#c9bfa5" stroke-width=".7" stroke-dasharray="1.4 1" fill="none"/>',
     places: [
       { id: "orsay", label: "Musée d'Orsay · la brocante du quai", short: "Orsay", q: "L'album du vendeur", x: 72, y: 37, unlock: "always", done: ["R1_done"], hideIf: "W1_done" },
       { id: "pont", label: "Pont Alexandre III", short: "Pont Alexandre III", q: "Le même endroit ?", x: 30, y: 23, labelAbove: true, unlock: "R1_done", lockedMsg: [{ if: "O06_done", fr: "D'abord, réponds à Marie." }], done: ["P_done"] },
       { id: "invalides", label: "Les Invalides · l'esplanade", short: "Invalides", q: "Les accessoires de Marcel", x: 18, y: 56, unlock: "R1_done", lockedMsg: [{ if: "O06_done", fr: "D'abord, réponds à Marie." }], done: ["I_done"] },
+      { id: "petitpalais", label: "Le Petit Palais · « Paris en 1900 »", short: "Petit Palais (facultatif)", q: "De vraies photos de 1900", x: 40, y: 11, labelAbove: true, unlock: "X_open", hideUntil: "X_open", done: ["X_done"], optional: true },
       { id: "stand6", label: "Les Invalides · stand 6", short: "Stand 6", q: "Chloé, à 14 h", x: 42, y: 47, unlock: ["P_done", "I_done"], lockedMsg: "Pas encore. D'abord, le pont et les Invalides.", done: ["W1_done"] },
       { id: "finale", label: "Musée d'Orsay · le stand du vendeur", short: "Le stand du vendeur", q: "Rendez-vous à 14 h 45", x: 72, y: 37, unlock: "W1_done", hideUntil: "W1_done", done: ["F04_done"] }
     ]
@@ -499,8 +518,15 @@ window.GAME = (function () {
         { id: "baguette", label: "la baguette qui tombe", reply: lino("Ça, elle le raconte.") }
       ],
       wrong: lino("Pas encore."), success: lino("Elle raconte un souvenir. Et elle dit aussi ce qu'elle ne sait pas.") },
-    effects: { flag: "P_done" }, next: [{ if: "I_done", node: "LUNCH" }, { node: "MAP" }] };
-  N.Pr = { type: "lines", amb: true, lines: [L("assistante", "Chloé arrive à quatorze heures. Elle est toujours à l'heure. Moi, jamais.")], next: "RESUME" };
+    effects: { flag: "P_done" }, next: "P04" };
+  /* Fassung 1.3: Tipp für den freiwilligen Nebenweg zum Petit Palais */
+  N.P04 = { type: "lines", doneAt: true, lines: [
+    L("assistante", "Vous aimez 1900 ? Le Petit Palais est juste à côté. On l'a construit pour l'Exposition universelle de 1900. Aujourd'hui, il y a une petite exposition : « Paris en 1900 ». Et l'entrée est gratuite."),
+    lino("Gratuit ? J'adore 1900."),
+    marie("Ce n'est pas obligatoire. Mais là-bas, il y a peut-être de vraies photos de 1900.")
+  ], effects: { flag: "X_open" }, next: [{ if: "I_done", node: "LUNCH" }, { node: "MAP" }] };
+  N.Pr = { type: "lines", amb: true, lines: [L("assistante", "Chloé arrive à quatorze heures. Elle est toujours à l'heure. Moi, jamais."),
+    L("assistante", "Et le Petit Palais, c'est juste à côté.", { onlyIf: ["X_open", "!X_done"] })], next: "RESUME" };
   N.Px = { type: "lines", amb: true, lines: [
     L("assistante", "Un moment, s'il vous plaît !"),
     narr("Elle cherche une rue sur son plan."),
@@ -508,6 +534,46 @@ window.GAME = (function () {
   ], next: "RESUME" };
   N.Ppc = { type: "lines", amb: true, lines: [lino("Des cartes postales du pont. Sans boulanger.")], next: "RESUME" };
   N.Pp = { type: "lines", amb: true, lines: [marie("Les lampadaires, les colonnes, les statues : tout ça existait déjà en 1900.")], next: "RESUME" };
+
+  /* ===== Nebenweg: das Petit Palais (freiwillig, Lino ermittelt, Marie hilft) ===== */
+  N.X00 = { type: "cut", bg: "bg_petitpalais", lines: [
+    narr("Le Petit Palais. Un palais de 1900, avec un jardin et beaucoup d'or. Dans une salle, il y a une petite exposition : « Paris en 1900 »."),
+    lino("De vraies photos de 1900 ! Enfin."),
+    marie("Alors, regarde bien. C'est quoi, une vraie photo de 1900 ?")
+  ], effects: { flag: "X_arr" }, doneAt: true };   // danach frei: die Vitrine (X02, X03), dazu Panneau, Appareil photo und Fenster
+  N.X01 = { type: "doc", amb: true, title: "Le panneau de l'exposition", icon: "fiche", next: "RESUME",
+    doc: "Paris en 1900\nEn 1900, il y avait l'Exposition universelle à Paris. Pendant sept mois, cinquante millions de visiteurs sont venus. Pour l'exposition, on a construit le Grand Palais, le Petit Palais, le pont Alexandre III et la gare d'Orsay.\nLes photographes de 1900 travaillaient avec de grands appareils en bois. Les photos étaient brunes ou grises. Souvent, on les collait sur un carton.",
+    effects: { flag: "X01_done" } };
+  N.X02 = { type: "lines", lines: [
+    narr("Dans la vitrine, il y a une vraie photo de 1900 : le pont Alexandre III pendant l'Exposition universelle."),
+    lino("Le même pont que sur la photo B ! On compare ?")
+  ], next: "X03" };
+  N.X03 = { type: "task", title: "Deux photos du pont", help: "X03", diag: "D_X03", doneAt: true,
+    task: { kind: "cols", show: "pair",
+      pair: [{ img: "doc_1900", carton: true, caption: "La vraie photo de 1900 (Petit Palais)" }, { photo: "P18", caption: "La photo B de l'album" }],
+      intro: "Pour chaque phrase : c'est sur la vraie photo de 1900, sur la photo B ou sur les deux ?",
+      columns: [{ id: "vraie", label: "La vraie photo" }, { id: "b", label: "La photo B" }, { id: "deux", label: "Les deux" }],
+      cards: [
+        { id: "x1", label: "On voit le pont Alexandre III.", col: "deux" },
+        { id: "x2", label: "La photo est brune.", col: "deux", trap: lino("Regarde bien : les deux photos sont brunes.") },
+        { id: "x3", label: "Les gens portent des vêtements de 1900.", col: "deux", trap: marie("Sur la photo B aussi. Mais ce sont peut-être des costumes.") },
+        { id: "x4", label: "Il y a beaucoup de monde.", col: "vraie" },
+        { id: "x5", label: "Un boulanger pose avec une baguette.", col: "b" },
+        { id: "x6", label: "La photo est collée sur un carton.", col: "vraie" }
+      ],
+      wrong: marie("Pas encore. Compare les deux photos, phrase par phrase.") },
+    after: [
+      lino("Brune, avec des vêtements de 1900… Ça, on peut le faire aujourd'hui aussi."),
+      marie("Oui. Une vraie photo de 1900, ce n'est pas seulement une photo brune."),
+      narr("À la sortie, il y a des cartes postales de l'exposition. Elles sont gratuites."),
+      lino("Je prends la vraie photo de 1900. Pour M. Nowak."),
+      marie("Bon. Maintenant, on retourne à notre enquête.")
+    ],
+    effects: { item: "carte_1900", flag: "X_done" }, next: "MAP" };
+  N.Xv = { type: "lines", amb: true, lines: [marie("La vraie photo de 1900. Beaucoup de monde, et pas de boulanger.")], next: "RESUME" };
+  N.Xa = { type: "lines", amb: true, lines: [lino("Ça, c'est un vrai appareil photo de 1900. Il est en bois, et il est grand comme une valise !"), marie("Et il n'a pas d'écran. On ne voit pas tout de suite la photo.")], next: "RESUME" };
+  N.Xf = { type: "lines", amb: true, lines: [lino("D'ici, on voit le pont Alexandre III. Il a cent vingt-six ans, et il va très bien.")], next: "RESUME" };
+  N.Xr = { type: "lines", amb: true, lines: [lino("On a déjà notre vraie photo de 1900. On retourne à l'enquête ?")], next: "RESUME" };
 
   /* ===== 5 Marcel an den Invalides (Lino ermittelt, Marie hilft) ===== */
   /* Fassung 1.3: Ankunft, dann frei: Marcel (I00m bis I02) und der Tisch mit den Requisiten (I03p, I03) in beliebiger Reihenfolge.
@@ -808,6 +874,7 @@ window.GAME = (function () {
   N.F05 = { type: "cut", bg: "bg_orsay", lines: [
     L("chloe", "Pour vous dire merci, je fais une vraie photo de la classe. Avec les costumes, si vous voulez."),
     L("nowak", "Une photo de la classe, pour l'école ? Ça, c'est un vrai souvenir."),
+    L("lino", "Et pour l'école, j'ai aussi une vraie photo de 1900. Une carte postale du Petit Palais. Gratuite !", { onlyIf: "X_done" }),
     L("kevin", "Et Lucien, il est où ?"),
     lino("En 1900, peut-être."),
     L("nowak", "Vingt, vingt et un, vingt-deux… vingt-trois ?"),
@@ -828,7 +895,7 @@ window.GAME = (function () {
     task: { kind: "write", min: 40, rows: 8, check: "rapport",
       intro: "Pour le journal de la classe, raconte l'affaire en trois ou quatre phrases (au moins 40 mots). Utilise l'imparfait et le passé composé.",
       starters: ["Le vendeur disait...", "Mais...", "Finalement..."],
-      topic: ["vendeur", "album", "photo", "chloe", "1900", "2025", "bouquinist", "nowak", "professeur", "baguette", "marcel", "lucien", "legende", "fiche", "copie", "bord"], topicMin: 3,
+      topic: ["vendeur", "album", "photo", "chloe", "1900", "2025", "bouquinist", "nowak", "professeur", "baguette", "marcel", "lucien", "legende", "fiche", "copie", "bord", "palais"], topicMin: 3,
       topicMsg: "Raconte l'affaire : le vendeur, les photos, Chloé.",
       msgs: {
         imparfait: "Il manque l'imparfait : comment c'était ?",
@@ -890,6 +957,7 @@ window.GAME = (function () {
     S_pont1: ["On a la photo B. Et ici, il y a le vrai pont.", { fr: "Regarde ce qui brille.", action: "material" }, "Compare la photo B avec le pont.", "Clique sur le pont. Puis : regarder."],
     S_pont2: ["Le pain est un accessoire de théâtre. Qui peut nous aider ?", { fr: "Regarde ce qui brille.", action: "material" }, "Au point d'information, il y a quelqu'un. Tu la connais, non ?", "Clique sur l'assistante. Puis : parler."],
     S_invalides: ["Qui connaît les accessoires de la photo B ? Et qu'est-ce qu'on peut comparer ?", { fr: "Regarde ce qui brille.", action: "material" }, "Parle avec Marcel. Et regarde les baguettes sur la table.", "Clique sur Marcel : parler. Et sur les baguettes : regarder."],
+    S_petitpalais: ["Une exposition sur 1900. Qu'est-ce qui nous aide pour l'album ?", { fr: "Regarde ce qui brille.", action: "material" }, "Dans la vitrine, il y a une vraie photo de 1900. Compare-la avec la photo B.", "Clique sur la vitrine. Puis : regarder."],
     S_stand6: ["Chloé a des photos. Et elle sait des choses.", { fr: "Regarde ce qui brille.", action: "material" }, "Regarde le dossier de Chloé. Et parle avec elle.", "Clique sur le dossier : regarder. Et sur Chloé : parler."],
     O02: ["Regarde d'abord la photo A. Regarde le monsieur.", { fr: "Regarde son visage et ses mains.", action: "material" }, "Il y a quelque chose sous son nez. Et à son poignet.", "Touche son visage. Et touche sa montre, à son poignet."],
     O03: ["Il répond seulement à ta question. Essaie avec quand ou quel.", { fr: "Regarde les mots en couleur dans les questions.", action: "material" }, "Par exemple : Quand est-ce qu'on a pris les photos ?", "Il dit seulement oui. Alors, on demande : Quand ? Quelles photos ?"],
@@ -899,6 +967,7 @@ window.GAME = (function () {
     P01: ["Regarde le bout du pain.", { fr: "Zoome sur la baguette.", action: "material" }, "Il y a quelque chose au bout, sur le pain et à la main.", "Le bout cassé, le ruban adhésif et le gant blanc."],
     P03: ["Écoute les mots : tout à coup, ramassée, recommencé.", { fr: "Écoute encore l'assistante.", action: "replay" }, { fr: "Voici ses mots. Cherche : costumes, tombée, ramassée, recommencé.", action: "transcript" }, "D'abord les costumes. Puis la baguette tombe. Marcel la ramasse. À la fin, Chloé recommence la photo."],
     P03b: ["Écoute la fin.", { fr: "Écoute encore l'assistante.", action: "replay" }, { fr: "Voici ses mots. Lis les deux dernières phrases.", action: "transcript" }, "Elle dit : la date exacte ? Je ne sais pas."],
+    X03: ["Regarde d'abord la vraie photo, puis la photo B.", "Le pont, la couleur, les vêtements : c'est sur une photo ou sur les deux ?", "Les deux photos sont brunes, et les gens portent des vêtements de 1900. Le boulanger est seulement sur la photo B.", "Les deux : le pont, brune, les vêtements. La vraie photo : beaucoup de monde, le carton. La photo B : le boulanger."],
     I01: ["Qu'est-ce que Marcel a dit ? Pas ce que tu penses.", { fr: "Relis les mots de Marcel.", action: "material" }, "Marcel parle de Lucien et de la séance photo.", "Il a dit : Lucien jouait le voyageur. Et : l'année dernière, il a fait une séance photo avec nous."],
     I02: ["Écoute bien : quand, pourquoi, comment.", { fr: "Écoute encore Marcel.", action: "replay" }, { fr: "Voici ses mots. Cherche : septembre, tombée, ruban adhésif.", action: "transcript" }, "En septembre, l'année dernière. La baguette est tombée. Il a mis trois morceaux de ruban adhésif."],
     Itemps: ["M. Nowak dit toujours : c'est le décor ou l'action ?", "Le décor, c'est comment c'était. L'action, c'est ce qui s'est passé une fois.", "Tout à coup : c'est une action.", "Il faisait le boulanger, il tenait une baguette : c'est le décor, alors l'imparfait. Elle est tombée, il a mis le ruban : ce sont des actions, alors le passé composé."],
@@ -918,6 +987,7 @@ window.GAME = (function () {
   G.diag = {
     S_orsay1: "Orsay frei erkunden: das Album finden (Szenenhilfe)", S_orsay2: "Orsay frei erkunden: Händler und Fiche (Szenenhilfe)",
     S_pont1: "Pont frei erkunden: die Brücke (Szenenhilfe)", S_pont2: "Pont frei erkunden: die Assistentin (Szenenhilfe)",
+    S_petitpalais: "Petit Palais (freiwillig) frei erkunden: die Vitrine (Szenenhilfe)", D_X03: "Echtes Foto von 1900 und Foto B vergleichen: braun und Kleidung beweisen nichts (freiwillig)",
     S_invalides: "Invalides frei erkunden: Marcel und die Baguettes (Szenenhilfe)", S_stand6: "Stand 6 frei erkunden: Dossier und Chloé (Szenenhilfe)",
     D_O02: "Gesicht und Uhr auf dem Albumfoto", D_O03: "W-Fragen statt Ja-Nein-Fragen", D_O04: "Versprechen über die Fotos (nicht über das Buch)",
     D_O06: "Dokument sagt ja, nein, nichts", D_R1: "Abfrage: Eröffnung des Museums",
@@ -937,11 +1007,13 @@ window.GAME = (function () {
     ["O04", "On a pris les photos en 1900 · Ce sont des photos originales, pas des copies"],
     ["O06", "oui: Le bâtiment existait en 1900 · non: déjà un musée / légende juste · rien: photo A en 2025 / toutes fausses"],
     ["R1", "1986 (Falle 1900)"],
-    ["Pont (frei)", "Erst die Brücke (P00 bis P01), dann die Assistentin (P02 bis P03b)"],
+    ["Pont (frei)", "Erst die Brücke (P00 bis P01), dann die Assistentin (P02 bis P03b); danach der Tipp zum Petit Palais (P04)"],
     ["P00", "Lampadaires, colonnes, statues, jeweils auf beiden Bildern antippen; Boot und Fahrrad nur heute"],
     ["P01", "Bout cassé, ruban adhésif, gant blanc; freiwillig: der Stativfuß am linken Rand (setzt pied_vu)"],
     ["P02", "Beide Fragen: Marcel (Invalides), Chloé (14 h, stand 6)"],
     ["P03", "costumes → tombe → ramasse → recommence"], ["P03b", "la date exacte des photos"],
+    ["Petit Palais (freiwillig)", "Nach dem Tipp P04 auf der Karte; die Vitrine (X02, X03), das Panneau (X01) liest man freiwillig; danach die Postkarte (carte_1900)"],
+    ["X03", "Beide: pont, brune, vêtements de 1900 · echtes Foto: beaucoup de monde, carton · Foto B: boulanger avec une baguette"],
     ["Invalides (frei)", "Marcel (I00m bis I02) und die Baguettes auf dem Tisch (I03p, I03) in beliebiger Reihenfolge; dann die Bouquiniste (I05)"],
     ["I01", "Lucien était un acteur sur ces photos · La séance photo était l'année dernière"],
     ["I02", "en septembre, l'année dernière · La baguette est tombée · avec trois morceaux de ruban adhésif"],
@@ -958,7 +1030,7 @@ window.GAME = (function () {
     ["F04", "Album ancien · Copies de photos prises en 2025 · Série en costumes « Paris 1900 »"],
     ["W2", "Mindestens 40 Wörter, ein imparfait, ein passé composé, drei Themenwörter"]
   ];
-  G.profUnlock = ["O01_done", "O02_done", "O03_done", "O04_done", "O06_done", "R1_done", "P_arr", "P01_done", "pied_vu", "p02_marcel", "p02_chloe", "P_done", "I_arr", "I02_done", "I03_done", "I05_done", "R2_done", "I_done", "C00_done", "C01_done", "C02_done", "W1_done"];
+  G.profUnlock = ["O01_done", "O02_done", "O03_done", "O04_done", "O06_done", "R1_done", "P_arr", "P01_done", "pied_vu", "p02_marcel", "p02_chloe", "P_done", "X_open", "X_arr", "X01_done", "X_done", "I_arr", "I02_done", "I03_done", "I05_done", "R2_done", "I_done", "C00_done", "C01_done", "C02_done", "W1_done"];
 
   /* ---------- Ältere Spielstände (bis Fassung 1.2): Die Stationen waren Ketten. Wer dort schon weiter war, bekommt die Flags,
      die es seit Fassung 1.3 dafür gibt; sonst fehlten Hotspots, oder ein Abschnitt käme noch einmal. game.js ruft das beim Laden. */
@@ -970,6 +1042,7 @@ window.GAME = (function () {
     // Pont: P00 → P00t → P01 → P02 … P03b (die Ankunft Pa gab es noch nicht)
     if (at.pont || f.P_done) f.P_arr = true;
     if (f.P_done || was("pont", ["P01b", "P02", "P02b", "P02c", "P03a", "P03", "P03b"])) f.P01_done = true;
+    if (f.P_done) f.X_open = true;   // den Tipp zum Petit Palais (P04) gab es noch nicht: der Nebenweg steht trotzdem auf der Karte
     // Invalides: I00 (mit Marcels Begrüßung) → I01 … I02 → I03 → I05 → R2
     if ((at.invalides && at.invalides !== "I00") || f.I02_done || f.I03_done || f.I_done) f.I_arr = true;
     // Stand 6: C00 → C01 → C02d … C02 → W1
@@ -1012,7 +1085,13 @@ window.GAME = (function () {
     ["le pansement, les pansements", "das Pflaster"],
     // Fassung 1.3: Wörter der freien Stationen
     ["l'horloge (f)", "die (große) Uhr, Bahnhofsuhr"],
-    ["la malle", "die Reisetruhe"]
+    ["la malle", "die Reisetruhe"],
+    // Fassung 1.3: Nebenweg Petit Palais
+    ["l'Exposition universelle (f)", "die Weltausstellung"],
+    ["la vitrine", "die Vitrine"],
+    ["le carton", "der Karton, die Pappe"],
+    ["gratuit, gratuite", "kostenlos"],
+    ["le photographe, la photographe", "der Fotograf, die Fotografin"]
   ];
 
   return G;

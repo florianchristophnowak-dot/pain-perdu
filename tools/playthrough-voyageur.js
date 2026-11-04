@@ -225,9 +225,33 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await pick(['la date exacte']); await cont();
   expect((await S()).flags.P_done && await page.locator('.modal.map').isVisible(), 'Pont erledigt, Karte offen');
 
+  /* Fassung 1.3: der freiwillige Nebenweg zum Petit Palais (Tipp der Assistentin, P04) */
+  log('== Nebenweg Petit Palais (freiwillig, Lino ermittelt, Marie hilft)');
+  expect((await S()).flags.X_open && await page.locator('.place', { hasText: 'Petit Palais' }).count() === 1, 'P04: Tipp der Assistentin, das Petit Palais steht auf der Karte');
+  await place('Petit Palais');
+  expect((await S()).mouse === 0, 'Maus wechselt bei jeder Fahrt: im Petit Palais wieder Anna');
+  expect(await free('petitpalais') && (await S()).flags.X_arr, 'Petit Palais: Ankunft, dann frei');
+  await page.locator('#dialogue .btn.aide').click(); await page.waitForTimeout(150);
+  expect((await page.locator('#dialogue .help-bubble').getAttribute('data-who')) === 'marie', 'Szenenhilfe im Petit Palais: Marie');
+  await hs('la fenêtre', 'Regarder');
+  expect((await read()).includes('cent vingt-six ans'), 'Petit Palais: Bemerkung am Fenster');
+  await hs('le panneau', 'Lire');
+  expect((await page.locator('#modal-body').innerText()).includes('Exposition universelle'), 'X01: das Panneau erklärt die Exposition universelle'); await cont();
+  expect(await done('le panneau') === 1 && await free('petitpalais'), 'X01: Häkchen am Panneau, die Station bleibt frei');
+  await hs('la vitrine', 'Regarder'); await cont();
+  expect(await page.locator('#modal-body .pair .pfig').count() === 2 && await page.locator('#modal-body .pair .pfig.carton').count() === 1, 'X03: zwei Fotos nebeneinander, das echte auf einem Karton');
+  await page.screenshot({ path: SHOT + '06b_petitpalais.png' });
+  const x03 = { 'On voit le pont': 'Les deux', 'La photo est brune': 'La vraie photo', 'vêtements de 1900': 'Les deux', 'beaucoup de monde': 'La vraie photo', 'Un boulanger': 'La photo B', 'sur un carton': 'La vraie photo' };
+  for (const [l, c] of Object.entries(x03)) await selectRow('.crow', l, c);
+  await btn('Valider');
+  expect(/Juste : 5 sur 6/.test(await feedback()) && (await feedback()).includes('les deux photos sont brunes'), 'X03 Zählung und Falle « brune »: ' + (await feedback()).slice(0, 120));
+  await selectRow('.crow', 'La photo est brune', 'Les deux'); await btn('Valider');
+  expect((await read()).includes('pas seulement une photo brune'), 'X03: braun allein beweist nichts');
+  expect((await S()).flags.X_done && (await S()).inv.includes('carte_1900') && await page.locator('.modal.map').isVisible(), 'X03 gelöst: Postkarte im Inventar, danach die Karte');
+
   log('== Invalides (Lino ermittelt, Marie hilft)');
   await place('Invalides');
-  expect((await S()).mouse === 0, 'Maus wechselt zurück zu Anna');
+  expect((await S()).mouse === 1, 'Maus wechselt: an den Invalides Ben (nach dem Nebenweg)');
   expect(await free('invalides') && (await S()).flags.I_arr, 'Invalides: Ankunft, dann frei');
   await hs('la bouquiniste', 'Parler');
   expect((await txt()).includes("Cherchez d'abord"), 'Invalides: die Bouquiniste wartet auf Ergebnisse'); await cont();
@@ -345,7 +369,8 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   { let shot = false;   // Schlussbild nach dem Bericht
     const seen = await read(40, async t => { if (!shot && t.includes('même en brun')) { shot = true; await page.screenshot({ path: SHOT + '12_photo_classe.png' }); } });
     expect(shot, 'F05 Klassenfoto mit Tafel nach dem Bericht');
-    expect(seen.includes('Et Lucien, il est où') && seen.includes('vingt-trois') && seen.includes('vrais souvenirs') && seen.includes('Je sais même où'), 'F05: Lucien, Bernd, das Echo auf Delmas und der Weg zum Bahnhof'); }
+    expect(seen.includes('Et Lucien, il est où') && seen.includes('vingt-trois') && seen.includes('vrais souvenirs') && seen.includes('Je sais même où'), 'F05: Lucien, Bernd, das Echo auf Delmas und der Weg zum Bahnhof');
+    expect(seen.includes('carte postale du Petit Palais'), 'F05: Lino denkt an seine Postkarte aus dem Petit Palais (nach dem Nebenweg)'); }
   expect(await page.locator('.modal.end').isVisible(), 'Endbildschirm');
   await page.screenshot({ path: SHOT + '13_end.png' });
   const st = await S();

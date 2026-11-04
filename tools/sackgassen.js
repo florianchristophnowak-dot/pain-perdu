@@ -280,6 +280,14 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     'Teil 3: alter Spielstand bei P02: Ankunft und Brücke nachgetragen, die Hotspots sind da');
   await reloadWith({ flags: { O01_done: true, O02_done: true, O03_done: true, O04_done: true, O06_done: true, R1_done: true, I02_done: true }, at: { invalides: 'I03' }, resume: 'I03', scene: 'invalides' });
   check(await page.evaluate(() => PP.S.flags.I_arr) && (await page.locator('.hotspot', { hasText: 'Marcel' }).count()) === 1, 'Teil 3: alter Spielstand bei I03: Ankunft nachgetragen, Marcel ist da');
+  /* Nebenweg Petit Palais: erst nach dem Tipp am Pont (P04) auf der Karte; ältere Stände mit erledigtem Pont bekommen ihn trotzdem */
+  const T3a = { O01_done: true, O02_done: true, O03_done: true, O04_done: true, O06_done: true, R1_done: true };
+  await reloadWith({ flags: Object.assign({ P_arr: true, P01_done: true }, T3a), at: {}, resume: null, scene: 'pont' });
+  await page.evaluate(() => PP.openMap()); await page.waitForTimeout(300);
+  check(!(await page.locator('.modal.map g.place', { hasText: 'Petit Palais' }).count()), 'Teil 3: vor dem Tipp der Assistentin fehlt das Petit Palais auf der Karte');
+  await reloadWith({ flags: Object.assign({ P_done: true }, T3a), at: {}, resume: null, scene: 'pont' });
+  await page.evaluate(() => PP.openMap()); await page.waitForTimeout(300);
+  check(await page.evaluate(() => PP.S.flags.X_open) && (await page.locator('.modal.map g.place', { hasText: 'Petit Palais' }).count()) === 1, 'Teil 3: alter Spielstand mit erledigtem Pont: das Petit Palais steht trotzdem auf der Karte');
 
   check(!errors.length, 'keine Skriptfehler ' + errors.join(' | '));
   console.log(fails ? fails + ' Prüfung(en) fehlgeschlagen' : 'Alle Prüfungen bestanden');
