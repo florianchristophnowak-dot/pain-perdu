@@ -75,7 +75,8 @@ window.GAME = (function () {
       locked: "Pas encore. On ne sait pas encore où aller.",
       finale: "Pas maintenant ! D'abord, on finit l'enquête.",
       afterHelp: "Bien. La prochaine fois, sans moi !",
-      helpLater: "Essaie encore une fois. Après, je t'aide."
+      helpLater: "Essaie encore une fois. Après, je t'aide.",
+      first: "D'abord, on finit ça."   // freie Station: ein Abschnitt läuft noch
     },
     /* gegen Raten: Pause nach jedem dritten Fehlversuch, Rückmeldung „wie viele richtig“, Tempobremse */
     guess: {

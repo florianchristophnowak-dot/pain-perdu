@@ -124,6 +124,14 @@ h1, h2, h3 { font-family: var(--serif); margin: 0 0 .5rem; }
 .hotspot { position: absolute; background: rgba(255,255,255,.06); border: 2px dashed rgba(255,255,255,.55); border-radius: 8px; color: #fff; padding: 0; display: flex; align-items: flex-end; justify-content: center; transition: background .15s, border-color .15s; }
 .hotspot:hover { background: rgba(255,220,120,.18); border-color: #ffd87a; }
 .hotspot > span { background: rgba(0,0,0,.6); font-size: .85rem; padding: .15rem .45rem; border-radius: 6px; margin-bottom: .25rem; white-space: nowrap; }
+/* Freie Stationen (Teil 2 und 3): Erledigtes trägt ein Häkchen, nach der Szenenhilfe (Stufe 2) leuchten die offenen Hotspots */
+.hotspot.done { border-style: solid; border-color: rgba(255,255,255,.4); }
+.hotspot.done > span { opacity: .8; }
+.hotspot.done::after { content: "✓"; position: absolute; top: 3px; right: 3px; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: #3f7d4e; color: #fff; font-size: .8rem; font-weight: 700; line-height: 1.3rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,.45); pointer-events: none; }
+.hotspot.hl { border: 3px solid #ffd87a; background: rgba(255,220,120,.22); box-shadow: 0 0 0 3px rgba(255,216,122,.35), 0 0 18px rgba(255,216,122,.6); animation: hotpulse 1.4s ease-in-out infinite; }
+@keyframes hotpulse { 50% { background: rgba(255,220,120,.4); box-shadow: 0 0 0 5px rgba(255,216,122,.55), 0 0 26px rgba(255,216,122,.85); } }
+@media (prefers-reduced-motion: reduce) { .hotspot.hl { animation: none; } }
+.hotspot.lab-r { justify-content: flex-end; } .hotspot.lab-l { justify-content: flex-start; }   /* schmale Hotspots am Bildrand: Beschriftung ragt nach innen */
 .verbs { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: .35rem; flex-wrap: nowrap; justify-content: center; z-index: 5; background: rgba(28,22,18,.88); padding: .4rem; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.45); border: 1px solid rgba(241,194,125,.35); }
 .btn.verb { display: flex; flex-direction: column; align-items: center; gap: .2rem; width: 74px; padding: .45rem .2rem .35rem; background: var(--panel); border-color: #d8c7a4; border-radius: 10px; font-size: .78rem; line-height: 1; color: var(--ink); }
 .btn.verb .vicon { width: 30px; height: 30px; color: var(--accent); }
@@ -142,6 +150,9 @@ h1, h2, h3 { font-family: var(--serif); margin: 0 0 .5rem; }
 .pt { width: 56px; height: 56px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #fff; font-weight: 700; background-size: cover; background-position: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
 .choices { margin-top: .6rem; }
 .help-row { display: flex; justify-content: flex-end; margin: .4rem 0; }
+.dialogue.idle:not(.active) .help-row { margin: 0; }   /* Szenenhilfe im leeren Dialogfeld; die Blase geht durch Antippen zu */
+.dialogue.idle .help-bubble { position: relative; padding-right: 2rem; cursor: pointer; }
+.dialogue.idle .help-bubble::after { content: "×"; position: absolute; top: .15rem; right: .55rem; font-size: 1.25rem; line-height: 1; opacity: .55; }
 .marie-bubble { display: flex; gap: .6rem; background: #fde9d6; border: 1px solid #f0b98f; border-radius: 10px; padding: .6rem .8rem; margin: .5rem 0; }
 .marie-bubble .who { font-weight: 700; color: var(--accent); font-size: .85rem; }
 
@@ -433,6 +444,10 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
   .stage { box-shadow: none; }
   .dialogue { position: absolute; left: 1rem; right: 1rem; bottom: .8rem; z-index: 8; margin: 0; max-height: 66%; overflow-y: auto; overscroll-behavior: contain; padding: .5rem .8rem; background: rgba(246,239,226,.97); }
   .dialogue:not(.active) { display: none; }
+  /* Szenenhilfe im leeren Dialogfeld: nur der Knopf (und die Blase) unten rechts, das Bild darunter bleibt anklickbar */
+  .dialogue.idle:not(.active) { display: block; left: auto; max-width: min(60%, 26rem); min-height: 0; padding: 0; background: none; box-shadow: none; pointer-events: none; overflow: visible; }
+  .dialogue.idle:not(.active) .btn, .dialogue.idle:not(.active) .help-bubble { pointer-events: auto; }
+  .dialogue.idle:not(.active) .help-bubble { margin: .3rem 0 0; }
   .dialogue .line { gap: .6rem; }
   .pt { width: 40px; height: 40px; }
   .line .text { font-size: 1rem; line-height: 1.35; }
