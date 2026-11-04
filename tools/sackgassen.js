@@ -182,6 +182,14 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
   await cont('Continuer', 2);
   check(await node() === 'R1', 'Teil 3: nach dem Nachspann von O06 kommt R1, O06 beginnt nicht neu (' + await node() + ')');
 
+  /* Teil 3, Fassung 1.2: P01b, R3, F03b und R4 gibt es nicht mehr. Ältere Spielstände, die dort stehen, laufen weiter */
+  for (const [id, scene, clicks, next] of [['P01b', 'pont', 1, 'P02'], ['R3', 'stand6', 1, 'W1'], ['F03b', 'finale', 4, 'F04l'], ['R4', 'finale', 1, 'W2']]) {
+    await page.evaluate(() => { PP.S.resume = null; PP.save(); });
+    await setup(['C02_done', 'F_started', 'F03_done'], scene, id);
+    await cont('Continuer', clicks);
+    check(await node() === next, 'Teil 3: alter Spielstand bei ' + id + ' geht weiter zu ' + next + ' (' + await node() + ')');
+  }
+
   check(!errors.length, 'keine Skriptfehler ' + errors.join(' | '));
   console.log(fails ? fails + ' Prüfung(en) fehlgeschlagen' : 'Alle Prüfungen bestanden');
   await browser.close();

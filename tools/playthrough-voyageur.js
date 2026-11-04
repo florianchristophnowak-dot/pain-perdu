@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 /* Automatischer Testdurchlauf durch Teil 3 « Le voyageur de 1900 »: ganzer Kernpfad mit zwei Spielenden, dazu die freiwilligen
-   Stellen (Stativfuß, Tempusübung), einige Fehlversuche (Fallen, « Juste : n sur m », Pflichtbeleg), die Tore R1 bis R4 und
+   Stellen (Stativfuß, Tempusübung), einige Fehlversuche (Fallen, « Juste : n sur m », Pflichtbeleg), die Tore R1 und R2 und
    danach Bildschirmfotos auf dem Handy (hoch und quer).
    Voraussetzungen: Node, das Paket playwright und ein lokaler Server im Hauptordner, z. B. python3 -m http.server 8765
    Aufruf: node tools/playthrough-voyageur.js   (Umgebung: URL=..., SHOT_DIR=..., CHROMIUM=Pfad zu Chromium, optional) */
@@ -23,6 +23,18 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   const modalOpen = () => page.locator('#modal').isVisible();
   const scope = async () => (await modalOpen()) ? '#modal-body ' : '#dialogue ';
   async function txt() { return (await page.locator((await scope()).trim()).innerText()).replace(/\s+/g, ' ').slice(0, 260); }
+  /* Continuer klicken und dabei alles mitlesen, was erscheint (bis ein Fenster ohne Continuer oder der Endbildschirm kommt) */
+  async function read(max = 40, onStep) {
+    let seen = '';
+    for (let i = 0; i < max; i++) {
+      const t = (await page.locator((await scope()).trim()).innerText()).replace(/\s+/g, ' ');
+      seen += ' ' + t; if (onStep) await onStep(t);
+      const loc = page.locator((await scope()) + 'button', { hasText: 'Continuer' }).filter({ visible: true });
+      if (!(await loc.count()) || !(await loc.first().isEnabled())) break;
+      await loc.first().click(); await page.waitForTimeout(110);
+    }
+    return seen;
+  }
   async function btn(text, opts = {}) {
     const loc = page.locator((await scope()) + 'button', { hasText: text }).filter({ visible: true });
     if (!(await loc.count())) throw new Error('no button: ' + text + ' · ' + (await txt()));
@@ -98,7 +110,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await loupeTap(...toSlot('P18', 52, 26));
   expect((await feedback()).includes('ruban adhésif ? Bizarre'), 'O02 Baguette auf B: nur eine Bemerkung');
   await loupeTap(...toSlot('P17', 43, 26.5));
-  expect((await feedback()).includes('notre guide') && (await status()).includes('1 sur 2'), 'O02 Gesicht gefunden: ' + await status());
+  expect((await feedback()).includes("On regarde d'abord") && (await status()).includes('1 sur 2'), 'O02 Gesicht gefunden, Lino urteilt nicht mehr vorschnell: ' + await status());
   expect((await page.locator('#modal-body .help-bubble, #modal-body .btn.aide').first().getAttribute('data-who')) === 'marie', 'O02 Hilfe von Marie (Lino ermittelt)');
   await loupeTap(...toSlot('P17', 49, 51.5));
   await cont();
@@ -116,7 +128,9 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   { const f = await feedback(); expect(/Juste : 1 sur 2/.test(f) && f.includes('pas les photos'), 'O04 Zählung und Falle « couverture »: ' + f.slice(0, 100)); }
   await pick(['On a pris les photos en 1900', 'photos originales, pas des copies']);
   await btn('Continuer');
-  expect((await page.locator('#dialogue').innerText()).includes('parapluie rouge'), 'O05 Bouquiniste erkennt die beiden aus Teil 2');
+  { const seen = await read();   // O05: M. Nowak will kaufen, O05q: die Bouquiniste zweifelt, dann das Programm
+    expect(seen.includes('vous vérifiez pour moi') && seen.includes("l'argent de la visite d'hier") && seen.includes('Il voyage beaucoup'), 'O05 M. Nowak will das Album mit dem Geld der Klasse kaufen und schickt die beiden los');
+    expect(seen.includes('parapluie rouge'), 'O05q Bouquiniste erkennt die beiden aus Teil 2'); }
   await cont();
   expect((await S()).inv.includes('programme'), 'O05 Programm im Inventar');
   const o6 = { 'existait en 1900': 'Le document dit oui', 'déjà un musée': 'Le document dit non', 'La légende de la photo A': 'Le document dit non', 'photo A en 2025': 'Le document dit non', 'Toutes les photos': 'Le document ne dit rien' };
@@ -125,6 +139,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   { const f = await feedback(); expect(/Juste : 4 sur 5/.test(f) && f.includes('Pas encore la date'), 'O06 Zählung und Falle: ' + f.slice(0, 120)); }
   await selectRow('.crow', 'photo A en 2025', 'Le document ne dit rien'); await btn('Valider'); await cont();
   expect((await S()).flags.O06_done, 'O06 erledigt');
+  expect((await txt()).includes('Kevin dit'), 'R1: M. Nowak fragt per SMS, was Kevin behauptet');
   await recall('1900'); expect((await feedback()).includes('prenaient le train'), 'R1 Falle « 1900 »');
   await recall('en 1986'); await cont();
   expect((await S()).flags.R1_done && await page.locator('.modal.map').isVisible(), 'R1 gelöst, Karte offen');
@@ -153,8 +168,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.screenshot({ path: SHOT + '07_loupe_b.png' });
   await loupeTap(...toCrop('P18', 59.3, 28));
   await cont();
-  await pick(['Marcel a volé']); expect((await feedback()).includes('preuve de vol'), 'P01b Falle « volé »');
-  await pick(['accessoire de théâtre']); await cont();
+  expect((await S()).resume === 'P02', 'nach P01 direkt zur Assistentin, ohne Auswahlfrage P01b (' + (await S()).resume + ')');
   await btn('Un train pour 1900'); await cont(); await btn('La personne qui a pris la photo'); await cont();
   expect((await page.locator('#dialogue').innerText()).includes('connaît cette baguette'), 'P02 die andere Frage folgt');
   await btn('connaît cette baguette'); await cont();
@@ -181,9 +195,12 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await tapIn('.compare .lz', 1, 28, 50);
   expect((await feedback()).includes("C'est sa baguette"), 'I03 gelöst');
   await cont();
+  await btn('Tout est faux'); await cont();
+  await btn('La légende de la photo A est fausse'); await cont();
+  expect((await txt()).includes('La bouquiniste') && (await txt()).includes('Qui a pris ces photos'), 'R2: die Bouquiniste fragt nach der Fotografin');
   /* R2 aufschieben: das Tor meldet sich im leeren Dialogfeld; dazwischen die freiwillige Tempusübung am Tisch */
   await btn('Revenir plus tard'); await cont(); await page.waitForTimeout(700);
-  expect(await page.locator('#dialogue.pending button', { hasText: 'Répondre' }).isVisible(), 'R2 wartet im Dialogfeld');
+  expect(await page.locator('#dialogue.pending button', { hasText: 'Répondre' }).isVisible() && (await page.locator('#dialogue').innerText()).includes('photographe'), 'R2 wartet im Dialogfeld (die Bouquiniste)');
   await page.locator('.hotspot', { hasText: 'la table' }).click(); await page.waitForTimeout(120); await page.locator('.verbs button').first().click(); await page.waitForTimeout(250);
   const ts = page.locator('#modal-body .gaptext select');
   for (const [i, v] of [[0, 'faisait'], [1, 'tenait'], [2, 'est tombée'], [3, 'a mis']]) await ts.nth(i).selectOption({ label: v });
@@ -193,8 +210,6 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await recall('Marcel', '14 h'); expect((await feedback()).includes('Marcel est sur la photo B'), 'R2 Falle « Marcel »');
   await recall('Chloé', '14 h 45'); expect((await feedback()).includes('plus tôt'), 'R2 Falle « 14 h 45 »');
   await recall('Chloé', 'à 14 h'); await cont();
-  await btn('Tout est faux'); await cont();
-  await btn('La légende de la photo A est fausse'); await cont();
   expect((await S()).flags.I_done && (await S()).scene === 'stand6', 'Invalides erledigt, Mittag, weiter zu Chloé');
 
   log('== Stand 6: Chloé (Marie ermittelt, Lino hilft)');
@@ -218,9 +233,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   for (const [l, o] of [['septembre 2025', 'la date des photos'], ['Paris 1900', 'le titre de la série'], ['180 €', 'le prix des trois copies'], ['18 €', "le prix de l'album"]]) await selectRow('.slot', l === '18 €' ? /^18 €/ : l, o);
   await btn('Valider'); expect(/Juste : 2 sur 4/.test(await feedback()), 'C02 Zählung');
   await selectRow('.slot', '180 €', "le prix de l'album"); await selectRow('.slot', /^18 €/, 'le prix des trois copies'); await btn('Valider'); await cont();
-  await recall('1900', 'la date'); { const f = await feedback(); expect(f.includes('fiche du vendeur'), 'R3 Falle « 1900 »: ' + f.slice(0, 90)); }
-  await recall('septembre 2025', 'la date'); expect((await feedback()).includes("l'erreur du vendeur"), 'R3 Falle « la date »');
-  await recall('en septembre 2025', 'le titre de la série'); await cont();
+  expect((await txt()).includes('Un message à M. Nowak'), 'nach C02 direkt die Nachricht an M. Nowak (W1 fragt Datum und Titel, R3 entfällt)');
   await write('Chloé a pris les photos.'); expect((await feedback()).includes('Encore'), 'W1 zu kurz');
   await write("Chloé a pris les photos en septembre, avec Marcel et Lucien. « Paris 1900 », c'est le titre de la série. Ce n'est pas une date. Nous avons les photos entières et la fiche de Chloé.");
   expect((await feedback()).includes('Quelle année'), 'W1 Rückfrage « Quelle année ? »');
@@ -242,25 +255,26 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await proof(1, 'les photos entières', 'Ce sont les mêmes photos. Le vendeur a coupé les bords.');
   await page.screenshot({ path: SHOT + '11_proofs.png' });
   await btn('Valider'); await cont();
-  await order(['En septembre 2025', 'Avant-hier', 'coupé les bords', 'collé les photos', 'Sur sa fiche']); await btn('Valider'); await cont();
-  await pick(['Un objet ancien']); await pick(["L'album est ancien"]); await cont();
-  await pick(['Album ancien', 'Photos originales de 1900', 'Série en costumes']); expect(/Juste : 2 sur 3/.test(await feedback()), 'F04 Zählung');
-  await pick(['Album ancien', 'Copies de photos', 'Série en costumes']); await cont();
-  /* R4 aufschieben: im Finale bleibt die Karte zu */
-  await btn('Revenir plus tard'); await cont(); await page.waitForTimeout(600);
+  /* F02: Delmas wehrt sich; im Finale bleibt die Karte zu */
+  expect((await page.locator('#dialogue').innerText()).includes('je ne savais pas'), 'F02 Einwand des Händlers');
   await page.click('#btn-map'); await page.waitForTimeout(200);
   expect(!(await page.locator('.modal.map').isVisible()) && (await page.locator('#toasts').innerText()).includes("on finit l'enquête"), 'Im Finale ist die Karte gesperrt');
-  await btn('Répondre');
-  await recall('la couverture'); expect((await feedback()).includes('vraiment vieille'), 'R4 Falle « couverture »');
-  await recall('les photos ne sont pas de 1900'); await cont(6);
-  expect((await page.locator('#modal-body').innerText()).includes('même en brun'), 'F05 Klassenfoto mit Tafel');
-  await page.screenshot({ path: SHOT + '12_photo_classe.png' });
-  await cont();
-  const rapportSansPC = "Le vendeur disait : les photos sont de 1900. Mais les photos étaient de Chloé, une série en costumes. L'album était vieux, mais les photos étaient des copies. La bouquiniste voulait acheter l'album, et Marcel avait encore sa vieille baguette en plastique.";
+  await btn('Les photos sont brunes'); expect((await page.locator('#dialogue').innerText()).includes("ce qu'il savait"), 'F02 Falle « brunes »'); await cont();
+  await btn('Chloé vous a expliqué le titre'); await cont();
+  await order(['En septembre 2025', 'Avant-hier', 'coupé les bords', 'collé les photos', 'Sur sa fiche']); await btn('Valider');
+  expect((await read()).includes("Je n'achète pas"), 'nach F03: M. Nowak kauft nicht (F03b entfällt)');
+  await pick(['Album ancien', 'Photos originales de 1900', 'Série en costumes']); expect(/Juste : 2 sur 3/.test(await feedback()), 'F04 Zählung');
+  await pick(['Album ancien', 'Copies de photos', 'Série en costumes']);
+  expect((await read()).includes("Notre argent reste dans l'enveloppe") && (await txt()).includes('Le rapport'), 'F04: das Geld bleibt in der Kasse, dann der Bericht W2 (R4 entfällt)');
+  const rapportSansPC = "Le vendeur disait : les photos sont de 1900. Mais les photos étaient de Chloé, une série en costumes. L'album était vieux, mais les photos étaient des copies. M. Nowak voulait acheter l'album, et Marcel avait encore sa vieille baguette en plastique.";
   await write(rapportSansPC); expect((await feedback()).includes('Il manque le passé composé'), 'W2 passé composé fehlt');
-  const rapport = "Le vendeur disait : « Les photos sont de 1900. » Mais Chloé a pris les photos en septembre 2025. Le vendeur a coupé les bords, et il a mis les photos dans un vieil album. Finalement, la bouquiniste n'a pas acheté l'album.";
+  const rapport = "Le vendeur disait : « Les photos sont de 1900. » Mais Chloé a pris les photos en septembre 2025. Le vendeur a coupé les bords, et il a mis les photos dans un vieil album. Finalement, M. Nowak n'a pas acheté l'album.";
   await write(rapport); await cont(1);
-  await write(rapport.replace('Finalement', 'Alors')); await cont(1);
+  await write(rapport.replace('Finalement', 'Alors'));
+  { let shot = false;   // Schlussbild nach dem Bericht
+    const seen = await read(40, async t => { if (!shot && t.includes('même en brun')) { shot = true; await page.screenshot({ path: SHOT + '12_photo_classe.png' }); } });
+    expect(shot, 'F05 Klassenfoto mit Tafel nach dem Bericht');
+    expect(seen.includes('Et Lucien, il est où') && seen.includes('vingt-trois') && seen.includes('vrais souvenirs') && seen.includes('Je sais même où'), 'F05: Lucien, Bernd, das Echo auf Delmas und der Weg zum Bahnhof'); }
   expect(await page.locator('.modal.end').isVisible(), 'Endbildschirm');
   await page.screenshot({ path: SHOT + '13_end.png' });
   const st = await S();
