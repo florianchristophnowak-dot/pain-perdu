@@ -1,7 +1,8 @@
 const { chromium } = require('playwright');
 /* Test gegen Sackgassen und Abkürzungen: Stellen, an denen man das Spiel früher festfahren oder Pflichtschritte überspringen
    konnte, weil man mitten im Nachspann einer Aufgabe oder mitten in einem Gespräch einen Hotspot oder die Karte antippte.
-   Teil 1 (französisch und deutsch), Teil 2 und Teil 3. Voraussetzungen wie bei den anderen Tests (lokaler Server auf Port 8765).
+   Teil 1 (französisch und deutsch), Teil 2 und Teil 3. Dazu die freien Stationen von Teil 3: ein angefangener Abschnitt
+   geht vor, Unterbrechen über die Karte, Neuladen in der freien Station, ältere Spielstände mitten in einer früheren Kette. Voraussetzungen wie bei den anderen Tests (lokaler Server auf Port 8765).
    Aufruf: node tools/sackgassen.js   (Umgebung: URL=... bis einschließlich des Hauptordners, CHROMIUM=Pfad, optional) */
 const BASE = process.env.URL || 'http://127.0.0.1:8765/';
 let fails = 0;
@@ -45,6 +46,18 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     check(!menu && !(await modalOpen()) && /d'abord|erst zu Ende/.test(await toasts()), what + ': Hotspot und Karte bleiben im Nachspann zu (' + (await toasts()) + ')');
   }
   async function use(hotspot) { await page.locator('.hotspot', { hasText: hotspot }).first().click(); await page.locator('.verbs .verb').first().click(); await page.waitForTimeout(250); }
+  /* Freie Stationen: Hotspot antippen, obwohl gerade ein Abschnitt läuft; Spielstand ändern, neu laden, weiterspielen */
+  async function tryUse(hotspot) { await page.locator('#toasts').evaluate(t => { t.innerHTML = ''; }); await use(hotspot); }
+  const idleHelp = async () => { await page.waitForTimeout(600); return (await page.locator('#dialogue.idle .btn.aide').count()) === 1; };
+  async function reloadWith(change) {
+    await page.evaluate(ch => { const S = JSON.parse(JSON.stringify(PP.S)); Object.assign(S, ch); localStorage.setItem(PP.saveKey, JSON.stringify(S)); }, change);
+    await page.reload(); await page.waitForTimeout(300);
+    await page.locator('#btn-resume').click(); await page.waitForTimeout(400);
+  }
+  async function travelTo(name) {
+    await page.locator('#btn-map').click(); await page.waitForTimeout(200);
+    await page.locator('.modal.map g.place', { hasText: name }).first().click(); await page.waitForTimeout(1200);
+  }
 
   /* ===== Teil 1: Finale V03q, französisch und deutsch ===== */
   const T1 = ['M00_done', 'M02_done', 'M03_done', 'M04b_done', 'P02_done', 'P03_done', 'P04_done', 'P05_done', 'P06_done', 'B03_open', 'B04_done', 'B05_done', 'B06_done', 'L02q_done', 'L02_done', 'L04_done', 'L05_done', 'V01q_done', 'V02_done', 'V03_talked'];
@@ -189,6 +202,39 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     await cont('Continuer', clicks);
     check(await node() === next, 'Teil 3: alter Spielstand bei ' + id + ' geht weiter zu ' + next + ' (' + await node() + ')');
   }
+
+  /* ===== Teil 3, Fassung 1.3: freie Stationen ===== */
+  await start(BASE + 'voyageur/index.html?test=1&listen=1');
+  await setup(['O01_done', 'O02_done', 'O03_done', 'O04_done', 'O06_done', 'R1_done', 'I_arr'], 'invalides', null);
+  check(await idleHelp(), 'Teil 3: Invalides frei, die Szenenhilfe steht im leeren Dialogfeld');
+  await use('Marcel');
+  await tryUse('les baguettes');
+  check(await node() === 'I00m' && /on finit ça/.test(await toasts()), 'Teil 3: Marcel angefangen: die Baguettes führen nicht vorbei (' + await node() + ' · ' + await toasts() + ')');
+  await tryUse('la malle');
+  check(await node() === 'I00m' && (await dlgText()).includes('Mes amis'), 'Teil 3: auch eine Bemerkung wartet, bis Marcel fertig ist');
+  /* Unterbrechen über die Karte: zurück an den Invalides geht es bei Marcel weiter, die Baguettes führen auch dann zu ihm */
+  await travelTo('Pont'); await cont('Continuer', 4);
+  await travelTo('Invalides'); await cont('Continuer', 2);
+  check(await page.evaluate(() => PP.S.at.invalides) === 'I00m', 'Teil 3: nach der Unterbrechung steht Marcels Abschnitt noch offen (' + await page.evaluate(() => PP.S.at.invalides) + ')');
+  await page.evaluate(() => { document.getElementById('dialogue').innerHTML = ''; document.getElementById('dialogue').classList.remove('active'); });
+  await tryUse('les baguettes');
+  check(await node() === 'I00m' && (await dlgText()).includes('Mes amis'), 'Teil 3: leeres Dialogfeld, Abschnitt offen: die Baguettes führen zurück zu Marcel (' + await node() + ')');
+  /* Neuladen in der freien Station: kein Abschnitt beginnt von selbst, Häkchen und Szenenhilfe sind wieder da */
+  await reloadWith({ flags: { O01_done: true, O02_done: true }, at: {}, resume: null, scene: 'orsay' });
+  check(!(await modalOpen()) && !(await page.evaluate(() => PP.S.at.orsay)) && await idleHelp() && (await page.locator('.hotspot.done', { hasText: "l'album" }).count()) === 1,
+    'Teil 3: Neuladen in Orsay nach dem Album: frei, Häkchen am Album, Szenenhilfe da');
+  /* Älterer Spielstand (Fassung 1.2) mitten in der Kette: nach dem Händler stand die Fiche an. G.migrate trägt O03_done nach */
+  await reloadWith({ flags: { O01_done: true, O02_done: true }, at: { orsay: 'O04d' }, resume: 'O04d', scene: 'orsay' });
+  check(await page.evaluate(() => PP.S.flags.O03_done) && (await modalText()).includes('Photos originales'), 'Teil 3: alter Spielstand bei O04d: O03_done nachgetragen, die Fiche geht weiter');
+  await cont('Continuer', 1);
+  for (const o of ['On a pris les photos en 1900', 'photos originales, pas des copies']) await click('#modal-body .btn.opt', o);
+  await click('#modal-body button', 'Valider'); await cont('Continuer', 1);
+  check(await node() === 'O05', 'Teil 3: alter Spielstand: nach der Fiche kommt M. Nowak (O05), der Händler wird nicht noch einmal gefragt (' + await node() + ')');
+  await reloadWith({ flags: { O01_done: true, O02_done: true, O03_done: true, O04_done: true, O06_done: true, R1_done: true }, at: { pont: 'P02' }, resume: 'P02', scene: 'pont' });
+  check(await page.evaluate(() => PP.S.flags.P_arr && PP.S.flags.P01_done) && (await page.locator('.hotspot', { hasText: "l'assistante" }).count()) === 1,
+    'Teil 3: alter Spielstand bei P02: Ankunft und Brücke nachgetragen, die Hotspots sind da');
+  await reloadWith({ flags: { O01_done: true, O02_done: true, O03_done: true, O04_done: true, O06_done: true, R1_done: true, I02_done: true }, at: { invalides: 'I03' }, resume: 'I03', scene: 'invalides' });
+  check(await page.evaluate(() => PP.S.flags.I_arr) && (await page.locator('.hotspot', { hasText: 'Marcel' }).count()) === 1, 'Teil 3: alter Spielstand bei I03: Ankunft nachgetragen, Marcel ist da');
 
   check(!errors.length, 'keine Skriptfehler ' + errors.join(' | '));
   console.log(fails ? fails + ' Prüfung(en) fehlgeschlagen' : 'Alle Prüfungen bestanden');
