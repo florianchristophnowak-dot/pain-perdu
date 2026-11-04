@@ -330,7 +330,6 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 .introvid .skip { position: absolute; bottom: 1.2rem; right: 1.2rem; }
 /* unten links: Schalter „Musique“, daneben „Son“, wenn der Browser den Ton gesperrt hat */
 .introvid .ictl { position: absolute; bottom: 1.2rem; left: 1.2rem; display: flex; align-items: center; gap: .5rem; }
-.introvid .ihold { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }   /* Standbild beim Wechsel der Fassung (Teil 3) */
 .introvid .musicsw .sw { background: rgba(241,194,125,.25); }
 .introvid .musicsw .sw::after { background: #f6ead3; }
 .introvid .musicsw[aria-checked="true"] .sw { background: #f1c27d; }
