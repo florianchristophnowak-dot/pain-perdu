@@ -240,6 +240,9 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   expect(await done('le panneau') === 1 && await free('petitpalais'), 'X01: Häkchen am Panneau, die Station bleibt frei');
   await hs('la vitrine', 'Regarder'); await cont();
   expect(await page.locator('#modal-body .pair .pfig').count() === 2 && await page.locator('#modal-body .pair .pfig.carton').count() === 1, 'X03: zwei Fotos nebeneinander, das echte auf einem Karton');
+  await page.locator('#modal-body .pair .pcol').first().locator('.lctl button', { hasText: '+' }).click(); await page.waitForTimeout(150);
+  expect((await page.locator('#modal-body .pair .lz').first().getAttribute('style') || '').includes('scale(1.5)'), 'X03: das echte Foto lässt sich vergrößern');
+  await page.locator('#modal-body .pair .pcol').first().locator('.lctl button').last().click();
   await page.screenshot({ path: SHOT + '06b_petitpalais.png' });
   const x03 = { 'On voit le pont': 'Les deux', 'La photo est brune': 'La vraie photo', 'vêtements de 1900': 'Les deux', 'beaucoup de monde': 'La vraie photo', 'Un boulanger': 'La photo B', 'sur un carton': 'La vraie photo' };
   for (const [l, c] of Object.entries(x03)) await selectRow('.crow', l, c);

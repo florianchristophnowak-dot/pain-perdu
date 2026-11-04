@@ -1517,12 +1517,19 @@
     },
     /* Zwei Fotos nebeneinander (Petit Palais, X03): das echte Foto von 1900 auf seinem Karton, daneben ein Albumfoto */
     pair(o) {
+      /* zwei Fotos nebeneinander (X03), jedes mit Zoom wie in der Bildlupe, damit man Menschen und Kleidung erkennt */
       const g = el("div", "pair");
       (o.item.pair || []).forEach(p => {
-        const f = el("figure", "pfig" + (p.carton ? " carton" : ""));
-        f.appendChild(p.photo ? cropEl(p.photo) : docImg(p.img));
+        const col = el("div", "pcol"), f = el("figure", "pfig" + (p.carton ? " carton" : ""));
+        const frame = el("div", "loupe"), lz = el("div", "lz");
+        frame.appendChild(lz);
+        if (p.photo) { frame.style.setProperty("--ar", cropAr(p.photo).toFixed(4)); lz.appendChild(cropEl(p.photo, "fill")); }
+        else { frame.style.setProperty("--ar", p.ar || 1.5); lz.appendChild(docImg(p.img, ar => frame.style.setProperty("--ar", ar.toFixed(4)))); }
+        const zv = zoomView(frame, lz, { max: 4, onTap: () => {} });
+        f.appendChild(frame);
         f.appendChild(el("figcaption", "", gl(p.caption)));
-        g.appendChild(f);
+        col.appendChild(f); col.appendChild(zoomCtl(zv));
+        g.appendChild(col);
       });
       return g;
     },

@@ -182,7 +182,7 @@
 /* Petit Palais (X03): zwei Fotos nebeneinander, das echte von 1900 auf einem Karton */
 .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: .8rem; margin: .4rem 0 .6rem; align-items: start; }
 .pfig { margin: 0; }
-.pfig > .docimg, .pfig > .crop { display: block; width: 100%; max-height: none; margin: 0; border-radius: 2px; }
+.pfig > .loupe { margin: 0 auto; border: 0; border-radius: 2px; }
 .pfig.carton { padding: 6% 6% 3%; background: linear-gradient(160deg, #eadfc6, #d6c59f); border: 1px solid #b9a77d; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
 .pfig figcaption { text-align: center; font-weight: 700; font-size: .9rem; margin-top: .35rem; }
 
