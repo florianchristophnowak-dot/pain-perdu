@@ -23,9 +23,11 @@
   function loadSave() { try { const s = localStorage.getItem(SAVE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
   function flag(f) { return !!S.flags[f]; }
   function setFlag(f) { S.flags[f] = true; save(); }
+  /* Bedingung: Flag, "!Flag" (nicht gesetzt) oder Liste (alle), wie in Teil 2 und 3 */
   function cond(c) {
     if (!c || c === "always") return true;
     if (Array.isArray(c)) return c.every(cond);
+    if (c[0] === "!") return !flag(c.slice(1));
     return flag(c);
   }
   function twoPlayers() { return !!(S.players[1] && S.players[1].trim()); }
@@ -164,7 +166,7 @@
   /* Dialogzeilen nacheinander anzeigen */
   function showLines(lines, cb, opts) {
     opts = opts || {};
-    const ls = (lines || []).filter(l => !l.onlyIf || flag(l.onlyIf));
+    const ls = (lines || []).filter(l => !l.onlyIf || cond(l.onlyIf));
     let i = 0;
     const box = opts.box || dlg;
     function step() {

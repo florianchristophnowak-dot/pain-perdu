@@ -58,12 +58,12 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     await click('#modal-body button', L.check); await cont(L.cont, 1);
     await blocked(L.scene, tag + ', nach V03q');
     await cont(L.cont, 4);
-    check(await node() === 'V04', tag + ': nach dem Nachspann von V03q folgt das Finale V04 (' + await node() + ')');
-    /* alter Spielstand, der schon festsaß: Marcel führt jetzt zum Finale */
+    check(await node() === 'V05', tag + ': nach dem Nachspann von V03q folgt der Rapport V05, die Schlussszene V04 kommt danach (' + await node() + ')');
+    /* alter Spielstand, der schon festsaß: Marcel führt jetzt zum Rapport */
     await page.evaluate(() => { PP.S.resume = null; PP.save(); });
     await setup([], 'louvre', null);
     await use('Marcel');
-    check(await node() === 'V04', tag + ': festgefahrener Stand (V03_done ohne Rapport): Marcel führt zu V04 (' + await node() + ')');
+    check(await node() === 'V05', tag + ': festgefahrener Stand (V03_done ohne Rapport): Marcel führt zu V05 (' + await node() + ')');
     /* Chloé am Telefon: Wer sie am Père-Lachaise noch nicht getroffen hat, hört kein « Ah, c'est vous ! » */
     for (const met of [false, true]) {
       await page.evaluate(() => { PP.S.resume = null; delete PP.S.flags.P05_done; PP.save(); });

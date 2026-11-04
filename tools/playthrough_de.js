@@ -192,6 +192,7 @@ const VW = +(process.env.VW || 1200), VH = +(process.env.VH || 900);
   await btn('ÄNDERUNG'); await page.locator('.sheet', { hasText: 'Aushang C' }).click();
   await page.screenshot({ path: SHOT + '10_stamp.png' });
   await cont(1); log('L04 after:', await dlgText()); await cont(1);
+  log('L05s (SMS Nowak):', await modalText()); await cont(3);
   log('L05:', await modalText()); await cont(2); await btn('Schließen');
   await hotspot('Herr Lenoir', 'Sprechen'); await cont(1); await btn('Warum gibt es zwei Marcels'); await cont(1); await cont(1); await btn('Danke, auf Wiedersehen');
   await hotspot('Marcels Karte', 'Ansehen'); log('L05 again:', (await modalText()).slice(0, 60)); await cont(2); await btn('Schließen');
@@ -255,9 +256,9 @@ const VW = +(process.env.VW || 1200), VH = +(process.env.VH || 900);
   await page.screenshot({ path: SHOT + '15_finale.png' });
   log('V03q ok:', await fbText());
   await cont(1); await contAll();
-  log('V04:', await modalText()); await contAll();
   log('V05:', await modalText());
   for (const p of [0, 1]) { await page.locator('textarea').fill('Wir waren in Montmartre für ein Foto. Lino hatte den Rucksack Bernd. Während wir das Foto angeschaut haben, hat der Pantomime unseren Rucksack genommen. Auf dem Père-Lachaise haben wir seinen Namen erfahren: Marcel Blanchard. Auf einem Foto hatte Marcel schon seine braune Tasche. Es war also kein Diebstahl. Er dachte, unser Rucksack wäre seine Tasche. Am Ende haben wir am Louvre die Taschen getauscht.'); await btn('Prüfen'); await cont(1); }
+  log('V04:', await modalText()); await contAll(); await contAll();
   log('END:', await modalText());
   await page.screenshot({ path: SHOT + '12_end.png' });
   await btn('Menü'); await page.waitForTimeout(200);
