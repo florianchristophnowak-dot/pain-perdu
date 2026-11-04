@@ -96,10 +96,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.screenshot({ path: SHOT + '03_loupe_zoom.png' });
   await loupeTap(91.6, 57.2);
   expect((await S()).flags.prix_vu, 'N04a Preis im Buch (Zoom) gefunden');
-  await cont();
-  await loupeTap(73.5, 48); await loupeTap(95, 81);
-  { const st = await page.locator('#modal-body .lstatus').innerText(); expect(/Beaumont : 2 sur 2/.test(st) && !/visage/.test(st), 'N04b Selfie: Moustache und Uhr als Details zu M. Beaumont, nicht « visage »: ' + st); }
-  await cont();
+  await cont();                                     // N04a → N05 (das Selfie kommt erst nach der ersten Station)
   log('  N05:', await txt());
   await cont();
   await choose('Beaumont, c\'est bizarre'); await cont();
@@ -117,22 +114,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.screenshot({ path: SHOT + '06_card_back.png' });
   await cont();
   expect((await S()).flags.N06_done, 'N06 erledigt');
-  const g = ['a été', 'avait', 'portait', 'avait', 'est parti'];
-  for (let i = 0; i < 5; i++) await page.locator('#modal-body .gaptext select').nth(i).selectOption({ label: g[i] });
-  await btn('Valider');
-  expect(/Juste : 4 sur 5/.test(await feedback()), 'N07a Zählung bei einem Fehler');
-  await page.locator('#modal-body .gaptext select').nth(0).selectOption({ label: 'était' });
-  await btn('Valider'); await cont(1);
-  await write('moustache manteau grand gris vite vieux gentil poli'); expect((await feedback()).includes('pas seulement des mots'), 'N07b Wortliste ohne Verb abgelehnt');
-  await write("Comment est-ce qu'il parlait ? Vite, lentement, poliment ?"); expect((await feedback()).includes('des questions'), 'N07b abgetippte Hilfe (Fragen) abgelehnt');
-  await write('Il parlait langsam und höflich. Er war sehr nett und alt.'); expect((await feedback()).includes('En français'), 'N07b deutsch abgelehnt');
-  /* Satzanfänge antippen und fortsetzen: Die eigenen Wörter « vite » und « gentil » reichen (früher fehlte « parl » aus dem Satzanfang) */
-  await page.fill('#modal-body textarea', '');
-  for (const [c, t] of [['Il parlait', 'vite. '], ['Il était très', 'gentil.']]) { await page.locator('#modal-body .chips button', { hasText: c }).first().click(); await page.keyboard.type(t); }
-  await btn('Valider'); expect((await feedback()).includes("c'est ça"), 'N07b « Il parlait vite. Il était très gentil. » mit Satzanfängen angenommen'); await cont(1);
-  await write('Il parlait très lentement et poliment. Il était grand et il avait un manteau beige.'); await cont(1);
-  for (const [l, c] of [['parapluie rouge', 'facilement'], ['moustache grise', 'difficile'], ['manteau beige', 'facilement'], ['sa voix', 'difficile'], ['le badge', 'facilement'], ['sa taille', 'difficile']]) await selectRow('.crow', l, c === 'facilement' ? 'Il peut le changer facilement' : "C'est plus difficile");
-  await btn('Valider'); await cont();
+  expect(!(await S()).flags.N07_done && !(await S()).inv.includes('fiche'), 'Auftakt ohne Fiche: die Personenbeschreibung kommt nach der ersten Station');
   for (const [l, o] of [['étiquette', 'les Galeries Lafayette'], ['le sac', 'les Galeries Lafayette'], ['rendez-vous', 'le Louvre'], ['vieux livre', 'les bouquinistes']]) await selectRow('.slot', l, o);
   await btn('Valider');
   expect((await feedback()).includes("pas d'indice pour le Louvre"), 'N08 Louvre-Falle');
@@ -169,7 +151,30 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await recall('Lucien'); await cont();
   await recall('il a rendu le manteau'); expect((await feedback()).includes("c'est une question"), 'R3b Falle « a rendu »');
   await recall('rendre le manteau'); await cont();
-  expect((await S()).flags.R3b_done, 'R3b gelöst');
+  expect((await S()).flags.R3b_done && (await S()).flags.station1_done, 'R3b gelöst (Frage der Policière über M. Nowak), erste Station erledigt');
+
+  log('== Personenbeschreibung nach der ersten Station');
+  expect((await S()).resume === 'N04b', 'nach R3b folgt direkt das Selfie für die Beschreibung (' + (await S()).resume + ')');
+  await loupeTap(73.5, 48); await loupeTap(95, 81);
+  { const st = await page.locator('#modal-body .lstatus').innerText(); expect(/Beaumont : 2 sur 2/.test(st) && !/visage/.test(st), 'N04b Selfie: Moustache und Uhr als Details zu M. Beaumont, nicht « visage »: ' + st); }
+  await cont();
+  const g = ['a été', 'avait', 'portait', 'avait', 'est parti'];
+  for (let i = 0; i < 5; i++) await page.locator('#modal-body .gaptext select').nth(i).selectOption({ label: g[i] });
+  await btn('Valider');
+  expect(/Juste : 4 sur 5/.test(await feedback()), 'N07a Zählung bei einem Fehler');
+  await page.locator('#modal-body .gaptext select').nth(0).selectOption({ label: 'était' });
+  await btn('Valider'); await cont(1);
+  await write('moustache manteau grand gris vite vieux gentil poli'); expect((await feedback()).includes('pas seulement des mots'), 'N07b Wortliste ohne Verb abgelehnt');
+  await write("Comment est-ce qu'il parlait ? Vite, lentement, poliment ?"); expect((await feedback()).includes('des questions'), 'N07b abgetippte Hilfe (Fragen) abgelehnt');
+  await write('Il parlait langsam und höflich. Er war sehr nett und alt.'); expect((await feedback()).includes('En français'), 'N07b deutsch abgelehnt');
+  /* Satzanfänge antippen und fortsetzen: Die eigenen Wörter « vite » und « gentil » reichen (früher fehlte « parl » aus dem Satzanfang) */
+  await page.fill('#modal-body textarea', '');
+  for (const [c, t] of [['Il parlait', 'vite. '], ['Il était très', 'gentil.']]) { await page.locator('#modal-body .chips button', { hasText: c }).first().click(); await page.keyboard.type(t); }
+  await btn('Valider'); expect((await feedback()).includes("c'est ça"), 'N07b « Il parlait vite. Il était très gentil. » mit Satzanfängen angenommen'); await cont(1);
+  await write('Il parlait très lentement et poliment. Il était grand et il avait un manteau beige.'); await cont(1);
+  for (const [l, c] of [['parapluie rouge', 'facilement'], ['moustache grise', 'difficile'], ['manteau beige', 'facilement'], ['sa voix', 'difficile'], ['le badge', 'facilement'], ['sa taille', 'difficile']]) await selectRow('.crow', l, c === 'facilement' ? 'Il peut le changer facilement' : "C'est plus difficile");
+  await btn('Valider'); await cont();
+  expect((await S()).flags.N07_done && (await S()).inv.includes('fiche') && await page.locator('.modal.map').isVisible(), 'Fiche fertig, danach die Karte');
 
   log('== Galeries Lafayette');
   await page.locator('.place', { hasText: 'Lafayette' }).first().click(); await page.waitForTimeout(200);
@@ -210,14 +215,17 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   log('== Finale');
   await page.locator('.place', { hasText: 'Service des retours' }).first().click(); await page.waitForTimeout(250);
   await cont();
-  await recall('des billets'); expect((await feedback()).includes("ce qu'il a dit, lui"), 'R5 Falle « billets »');
-  await recall('un bon de réduction'); await cont();
+  expect(!(await S()).flags.R5_done, 'Finale beginnt ohne Abfrage am Eingang');
   await page.screenshot({ path: SHOT + '11_retours.png' });
   await loupeTap(26, 50); expect((await feedback()).includes("modèle de l'hiver"), 'F01 falscher Mann: eigene Reaktion');
   await loupeTap(53, 45); await cont();
   await pick(['moustache grise', 'montre dorée']); await cont();
   await choose('Demain, c\'est notre guide'); await cont();
   await choose('Ce matin, c\'était notre guide'); await cont();
+  log('  R5:', await txt());
+  await recall('des billets'); expect((await feedback()).includes("ce qu'il a dit, lui"), 'R5 im Finale: Falle « billets »');
+  await recall('un bon de réduction'); await cont();
+  expect((await S()).flags.R5_done && (await txt()).includes('Mets les phrases'), 'R5 gelöst, weiter mit F04');
   await order(['dix heures', 'onze heures', '220 euros', 'midi moins le quart', 'Maintenant']);
   const gaps = page.locator('#modal-body .ctext select');
   for (let i = 0; i < 3; i++) await gaps.nth(i).selectOption({ label: 'pas' });
@@ -242,6 +250,8 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   expect((await feedback()).includes("Il manque l'action"), 'F09 passé composé fehlt');
   await write(rapport); await cont(1);
   await write(rapport.replace('très poli', 'très gentil')); await cont(1);
+  expect((await S()).resume === 'Z03', 'nach dem Bericht kommt das Schlussbild Z03 (' + (await S()).resume + ')');
+  await cont();
   expect(await page.locator('.modal.end').isVisible(), 'Endbildschirm');
   await page.screenshot({ path: SHOT + '13_end.png' });
   const st = await S();

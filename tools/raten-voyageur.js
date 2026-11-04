@@ -142,7 +142,7 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
   /* 11. Bei den Abfragen nennt der Hinweis den Fundort, nie die Antwort */
   const leaks = await page.evaluate(() => {
     const out = [];
-    ['R1', 'R2', 'R3', 'R4'].forEach(id => window.GAME.nodes[id].task.fields.forEach(f => {
+    Object.keys(window.GAME.nodes).filter(id => window.GAME.nodes[id].gate).forEach(id => window.GAME.nodes[id].task.fields.forEach(f => {
       const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
       const w = norm(f.where || '');
       f.answers.forEach(a => { const n = norm(a).replace(/^(en|le|la|a|c'est) /, ''); if (n.length > 2 && w.includes(n)) out.push(id + ': ' + a); });

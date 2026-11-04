@@ -179,6 +179,7 @@ const URL = process.env.URL || 'http://127.0.0.1:8765/index.html?intro=0&test=1'
   await btn('MODIFICATION'); await page.locator('.sheet', { hasText: 'affiche C' }).click();
   await page.screenshot({ path: SHOT + '10_stamp.png' });
   await cont(1); log('L04 after:', await dlgText()); await cont(1);
+  log('L05s (SMS Nowak):', await modalText()); await cont(3);
   log('L05:', await modalText()); await cont(2); await btn('Fermer');
   await hotspot('M. Lenoir', 'Parler'); await cont(1); await btn('Pourquoi il y a deux Marcel'); await cont(1); await cont(1); await btn('Merci, au revoir');
   await hotspot('la carte de Marcel', 'Regarder'); log('L05 again:', (await modalText()).slice(0, 60)); await cont(2); await btn('Fermer');
@@ -231,9 +232,9 @@ const URL = process.env.URL || 'http://127.0.0.1:8765/index.html?intro=0&test=1'
   await g('g5').fill('billets de train'); await btn('Vérifier');
   await page.screenshot({ path: SHOT + '15_finale.png' });
   await cont(1); await contAll();
-  log('V04:', await modalText()); await contAll();
   log('V05:', await modalText());
   for (const p of [0, 1]) { await page.locator('textarea').fill('On était à Montmartre pour une photo. Lino tenait le sac Bernd. Pendant que nous regardions la photo, le mime a pris notre sac. Au Père-Lachaise, on a appris son nom : Marcel Blanchard. Sur une photo, Marcel avait déjà son sac brun. Donc ce n était pas un vol. Il croyait que notre sac était son sac. À la librairie, on a trouvé le bon programme. À la fin, on a échangé les sacs au Louvre.'); await btn('Valider'); await cont(1); }
+  log('V04:', await modalText()); await contAll(); await contAll();
   log('END:', await modalText());
   await page.screenshot({ path: SHOT + '12_end.png' });
   await btn('Menu'); await page.waitForTimeout(200);

@@ -58,12 +58,12 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     await click('#modal-body button', L.check); await cont(L.cont, 1);
     await blocked(L.scene, tag + ', nach V03q');
     await cont(L.cont, 4);
-    check(await node() === 'V04', tag + ': nach dem Nachspann von V03q folgt das Finale V04 (' + await node() + ')');
-    /* alter Spielstand, der schon festsaß: Marcel führt jetzt zum Finale */
+    check(await node() === 'V05', tag + ': nach dem Nachspann von V03q folgt der Rapport V05, die Schlussszene V04 kommt danach (' + await node() + ')');
+    /* alter Spielstand, der schon festsaß: Marcel führt jetzt zum Rapport */
     await page.evaluate(() => { PP.S.resume = null; PP.save(); });
     await setup([], 'louvre', null);
     await use('Marcel');
-    check(await node() === 'V04', tag + ': festgefahrener Stand (V03_done ohne Rapport): Marcel führt zu V04 (' + await node() + ')');
+    check(await node() === 'V05', tag + ': festgefahrener Stand (V03_done ohne Rapport): Marcel führt zu V05 (' + await node() + ')');
     /* Chloé am Telefon: Wer sie am Père-Lachaise noch nicht getroffen hat, hört kein « Ah, c'est vous ! » */
     for (const met of [false, true]) {
       await page.evaluate(() => { PP.S.resume = null; delete PP.S.flags.P05_done; PP.save(); });
@@ -102,7 +102,7 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
   /* ===== Teil 2: die Fiche enthält, was R1 und die Hilfe in F01 dort suchen lassen ===== */
   await start(BASE + 'guide-fantome/index.html?test=1');
   const fiche = await page.evaluate(() => window.GAME.items.fiche.desc);
-  check(fiche.includes('midi moins le quart') && fiche.includes('moustache grise'), 'Teil 2: die Fiche de signalement nennt die Uhrzeit (R1) und die Merkmale (F01)');
+  check(fiche.includes('midi moins le quart') && fiche.includes('moustache grise'), 'Teil 2: die Fiche de signalement nennt die Uhrzeit und die Merkmale (F01)');
   /* Das Carnet verrät die Antworten der Abfragen R2, R3, R3b und R5 erst, wenn sie beantwortet sind */
   const carnet = async flags => { await page.evaluate(fl => { fl.forEach(f => { PP.S.flags[f] = true; }); PP.save(); PP.openCarnet(); }, flags); await page.waitForTimeout(150); return modalText(); };
   const before = await carnet(['N08_done', 'badge_faux', 'E03_done', 'N06_done', 'G06_done', 'G05_done', 'E04_done', 'R2_done']);
@@ -110,6 +110,50 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     'Teil 2: Q1 bis Q3 sind geklärt, das Carnet zeigt ihre Antworten aber noch nicht vor R3, R3b und R5');
   const after = await carnet(['R3_done', 'R3b_done', 'R5_done']);
   check(['Lucien', 'bons de réduction', 'rendre le manteau'].every(w => after.includes(w)), 'Teil 2: nach den Abfragen stehen die Antworten im Carnet');
+
+  /* Teil 2: R1 kommt jetzt vor der Fiche. Wer die Uhrzeit vergessen hat, hört sie bei der Klasse (Kevin) */
+  const linesOf = async (n = 6) => {
+    let t = '';
+    for (let i = 0; i < n; i++) {
+      t += ' ' + await dlgText();
+      const b = page.locator('#dialogue button', { hasText: 'Continuer' }).filter({ visible: true });
+      if (!(await b.count())) break;
+      await b.first().click(); await page.waitForTimeout(150);
+    }
+    return t;
+  };
+  await start(BASE + 'guide-fantome/index.html?test=1');
+  await setup(['N08_done'], 'notredame', 'Ncl');
+  check((await linesOf()).includes('midi moins le quart'), 'Teil 2: vor R1 nennt Lino bei der Klasse die Uhrzeit (Kevin hat auf die Uhr geschaut)');
+  await setup(['R1_done'], 'notredame', 'Ncl');
+  check(!(await linesOf()).includes('midi moins le quart'), 'Teil 2: nach R1 sagt Lino das bei der Klasse nicht mehr');
+  /* Die Personenbeschreibung kommt nach der ersten Station, egal welche: hier die Bouquinisten */
+  await setup(['B05_done', 'R4_done', 'B06_done'], 'bouquinistes', 'B06e');
+  await cont('Continuer', 8);
+  check(await node() === 'N04b', 'Teil 2: nach den Bouquinisten als erster Station fragt M. Nowak nach der Beschreibung, das Selfie folgt (' + await node() + ')');
+  /* und falls sie dort fehlt (alter Spielstand), meldet sich M. Nowak im leeren Dialogfeld */
+  await page.evaluate(() => { PP.S.resume = null; PP.save(); });
+  await setup([], 'lafayette', null); await page.waitForTimeout(600);
+  check((await dlgText()).includes('description de M. Beaumont'), 'Teil 2: erste Station ohne Beschreibung: M. Nowak fragt im leeren Dialogfeld (' + (await dlgText()).slice(0, 60) + ')');
+  await click('#dialogue button', 'Répondre');
+  check(await node() === 'N04b', 'Teil 2: « Répondre » führt zum Selfie (' + await node() + ')');
+  /* Finale: R5 erst nach F03. Wer « Revenir plus tard » wählt, bleibt am Schalter, und der Sicherheitsmann fragt noch einmal */
+  await page.evaluate(() => { PP.S.resume = null; PP.save(); });
+  await setup(['N07_done', 'R2_done', 'R3_done', 'R3b_done', 'F00_done', 'F03_done'], 'retours', 'R5');
+  await click('#modal-body button', 'Revenir plus tard'); await cont('Continuer', 2);
+  await page.locator('#toasts').evaluate(t => { t.innerHTML = ''; });
+  await page.locator('#btn-map').click(); await page.waitForTimeout(700);
+  check(!(await page.locator('.modal.map').isVisible()) && /finit l'enquête/.test(await toasts()), 'Teil 2: im Finale bleibt die Karte zu (' + await toasts() + ')');
+  check((await dlgText()).includes('Cette carte'), 'Teil 2: nach « Revenir plus tard » fragt der Sicherheitsmann wieder nach der Karte (' + (await dlgText()).slice(0, 60) + ')');
+  await click('#dialogue button', 'Répondre');
+  check(await node() === 'R5', 'Teil 2: « Répondre » führt zurück zu R5 (' + await node() + ')');
+  /* Schlussbild für alle: ohne Bouquinisten mit der Überleitung nach Notre-Dame */
+  for (const withB of [false, true]) {
+    await page.evaluate(b => { PP.S.resume = null; if (b) PP.S.flags.B_done = true; else delete PP.S.flags.B_done; PP.save(); }, withB);
+    await setup(['F09_done'], 'retours', 'Z03');
+    const z = await modalText();
+    check(z.includes('Plus tard, devant Notre-Dame') === !withB, 'Teil 2: Schlussbild Z03 ' + (withB ? 'nach den Bouquinisten ohne die' : 'ohne Bouquinisten mit der') + ' Überleitung « Plus tard, devant Notre-Dame » (' + z.slice(0, 50) + ')');
+  }
 
   /* ===== Teil 3: P02 unterbrechen, O06 und I02 im Nachspann ===== */
   await start(BASE + 'voyageur/index.html?test=1&listen=1');
@@ -137,6 +181,14 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
   await blocked('le vendeur', 'Teil 3, nach O06');
   await cont('Continuer', 2);
   check(await node() === 'R1', 'Teil 3: nach dem Nachspann von O06 kommt R1, O06 beginnt nicht neu (' + await node() + ')');
+
+  /* Teil 3, Fassung 1.2: P01b, R3, F03b und R4 gibt es nicht mehr. Ältere Spielstände, die dort stehen, laufen weiter */
+  for (const [id, scene, clicks, next] of [['P01b', 'pont', 1, 'P02'], ['R3', 'stand6', 1, 'W1'], ['F03b', 'finale', 4, 'F04l'], ['R4', 'finale', 1, 'W2']]) {
+    await page.evaluate(() => { PP.S.resume = null; PP.save(); });
+    await setup(['C02_done', 'F_started', 'F03_done'], scene, id);
+    await cont('Continuer', clicks);
+    check(await node() === next, 'Teil 3: alter Spielstand bei ' + id + ' geht weiter zu ' + next + ' (' + await node() + ')');
+  }
 
   check(!errors.length, 'keine Skriptfehler ' + errors.join(' | '));
   console.log(fails ? fails + ' Prüfung(en) fehlgeschlagen' : 'Alle Prüfungen bestanden');

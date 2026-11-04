@@ -1,5 +1,5 @@
 /* Le voyageur de 1900 (Pain perdu, Teil 3) – Spieldaten
-   Quelle: Drehbuch Teil 3, Fassung 1.1 (29. Oktober 2026). Kennungen wie im Drehbuch: O = Musée d'Orsay, P = Pont Alexandre III,
+   Quelle: Drehbuch Teil 3, Fassung 1.2 (4. November 2026). Kennungen wie im Drehbuch: O = Musée d'Orsay, P = Pont Alexandre III,
    I = Invalides (Marcel), C = Chloé am Stand 6, F = Finale am Stand des Händlers, R = Abfragen, W = Schreibaufträge.
    Alle Spieltexte sind französisch und halten A2 (Drehbuch, Abschnitt 2): nur présent, passé composé, imparfait und futur proche;
    Fragen mit est-ce que oder Intonation; Aufgaben für beide mit vous, Schreibaufträge und Hilfen für eine Person mit tu.
@@ -7,7 +7,7 @@
 window.GAME = (function () {
   const G = {};
 
-  G.version = "3.0.0";
+  G.version = "3.1.0";
   /* Teil 3 startet aus dem gemeinsamen Startmenü (../index.html, Schlüsselwort « Orsay » am Ende von Teil 2), wie Teil 2.
      Das eigene Startmenü gibt es nur noch in der Lehrkraft-Ansicht und für die automatischen Tests. */
   G.hub = true;
@@ -31,7 +31,7 @@ window.GAME = (function () {
   /* Wer an einer Station nicht ermittelt, gibt dort die Hilfe (Drehbuch, Abschnitt 2) */
   G.helpBy = { orsay: "marie", pont: "lino", invalides: "marie", stand6: "lino", finale: "marie" };
   G.helpDefault = "marie";
-  /* Wer in Teil 2 bei den Bouquinisten war, wird in O05 wiedererkannt */
+  /* Wer in Teil 2 bei den Bouquinisten war, wird in O05q wiedererkannt */
   G.earlier = [{ save: "pg_save_v1", flag: "B_done", as: "t2_B" }];
 
   /* ---------- Feste Texte ---------- */
@@ -141,7 +141,7 @@ window.GAME = (function () {
   G.questions = {
     Q1: { title: "Qu'est-ce que le vendeur promet ?", done: "O04_done", answer: "Il dit : on a pris les photos en 1900. Et ce sont des photos originales, pas des copies." },
     Q2: { title: "Qu'est-ce qui est vraiment vieux ?", done: ["O06_done", "I03_done"], answer: "Le bâtiment d'Orsay et l'album. Mais sur la photo B, il y a la baguette réparée de Marcel : la photo est de l'année dernière, ou plus tard." },
-    Q3: { title: "Quand est-ce qu'on a pris les photos ?", done: "R3_done", answer: "En septembre 2025. « Paris 1900 », c'est le titre de la série. Ce n'est pas une date." },
+    Q3: { title: "Quand est-ce qu'on a pris les photos ?", done: "W1_done", answer: "En septembre 2025. « Paris 1900 », c'est le titre de la série. Ce n'est pas une date." },
     Q4: { title: "Comment est-ce qu'on peut le montrer ?", done: "F04_done", answer: "Avec trois preuves : {proofs}." }
   };
   G.openAfter = "O02_done";   // das Carnet öffnet sich, wenn das Album gefunden ist
@@ -206,7 +206,7 @@ window.GAME = (function () {
       ]
     },
     invalides: {
-      name: "Les Invalides · l'esplanade", bg: "bg_invalides", enter: [{ if: "I_done", node: "Ir" }, { if: "R2_done", node: "I05" }, { if: "I03_done", node: "R2" }, { node: "I00" }],
+      name: "Les Invalides · l'esplanade", bg: "bg_invalides", enter: [{ if: "I_done", node: "Ir" }, { if: "I05_done", node: "R2" }, { if: "I03_done", node: "I05" }, { node: "I00" }],
       labels: [{ x: 50, y: 36.5, text: "Les Images de Paris", cls: "paint big" }, { x: 88.5, y: 35.8, text: "Stand 6", cls: "paint mid" }],
       hotspots: [
         { id: "marcel", label: "Marcel", x: 35, y: 39, w: 14, h: 60, actions: { parler: "Ir" }, showIf: "I_done" },
@@ -215,14 +215,14 @@ window.GAME = (function () {
       ]
     },
     stand6: {
-      name: "Les Invalides · stand 6", bg: "bg_stand6", enter: [{ if: "W1_done", node: "Cr" }, { if: "R3_done", node: "W1" }, { if: "C02_done", node: "R3" }, { node: "C00" }],
+      name: "Les Invalides · stand 6", bg: "bg_stand6", enter: [{ if: "W1_done", node: "Cr" }, { if: "C02_done", node: "W1" }, { node: "C00" }],
       labels: [{ x: 50, y: 36.5, text: "Les Images de Paris", cls: "paint big" }, { x: 88.5, y: 35.5, text: "Stand 6", cls: "paint mid" }],
       hotspots: [
         { id: "chloe", label: "Chloé", x: 80, y: 44, w: 15, h: 53, actions: { parler: "Cr" }, showIf: "W1_done" }
       ]
     },
     finale: {
-      name: "Musée d'Orsay · le stand du vendeur", bg: "bg_orsay", enter: [{ if: "finished", node: "Fr" }, { if: "R4_done", node: "F05" }, { if: "F04_done", node: "R4" }, { node: "F00" }],
+      name: "Musée d'Orsay · le stand du vendeur", bg: "bg_orsay", enter: [{ if: "finished", node: "Fr" }, { if: "W2_done", node: "F05" }, { if: "F04_done", node: "W2" }, { node: "F00" }],
       labels: [{ x: 46, y: 26.5, text: "Brocante du quai", cls: "paint big" }],
       hotspots: [
         { id: "delmas", label: "le vendeur", x: 41, y: 34, w: 28, h: 35.5, actions: { parler: "Fr" }, showIf: "finished" }
@@ -257,11 +257,11 @@ window.GAME = (function () {
   };
 
   /* ---------- Offene Abfragen: Wer auf eine Antwort wartet, meldet sich im leeren Dialogfeld ---------- */
+  /* Fassung 1.2: Jede Abfrage stellt eine Figur, die die Antwort braucht (R1 M. Nowak per SMS, R2 die Bouquiniste).
+     R3 ist in W1 aufgegangen, R4 entfällt. */
   G.pending = [
-    { if: "O06_done", unless: "R1_done", scene: "orsay", who: "marie", fr: "Attends. J'ai une question.", node: "R1" },
-    { if: "I03_done", unless: "R2_done", scene: "invalides", who: "lino", fr: "Attends, Marie. J'ai une question.", node: "R2" },
-    { if: "C02_done", unless: "R3_done", scene: "stand6", who: "marie", fr: "Attends. J'ai une question.", node: "R3" },
-    { if: "F04_done", unless: "R4_done", scene: "finale", who: "nowak", fr: "Lino, Marie, une dernière question.", node: "R4" }
+    { if: "O06_done", unless: "R1_done", scene: "orsay", who: "nowak", sms: true, fr: "Lino ? Kevin a une question.", node: "R1" },
+    { if: "I05_done", unless: "R2_done", scene: "invalides", who: "bouquiniste", fr: "Et la photographe ? Qui est-ce ?", node: "R2" }
   ];
 
   /* ---------- Knoten ---------- */
@@ -291,7 +291,7 @@ window.GAME = (function () {
     task: { kind: "loupe", render: "album", maxZoom: 5, status: "Sur la photo A : {n} sur {m}",
       intro: "Regardez les trois photos. Sur la photo A, trouvez le visage et la montre du monsieur.",
       points: [
-        { id: "visage", need: true, chip: "le visage", photo: "P17", x: 39, y: 20.5, w: 8, h: 12.5, lines: [lino("Marie. Le monsieur sur la photo. C'est notre guide !"), marie("Notre faux guide. Lucien.")] },
+        { id: "visage", need: true, chip: "le visage", photo: "P17", x: 39, y: 20.5, w: 8, h: 12.5, lines: [lino("Marie ! Le monsieur sur la photo A, c'est Lucien ! Notre voleur… Non. Attends. On regarde d'abord."), marie("C'est ma phrase, ça."), lino("Je l'ai apprise à Montmartre.")] },
         { id: "montre", need: true, chip: "la montre", photo: "P17", x: 42, y: 46.5, w: 9.5, h: 8, line: marie("La même montre, peut-être.") },
         { id: "lucien_c", neutral: true, photo: "P19", x: 22, y: 11, w: 20, h: 72.5, line: lino("Encore le même monsieur. Mais regarde d'abord la photo A.") },
         { id: "baguette", neutral: true, photo: "P18", x: 43.5, y: 21.5, w: 20, h: 11, line: lino("Une baguette avec du ruban adhésif ? Bizarre.") },
@@ -339,12 +339,26 @@ window.GAME = (function () {
       matText: "La fiche de vente : « Album Paris 1900 · Couverture et pages anciennes · Trois photographies prises en 1900 · Photos originales, pas des copies · Prix : 180 € · Vendeur : Victor Delmas »",
       wrong: marie("Pas encore.") },
     effects: { flag: "O04_done" }, next: "O05" };
+  /* Fassung 1.2: M. Nowak will das Album kaufen, mit dem Geld der Klasse, das Lino und Marie gestern zurückgeholt haben */
   N.O05 = { type: "lines", lines: [
+    narr("M. Nowak arrive avec la classe. Il regarde l'album."),
+    L("nowak", "Paris en 1900 ! Pour notre école, c'est un beau cadeau. Avec l'argent de la visite d'hier, on peut l'acheter."),
+    lino("Hier, notre argent est revenu. Et aujourd'hui, il repart ?"),
+    L("delmas", "Cent quatre-vingts euros, monsieur. C'est un bon prix."),
+    L("nowak", "Attendez… Ce monsieur, c'est notre guide d'hier !"),
+    lino("Oui. Il voyage beaucoup."),
+    L("delmas", "Un voyageur de 1900, monsieur. Il ressemble à beaucoup de gens."),
+    L("nowak", "Hmm. Je reviens à quinze heures pour payer. Vous gardez l'album pour moi ?"),
+    L("delmas", "Bien sûr. Jusqu'à quinze heures."),
+    L("nowak", "Lino, Marie : vous vérifiez pour moi ? Vous êtes mes détectives. Moi, je reste avec la classe.")
+  ], next: "O05q" };
+  /* Die Bouquiniste bleibt als Fachfrau, die an den Fotos zweifelt */
+  N.O05q = { type: "lines", lines: [
     L("bouquiniste", "Tiens ! Les deux jeunes du monsieur au parapluie rouge ! Vous regardez cet album, vous aussi ?", { onlyIf: "t2_B" }),
     L("bouquiniste", "Bonjour ! Vous regardez cet album, vous aussi ?", { onlyIf: "!t2_B" }),
-    marie("Vous allez l'acheter ?"),
-    L("bouquiniste", "Peut-être. Je reviens à quinze heures pour payer. La couverture est vraiment vieille. Mais les photos… je ne sais pas."),
-    L("bouquiniste", "D'habitude, je vends mes livres sur le quai, près de Notre-Dame. Aujourd'hui, j'ai un stand aux Invalides. Il ouvre à onze heures. Après, je ne peux pas quitter mon stand. Vous pouvez vérifier pour moi ?"),
+    marie("Notre professeur veut l'acheter. Vous connaissez les vieux livres ?"),
+    L("bouquiniste", "C'est mon travail. La couverture est vraiment vieille. Mais les photos… je ne sais pas."),
+    L("bouquiniste", "D'habitude, je vends mes livres sur le quai, près de Notre-Dame. Aujourd'hui, j'ai un stand aux Invalides. Il ouvre à onze heures. Venez me dire ce que vous trouvez."),
     lino("On a déjà trouvé un monsieur qui était vieux avant de naître."),
     L("bouquiniste", "Alors, vérifiez. Un titre, ce n'est pas une preuve."),
     narr("Elle donne un programme à Marie.")
@@ -354,7 +368,7 @@ window.GAME = (function () {
     effects: { item: "programme" }, next: "O05b" };
   N.O05b = { type: "lines", lines: [
     marie("Marcel ! Sur la photo B, il y a un boulanger avec une baguette. Et Marcel a des baguettes en plastique."),
-    L("marie", "Nous regardons les photos d'un album. Nous suivons la promenade et nous allons aux Invalides.", { sms: true }),
+    L("marie", "Nous vérifions les photos de l'album. Nous suivons la promenade et nous allons aux Invalides.", { sms: true }),
     L("nowak", "D'accord. Regardez aussi la fiche sur Orsay. Je vous l'ai donnée ce matin.", { sms: true })
   ], next: "O06" };
   N.O06 = { type: "task", title: "Une gare avant un musée", help: "O06", diag: "D_O06", doneAt: true,
@@ -412,16 +426,7 @@ window.GAME = (function () {
         { id: "boulanger", neutral: true, photo: "P18", x: 32.5, y: 5.5, w: 28.5, h: 91.5, line: lino("Le boulanger. Regarde son pain.") }
       ],
       material: [{ photo: "P18", x: 43, y: 21, w: 19.5, h: 13 }] },
-    after: [lino("Marcel avait des baguettes en plastique. Et des problèmes de sac.")],
-    next: "P01b" };
-  N.P01b = { type: "task", title: "Le pain qui ne vieillit pas", help: "P01b", diag: "D_P01b",
-    task: { kind: "pick", n: 1, question: "La baguette sur la photo B : qu'est-ce qui est vrai ?",
-      options: [
-        { id: "accessoire", label: "Cette baguette ressemble à un accessoire de théâtre.", ok: true },
-        { id: "plastique", label: "Avant, toutes les baguettes étaient en plastique.", reply: lino("On n'a rien lu sur ça.") },
-        { id: "vol", label: "Marcel a volé cet album.", reply: lino("Une baguette sur une photo, ce n'est pas une preuve de vol.") }
-      ],
-      wrong: lino("Pas encore.") },
+    after: [marie("Un vrai pain, on ne le répare pas. C'est un accessoire de théâtre."), lino("Marcel avait des baguettes en plastique. Et des problèmes de sac.")],
     next: "P02" };
   N.P02 = { type: "choice", who: "assistante", diag: "D_P02",
     lines: [
@@ -529,23 +534,22 @@ window.GAME = (function () {
       material: [{ img: 0, x: 43, y: 22, w: 9, h: 11 }, { img: 1, x: 3, y: 32, w: 36, h: 32 }],
       success: lino("Le même bout cassé. Les mêmes trois morceaux de ruban. C'est sa baguette.") },
     after: [
-      marie("La photo B ne peut pas être plus vieille que la réparation. Pour les deux autres, on doit voir Chloé."),
+      marie("La photo B ne peut pas être plus vieille que la réparation. Pour les deux autres, on doit voir la photographe."),
       lino("Alors, la photo B est de septembre de l'année dernière. Ou plus tard."),
       L("marcel", "Pour faire vieux, un peu de couleur suffit. Pour avoir raison, il faut plus de travail.")
     ],
-    effects: { flag: "I03_done" }, next: "R2" };
+    effects: { flag: "I03_done" }, next: "I05" };
   N.I05 = { type: "choice", who: "bouquiniste", help: "I05", diag: "D_I05", doneAt: true,
     lines: [narr("Au stand de la bouquiniste.")],
-    prompt: L("bouquiniste", "Alors ? Vous avez trouvé quelque chose ?"),
+    prompt: L("bouquiniste", "Alors ? L'album de votre professeur, il est vraiment de 1900 ?"),
     choices: [
       { fr: "Tout est faux, même la couverture.", kind: "wrong", reply: [L("bouquiniste", "Attention. La couverture, je l'ai regardée. Elle est vraiment vieille.")] },
-      { fr: "La légende de la photo A est fausse. Et Marcel reconnaît sa baguette sur la photo B. Maintenant, on attend Chloé.", kind: "ok", reply: [
-        L("bouquiniste", "Bien. Je ne paie pas avant de voir ses photos."),
-        L("bouquiniste", "Rendez-vous à quatorze heures quarante-cinq, au stand du vendeur. Mon voisin peut garder mon stand une heure.")
+      { fr: "La légende de la photo A est fausse. Et Marcel reconnaît sa baguette sur la photo B. Maintenant, on attend la photographe.", kind: "ok", reply: [
+        L("bouquiniste", "Une photographe ? Bien. Je veux savoir qui c'est.")
       ] },
       { fr: "Lucien est sur une photo. Alors, le vendeur travaille avec lui.", kind: "wrong", reply: [L("bouquiniste", "Ça, ce n'est pas une preuve.")] }
     ],
-    effects: { flag: "I_done" }, next: [{ if: "P_done", node: "LUNCH" }, { node: "MAP" }] };
+    effects: { flag: "I05_done" }, next: "R2" };
   /* Freiwillig: die Tempusübung am Tisch mit den Requisiten (öffnet keinen Ort) */
   N.Itemps = { type: "task", amb: true, title: "Marcel raconte", help: "Itemps", diag: "D_Itemps",
     task: { kind: "gap", intro: "Marcel raconte. Choisissez la bonne forme.",
@@ -554,16 +558,18 @@ window.GAME = (function () {
         " une baguette. Tout à coup, elle ", { id: "t3", opts: ["tombait", "est tombée"], answer: "est tombée" }, ". Alors, il ",
         { id: "t4", opts: ["mettait", "a mis"], answer: "a mis" }, " trois morceaux de ruban adhésif."
       ],
-      wrong: marie("C'est le décor ou l'action ?") },
+      wrong: marie("M. Nowak dit toujours : c'est le décor ou l'action ?") },
     effects: { flag: "Itemps_done" }, next: "RESUME" };
   N.Ir = { type: "lines", amb: true, lines: [L("marcel", "Chloé a les photos entières. Moi, j'ai seulement de bons souvenirs.")], next: "RESUME" };
-  N.Ib = { type: "lines", amb: true, lines: [L("bouquiniste", "Je n'ai encore rien payé. Et sans preuves, je ne paie pas.")], next: "RESUME" };
+  N.Ib = { type: "lines", amb: true, lines: [L("bouquiniste", "Votre professeur n'a encore rien payé ? Bien. Sans preuves, on ne paie pas.")], next: "RESUME" };
 
   /* Mittag: sichtbarer Zeitsprung, sobald Pont und Invalides erledigt sind */
   N.LUNCH = { type: "cut", bg: "cut_dejeuner", lines: [
     narr("Midi. La classe mange ensemble sur l'esplanade des Invalides."),
     L("nowak", "Vingt, vingt et un, vingt-deux. Bon appétit !"),
     lino("Une vraie baguette. Sans ruban adhésif."),
+    L("nowak", "Alors, mes détectives ? À quinze heures, je paie ?"),
+    marie("Pas encore. D'abord, Chloé, à quatorze heures."),
     narr("Après, il est presque quatorze heures.")
   ], next: "GO_stand6" };
 
@@ -575,7 +581,7 @@ window.GAME = (function () {
     lino("Aujourd'hui, on cherche une date."),
     narr("Chloé regarde les photos A, B et C."),
     L("chloe", "Mais ce sont mes photos ! Pourquoi est-ce qu'elles sont dans cet album ?"),
-    marie("Le vendeur dit : elles sont de 1900."),
+    marie("Le vendeur dit : elles sont de 1900. Et notre professeur veut acheter l'album."),
     L("chloe", "J'ai bien travaillé, alors. Mais pas si bien."),
     L("chloe", "Voilà les photos entières. Ce sont des photos des coulisses. On voit aussi notre travail.")
   ], next: "C01" };
@@ -626,28 +632,36 @@ window.GAME = (function () {
       matInv: ["fiche_chloe", "fiche_vente"],
       wrong: lino("Pas encore.") },
     after: [L("chloe", "Vous pouvez montrer ma fiche et mes photos. Je viens avec vous, si vous voulez.")],
-    effects: { flag: "C02_done" }, next: "R3" };
-  N.W1 = { type: "task", title: "Un message à la bouquiniste", help: "W1", diag: "D_W1", doneAt: true,
+    effects: { flag: "C02_done" }, next: "W1" };
+  /* W1 fragt Datum und Titel ab (früher zusätzlich das Tor R3) */
+  N.W1 = { type: "task", title: "Un message à M. Nowak", help: "W1", diag: "D_W1", doneAt: true,
     task: { kind: "write", min: 25, rows: 5, check: "contents", sms: true,
-      intro: "Écris un message à la bouquiniste. Trois phrases : donne la vraie date, explique le titre, dis ce que vous pouvez montrer. (au moins 25 mots)",
+      intro: "Écris un message à M. Nowak. Trois phrases : donne la vraie date, explique le titre, dis ce que vous pouvez montrer. (au moins 25 mots)",
       starters: ["Chloé a pris...", "« Paris 1900 », c'est...", "Nous avons..."],
-      topic: ["photo", "chloe", "2025", "septembre", "titre", "serie", "date", "fiche", "entier", "montr", "vendeur", "1900", "copie", "bouquinist", "album", "bord"], topicMin: 2,
+      topic: ["photo", "chloe", "2025", "septembre", "titre", "serie", "date", "fiche", "entier", "montr", "vendeur", "1900", "copie", "bouquinist", "nowak", "album", "bord"], topicMin: 2,
       topicMsg: "Parle des photos : la date, le titre, ce que vous pouvez montrer.",
       need: [
         { any: ["2025", "deux mille vingt-cinq"], msg: "Quelle année ?" },
         { any: ["titre", "serie"], msg: "Le titre ou la date ?" },
         { any: ["entiere", "entier", "fiche", "montr", "preuve", "dossier", "original"], msg: "Qu'est-ce que vous pouvez montrer ?" }
       ],
-      success: L("bouquiniste", "Merci ! À quatorze heures quarante-cinq, chez le vendeur.", { sms: true }) },
+      success: L("nowak", "Merci ! Alors, je ne paie pas encore. Rendez-vous à quatorze heures quarante-cinq, au stand du vendeur. Avec Chloé, si elle veut.", { sms: true }) },
     effects: { flag: "W1_done" }, next: "MAP" };
   N.Cr = { type: "lines", amb: true, lines: [L("chloe", "Les trois photos sont dans ce dossier. Entières, avec les bords.")], next: "RESUME" };
 
   /* ===== 7 Finale am Stand von Delmas (Lino ermittelt, Marie hilft) ===== */
+  /* Nach F03: M. Nowak kauft nicht, der Verantwortliche kommt (früher der Nachspann von F03b) */
+  const F03after = [
+    L("nowak", "Je voulais des photos de 1900 pour l'école. Ce n'est pas ça. Je n'achète pas."),
+    narr("Le responsable de la brocante arrive au stand."),
+    L("nowak", "Bonjour, monsieur. Voici la fiche du vendeur et la fiche de la photographe. Vous pouvez parler avec monsieur Delmas ?"),
+    L("responsable", "Bien sûr. Monsieur Delmas, je regarde votre fiche avec vous.")
+  ];
   N.F00 = { type: "cut", bg: "bg_orsay", lines: [
     deuxVoix,
-    narr("Quatorze heures quarante-cinq. Au stand du vendeur. La bouquiniste arrive avec M. Nowak. Chloé est avec Lino et Marie."),
-    L("delmas", "Alors, madame ? Cent quatre-vingts euros. C'est un bon prix."),
-    L("bouquiniste", "Avant de payer, je veux écouter ces deux jeunes."),
+    narr("Quatorze heures quarante-cinq. Au stand du vendeur. M. Nowak arrive avec la classe. Chloé est avec Lino et Marie."),
+    L("delmas", "Ah, monsieur ! Vous êtes en avance. Cent quatre-vingts euros, s'il vous plaît."),
+    L("nowak", "Avant de payer, je veux écouter mes détectives."),
     lino("Le livre est peut-être vieux. Mais les photos ont notre âge. Enfin, non : elles sont plus jeunes."),
     marie("Elles ont un an."),
     L("delmas", "« Paris 1900 », c'est une ambiance. Je n'ai jamais écrit : les photos sont de 1900.")
@@ -676,7 +690,20 @@ window.GAME = (function () {
       matInv: ["fiche_vente", "photos_entieres", "fiche_chloe"],
       wrong: marie("Pas encore.") },
     after: [L("delmas", "Le livre, lui, est vraiment ancien."), lino("Oui. C'est votre meilleure preuve. Pour le livre.")],
-    effects: { flag: "F01_done" }, next: "F03" };
+    effects: { flag: "F01_done" }, next: "F02" };
+  /* Fassung 1.2: Delmas wehrt sich. Die Antwort steht im Hörtext von Chloé (C02a) */
+  N.F02 = { type: "choice", who: "delmas", help: "F02", diag: "D_F02",
+    prompt: L("delmas", "Moi, je ne savais pas. J'ai acheté ces photos comme ça."),
+    choices: [
+      { fr: "Chloé vous a expliqué le titre.", kind: "ok", reply: [
+        L("chloe", "Oui, monsieur. Je vous l'ai expliqué. « Paris 1900 », c'est le titre de notre série."),
+        L("delmas", "Ah… j'ai oublié."),
+        lino("Pratique.")
+      ] },
+      { fr: "Les photos sont brunes.", kind: "wrong", reply: [marie("Brunes, oui. Mais ça ne montre pas ce qu'il savait.")] },
+      { fr: "Lucien est sur la photo.", kind: "wrong", reply: [marie("Lucien, oui. Mais ça ne montre pas ce qu'il savait.")] }
+    ],
+    next: "F03" };
   N.F03 = { type: "task", title: "Comment il a fait l'album", help: "F03", diag: "D_F03",
     task: { kind: "chain", intro: "Comment est-ce que le vendeur a fait l'album ? Mettez les phrases dans l'ordre.", words: [],
       items: [
@@ -687,21 +714,7 @@ window.GAME = (function () {
         { parts: ["Sur sa fiche, il a écrit : photos de 1900."] }
       ],
       wrong: marie("Pas encore. Pense aux dates.") },
-    next: "F03b" };
-  N.F03b = { type: "task", title: "Comment il a fait l'album", help: "F03b", diag: "D_F03b",
-    task: { kind: "pick", n: 1, question: "Qu'est-ce qui est vrai ?",
-      options: [
-        { id: "vrai", label: "L'album est ancien, mais les photos sont récentes. La fiche de vente est fausse.", ok: true },
-        { id: "objet", label: "Un objet ancien dit toujours la vérité.", reply: marie("Non. L'album est vieux, mais sa fiche ne dit pas la vérité.") },
-        { id: "chere", label: "Une photo chère est toujours une vieille photo.", reply: marie("Non. Le prix ne dit pas la date.") }
-      ],
-      wrong: marie("Pas encore.") },
-    after: [
-      L("bouquiniste", "Je voulais des photos de 1900. Ce n'est pas ça. Je n'achète pas."),
-      narr("Le responsable de la brocante arrive au stand."),
-      L("nowak", "Bonjour, monsieur. Voici la fiche du vendeur et la fiche de la photographe. Vous pouvez parler avec monsieur Delmas ?"),
-      L("responsable", "Bien sûr. Monsieur Delmas, je regarde votre fiche avec vous.")
-    ],
+    after: F03after,
     next: "F04l" };
   N.F04l = { type: "lines", lines: [
     L("delmas", "D'accord. J'avais un album vide. J'ai mis les photos dedans. Elles allaient bien avec la couverture."),
@@ -717,46 +730,60 @@ window.GAME = (function () {
         { id: "gare", label: "Photos trouvées dans une gare en 1900", reply: lino("Une gare en 1900, oui. Des photos de 1900, non.") }
       ],
       wrong: marie("Pas encore.") },
-    after: [narr("Monsieur Delmas donne la nouvelle fiche au responsable.")],
-    effects: { flag: "F04_done" }, next: "R4" };
+    after: [
+      narr("Monsieur Delmas donne la nouvelle fiche au responsable."),
+      L("delmas", "Avec la nouvelle fiche, l'album coûte… trente euros. Monsieur ?"),
+      L("nowak", "Non, merci. Notre argent reste dans l'enveloppe."),
+      lino("Bravo, monsieur. Vous apprenez vite.")
+    ],
+    effects: { flag: "F04_done" }, next: "W2" };
+  /* Fassung 1.2: Schlussbild nach dem Bericht. Statt des Albums bekommt die Schule ein ehrliches Klassenfoto */
   N.F05 = { type: "cut", bg: "bg_orsay", lines: [
     L("chloe", "Pour vous dire merci, je fais une vraie photo de la classe. Avec les costumes, si vous voulez."),
+    L("nowak", "Une photo de la classe, pour l'école ? Ça, c'est un vrai souvenir."),
+    L("kevin", "Et Lucien, il est où ?"),
+    lino("En 1900, peut-être."),
+    L("nowak", "Vingt, vingt et un, vingt-deux… vingt-trois ?"),
+    lino("Bernd aussi veut être sur la photo."),
     L("kevin", "Je peux garder mon téléphone ?"),
     lino("Oui. Dans cent ans, ça va aider quelqu'un."),
-    L("nowak", "Vingt, vingt et un, vingt-deux. Vous êtes prêts ?"),
     marie("Attendez. Il manque une chose.")
   ], next: "F05b" };
   /* Die Tafel vor der Klasse: Text vom Spiel, damit er auf dem braunen Bild lesbar bleibt */
   N.F05b = { type: "cut", bg: "cut_photo_classe", sign: "Classe 10b\nd'Erfurt\nParis · 2026", signAt: { x: 43, y: 74.3, w: 9.6, h: 11.1 }, lines: [
-    lino("Maintenant, même en brun, c'est vrai.")
-  ], next: "W2" };
+    lino("Maintenant, même en brun, c'est vrai."),
+    marie("« Les vrais souvenirs restent plus longtemps que les téléphones. » Le vendeur avait raison, finalement."),
+    lino("Pour une fois."),
+    L("nowak", "Et maintenant, la gare. Les billets sont dans Bernd, et mon enveloppe rouge est dessous."),
+    lino("Je sais. Je sais même où.")
+  ], next: "END_SCREEN" };
   N.W2 = { type: "task", title: "Le rapport", perPlayer: true, help: "W2", diag: "D_W2", doneAt: true,
     task: { kind: "write", min: 40, rows: 8, check: "rapport",
       intro: "Pour le journal de la classe, raconte l'affaire en trois ou quatre phrases (au moins 40 mots). Utilise l'imparfait et le passé composé.",
       starters: ["Le vendeur disait...", "Mais...", "Finalement..."],
-      topic: ["vendeur", "album", "photo", "chloe", "1900", "2025", "bouquinist", "baguette", "marcel", "lucien", "legende", "fiche", "copie", "bord"], topicMin: 3,
+      topic: ["vendeur", "album", "photo", "chloe", "1900", "2025", "bouquinist", "nowak", "professeur", "baguette", "marcel", "lucien", "legende", "fiche", "copie", "bord"], topicMin: 3,
       topicMsg: "Raconte l'affaire : le vendeur, les photos, Chloé.",
       msgs: {
         imparfait: "Il manque l'imparfait : comment c'était ?",
         pc: "Il manque le passé composé : qu'est-ce qu'il a fait ?"
       } },
-    next: "END_SCREEN" };
+    effects: { flag: "W2_done" }, next: "F05" };
   N.END_SCREEN = { type: "end" };
   N.Fr = { type: "lines", amb: true, lines: [L("delmas", "Tout est sur la nouvelle fiche. Cette fois, avec la bonne date.")], next: "RESUME" };
 
   /* ===== Abfragen unterwegs (Tore): getippt, ohne Auswahl, nur mit Hinweis, wo man nachsehen kann ===== */
-  N.R1 = { type: "task", gate: true, title: "Le musée", diag: "D_R1",
-    task: { kind: "recall", who: "marie", intro: "Avant de continuer : le musée a ouvert en quelle année ?",
+  N.R1 = { type: "task", gate: true, title: "Une question de Kevin", diag: "D_R1",
+    task: { kind: "recall", who: "nowak", sms: true, intro: "Lino, Kevin dit : le musée a ouvert en 1900. C'est vrai ? Il a ouvert en quelle année ?",
       fields: [{ id: "annee", label: "L'année :", size: 12,
         answers: ["1986", "en 1986", "mille neuf cent quatre-vingt-six", "en mille neuf cent quatre-vingt-six"],
         keywords: [["1986"], ["quatre", "vingt", "six"]],
-        traps: [{ answers: ["1900", "en 1900"], keywords: [["1900"]], who: "marie", fr: "En 1900, les gens prenaient le train ici." }],
-        where: "C'est sur la fiche de M. Nowak." }],
-      wrongText: "Hmm. Je ne crois pas.",
-      success: marie("1986. Avant, c'était une gare.") },
+        traps: [{ answers: ["1900", "en 1900"], keywords: [["1900"]], who: "nowak", fr: "C'est ce que Kevin dit. Mais en 1900, les gens prenaient le train ici, non ?" }],
+        where: "C'est sur ma fiche de ce matin." }],
+      wrongText: "Tu es sûr ? Kevin, lui, est très sûr.",
+      success: L("nowak", "1986. Avant, c'était une gare. Merci, Lino ! Kevin n'est pas content.", { sms: true }) },
     effects: { flag: "R1_done" }, after: [marie("On y va ? La carte est ouverte. Le pont est tout près.")], next: "MAP" };
-  N.R2 = { type: "task", gate: true, title: "Les photos de Chloé", diag: "D_R2",
-    task: { kind: "recall", who: "lino", intro: "Avant de partir, deux questions.",
+  N.R2 = { type: "task", gate: true, title: "La photographe", diag: "D_R2",
+    task: { kind: "recall", who: "bouquiniste", intro: "Qui a pris ces photos ? Et je peux voir cette personne à quelle heure ?",
       fields: [
         { id: "qui", label: "Qui a pris ces photos ?", size: 14, answers: ["Chloé", "c'est Chloé"], keywords: [["chloe"]],
           traps: [
@@ -769,48 +796,21 @@ window.GAME = (function () {
           answers: ["14 h", "14 heures", "quatorze heures", "à quatorze heures", "à partir de quatorze heures"], times: ["14", "1400"],
           keywords: [["quatorze", "heure"]],
           traps: [
-            { times: ["1445"], keywords: [["quarante", "cinq"]], who: "lino", fr: "Non, plus tôt. Ça, c'est le rendez-vous chez le vendeur." },
-            { times: ["11", "1100"], keywords: [["onze"]], who: "lino", fr: "Onze heures, c'est le stand de la bouquiniste." },
-            { times: ["15", "1500"], keywords: [["quinze"]], who: "lino", fr: "Quinze heures, c'est quand la bouquiniste veut payer." }
+            { times: ["1445"], keywords: [["quarante", "cinq"]], who: "lino", fr: "Non, plus tôt." },
+            { times: ["11", "1100"], keywords: [["onze"]], who: "lino", fr: "Onze heures, c'est quand son stand ouvre." },
+            { times: ["15", "1500"], keywords: [["quinze"]], who: "lino", fr: "Quinze heures, c'est quand M. Nowak veut payer." }
           ],
           where: "C'est sur le programme." }
       ],
-      wrongText: "Hmm. Je ne crois pas.",
-      success: marie("Chloé, à quatorze heures, au stand 6.") },
-    effects: { flag: "R2_done" }, next: "I05" };
-  N.R3 = { type: "task", gate: true, title: "La date et le titre", diag: "D_R3",
-    task: { kind: "recall", who: "marie", intro: "Alors, deux questions.",
-      fields: [
-        { id: "quand", label: "Quand est-ce que Chloé a pris les photos ?", size: 18,
-          answers: ["en septembre 2025", "septembre 2025", "en 2025", "2025"], keywords: [["2025"], ["vingt", "cinq"]],
-          traps: [
-            { keywords: [["1900"]], who: "marie", fr: "Non. 1900, c'est sur la fiche du vendeur." },
-            { keywords: [["2026"], ["octobre"]], who: "marie", fr: "Non. En octobre, monsieur Delmas a acheté les copies." }
-          ],
-          where: "Écoute encore Chloé. Et regarde sa fiche." },
-        { id: "titre", label: "Et « Paris 1900 », c'est quoi ?", size: 22,
-          answers: ["le titre de la série", "le titre", "une série de photos", "c'est le titre de la série", "un titre", "le titre de la série de photos"],
-          keywords: [["titre"], ["serie"]],
-          traps: [{ answers: ["la date", "une date", "c'est la date", "c'est une date", "la date des photos"], who: "lino", fr: "Non. Ça, c'est l'erreur du vendeur." }],
-          where: "Chloé l'a dit. Et c'est sur sa fiche." }
-      ],
-      wrongText: "Hmm. Je ne crois pas.",
-      success: marie("Septembre 2025. Et « Paris 1900 », c'est un titre. Pas une date.") },
-    effects: { flag: "R3_done" }, next: "W1" };
-  N.R4 = { type: "task", gate: true, title: "Le vrai problème", diag: "D_R4",
-    task: { kind: "recall", who: "nowak", intro: "En une phrase : qu'est-ce qui était faux sur la fiche ?",
-      /* sinngleich: alles, was die Datierung der Fotos nennt; dazu die zweite falsche Angabe der Fiche (Originale statt Kopien) */
-      fields: [{ id: "faux", label: "Sur la fiche, c'était faux :", size: 30,
-        answers: ["la date des photos", "la date", "l'année des photos", "les photos ne sont pas de 1900", "il disait : les photos sont de 1900", "les photos sont de 2025"],
-        keywords: [["date"], ["annee"], ["1900"], ["2025"], ["age", "photo"], ["recent"], ["copie"], ["original"]],
-        traps: [
-          { answers: ["la couverture", "la couverture de l'album", "l'album", "le livre", "les pages"], keywords: [["couverture"]], who: "nowak", fr: "Non. La couverture est vraiment vieille." },
-          { answers: ["le prix", "180 €", "180 euros"], keywords: [["prix"]], who: "nowak", fr: "Le prix ? C'est cher, oui. Mais ce n'est pas faux." }
-        ],
-        where: "Relis la fiche de vente : la troisième ligne." }],
-      wrongText: "Hmm. Tu peux répéter ?",
-      success: L("nowak", "Exactement. La date des photos était fausse.") },
-    effects: { flag: "R4_done" }, next: "F05" };
+      wrongText: "Hmm. Vous êtes sûrs ?",
+      success: L("bouquiniste", "Chloé, à quatorze heures, au stand 6. Alors, votre professeur ne doit pas payer avant de voir ses photos.") },
+    after: [lino("On lui écrit après Chloé. Promis.")],
+    effects: { flags: ["R2_done", "I_done"] }, next: [{ if: "P_done", node: "LUNCH" }, { node: "MAP" }] };
+  /* Ältere Spielstände (Fassung 1.1): Diese Knoten gibt es nicht mehr. Wer dort stehen geblieben ist, geht hier weiter. */
+  N.P01b = { type: "lines", lines: [marie("Un vrai pain, on ne le répare pas. C'est un accessoire de théâtre.")], next: "P02" };
+  N.R3 = { type: "lines", lines: [marie("Alors, on écrit à M. Nowak.")], next: "W1" };
+  N.F03b = { type: "lines", lines: F03after, next: "F04l" };
+  N.R4 = { type: "lines", lines: [L("nowak", "Bien. Et maintenant, le rapport pour le journal de la classe.")], next: "W2" };
 
   G.nodes = N;
 
@@ -823,20 +823,19 @@ window.GAME = (function () {
     O06: ["Avant, c'était une gare.", { fr: "Relis la fiche sur Orsay.", action: "material" }, "Regarde les deux années : 1900 et 1986.", "La légende est fausse. Mais ça ne donne pas la date de la photo."],
     P00: ["Cherche les choses sur les deux images.", { fr: "Regarde le pont sur les deux images.", action: "material" }, "Le bateau et le vélo sont seulement sur l'image d'aujourd'hui.", "Les lampadaires, les colonnes, les statues : trouve-les sur la photo B et sur l'image d'aujourd'hui."],
     P01: ["Regarde le bout du pain.", { fr: "Zoome sur la baguette.", action: "material" }, "Il y a quelque chose au bout, sur le pain et à la main.", "Le bout cassé, le ruban adhésif et le gant blanc."],
-    P01b: ["Pourquoi est-ce qu'il y a du ruban adhésif ?", "Un vrai pain, on ne le répare pas.", "C'est peut-être un accessoire réparé. Il faut demander à Marcel.", "Une baguette avec du ruban adhésif, c'est un accessoire de théâtre."],
     P03: ["Écoute les mots : tout à coup, ramassée, recommencé.", { fr: "Écoute encore l'assistante.", action: "replay" }, { fr: "Voici ses mots. Cherche : costumes, tombée, ramassée, recommencé.", action: "transcript" }, "D'abord les costumes. Puis la baguette tombe. Marcel la ramasse. À la fin, Chloé recommence la photo."],
     P03b: ["Écoute la fin.", { fr: "Écoute encore l'assistante.", action: "replay" }, { fr: "Voici ses mots. Lis les deux dernières phrases.", action: "transcript" }, "Elle dit : la date exacte ? Je ne sais pas."],
     I01: ["Qu'est-ce que Marcel a dit ? Pas ce que tu penses.", { fr: "Relis les mots de Marcel.", action: "material" }, "Marcel parle de Lucien et de la séance photo.", "Il a dit : Lucien jouait le voyageur. Et : l'année dernière, il a fait une séance photo avec nous."],
     I02: ["Écoute bien : quand, pourquoi, comment.", { fr: "Écoute encore Marcel.", action: "replay" }, { fr: "Voici ses mots. Cherche : septembre, tombée, ruban adhésif.", action: "transcript" }, "En septembre, l'année dernière. La baguette est tombée. Il a mis trois morceaux de ruban adhésif."],
-    Itemps: ["C'est le décor ou l'action ?", "Le décor, c'est comment c'était. L'action, c'est ce qui s'est passé une fois.", "Tout à coup : c'est une action.", "Il faisait le boulanger, il tenait une baguette : c'est le décor, alors l'imparfait. Elle est tombée, il a mis le ruban : ce sont des actions, alors le passé composé."],
+    Itemps: ["M. Nowak dit toujours : c'est le décor ou l'action ?", "Le décor, c'est comment c'était. L'action, c'est ce qui s'est passé une fois.", "Tout à coup : c'est une action.", "Il faisait le boulanger, il tenait une baguette : c'est le décor, alors l'imparfait. Elle est tombée, il a mis le ruban : ce sont des actions, alors le passé composé."],
     I03: ["Compare les petits détails.", { fr: "Regarde la baguette sur les deux images.", action: "material" }, "Zoome sur le bout de la baguette.", "Le même bout cassé, le même ruban, à la même place : c'est la même baguette."],
     I05: ["Qu'est-ce qu'on sait vraiment ?", "Pense à la légende et à la baguette.", "Lucien sur une photo, ce n'est pas une preuve.", "La légende de la photo A est fausse. Et Marcel reconnaît sa baguette."],
     C01: ["Le vendeur n'a pas montré toute la photo.", { fr: "Regarde les personnes sur les photos entières.", action: "material" }, { fr: "Regarde où est la photo de l'album sur la photo entière.", action: "material" }, "Regarde les personnes : même place, même manteau. Au bord, il y a des choses modernes."],
     C02: ["La date, le titre ou le prix ?", { fr: "Regarde la fiche de Chloé et la fiche de vente.", action: "material" }, { fr: "Voici les mots de Chloé.", action: "transcript" }, "Septembre 2025, c'est la date. « Paris 1900 », c'est le titre. 18 €, ce sont les trois copies. 180 €, c'est l'album."],
     W1: ["Trois phrases : la date, le titre, ce que vous pouvez montrer.", "Chloé a pris les photos quand ? « Paris 1900 », c'est quoi ?", "Tu peux commencer : Chloé a pris les photos en…", "La date et le titre sont sur la fiche de Chloé. Et ce que vous pouvez montrer, c'est dans l'inventaire."],
     F01: ["Il dit : je n'ai jamais écrit ça. Qu'est-ce qu'il a écrit ?", { fr: "Regarde la fiche de vente, les photos entières et la fiche de Chloé.", action: "material" }, "Sa fiche, les mêmes photos, la vraie date.", "Le titre ne montre rien. Compare la fiche de vente et les documents."],
+    F02: ["Qu'est-ce que Chloé a dit sur la vente ?", "Avant-hier, il a acheté les copies. Et Chloé lui a parlé.", "Chloé a dit : je lui ai expliqué le titre.", "Il savait : Chloé lui a expliqué le titre. Les photos brunes et Lucien ne montrent pas ce qu'il savait."],
     F03: ["Commence par la séance photo.", "D'abord Chloé, puis le vendeur.", "Après l'achat, il a coupé. Puis il a collé.", "Septembre 2025 : les photos. Avant-hier : les copies. Puis : couper, coller, écrire la fiche."],
-    F03b: ["Pense à l'album et aux photos.", "L'album est vieux. Et les photos ?", "Les photos sont de 2025. Et la fiche de vente dit : 1900.", "L'album est ancien, mais les photos sont récentes. Alors, la fiche de vente est fausse."],
     F04: ["Une fiche juste dit la vérité sur l'album et sur les photos.", "L'album est vieux. Les photos sont des copies.", "Les photos sont de 2025. « Paris 1900 », c'est le titre de la série.", "Album ancien. Copies de photos prises en 2025. Série en costumes « Paris 1900 »."],
     W2: ["Raconte dans l'ordre : le vendeur, Chloé, l'album, la fin.", { fr: "Regarde les débuts de phrases.", action: "material" }, "Le décor à l'imparfait : le vendeur disait. L'action au passé composé : Chloé a pris, il a coupé.", "Au moins 40 mots, un imparfait (disait, était), un passé composé (a pris, a coupé), et trois mots de l'affaire : le vendeur, les photos, Chloé…"]
   };
@@ -845,11 +844,12 @@ window.GAME = (function () {
   G.diag = {
     D_O02: "Gesicht und Uhr auf dem Albumfoto", D_O03: "W-Fragen statt Ja-Nein-Fragen", D_O04: "Versprechen über die Fotos (nicht über das Buch)",
     D_O06: "Dokument sagt ja, nein, nichts", D_R1: "Abfrage: Eröffnung des Museums",
-    D_P00: "Gleiche Dinge auf zwei Bildern", D_P01: "Details der Baguette", D_P01b: "Requisit statt Brot", D_P02: "Wen fragen", D_P03: "Reihenfolge der Erinnerung", D_P03b: "Was die Assistentin nicht weiß",
+    D_P00: "Gleiche Dinge auf zwei Bildern", D_P01: "Details der Baguette", D_P01b: "Requisit statt Brot (bis Fassung 1.1)", D_P02: "Wen fragen", D_P03: "Reihenfolge der Erinnerung", D_P03b: "Was die Assistentin nicht weiß",
     D_I01: "Was Marcel weiß (nicht vermutet)", D_I02: "Hören: wann, warum, wie", D_Itemps: "Imparfait und passé composé (freiwillig)", D_I03: "Gleiche Details: dieselbe Baguette",
     D_R2: "Abfrage: Fotografin und Uhrzeit", D_I05: "Was wir wirklich wissen",
-    D_C01: "Ausschnitt und Vollbild, abgeschnittene Details", D_C02: "Datum, Titel, Preise", D_R3: "Abfrage: Datum und Titel", D_W1: "Nachricht an die Bouquiniste",
-    D_F01: "Beweise mit Pflichtbeleg", D_F03: "Wie das Album entstand", D_F03b: "Altes Album, neue Fotos", D_F04: "Eine richtige Fiche", D_R4: "Abfrage: was falsch war", D_W2: "Rapport"
+    D_C01: "Ausschnitt und Vollbild, abgeschnittene Details", D_C02: "Datum, Titel, Preise", D_R3: "Abfrage: Datum und Titel (bis Fassung 1.1)", D_W1: "Nachricht an M. Nowak",
+    D_F01: "Beweise mit Pflichtbeleg", D_F02: "Einwand des Händlers: was Chloé ihm erklärt hat", D_F03: "Wie das Album entstand", D_F03b: "Altes Album, neue Fotos (bis Fassung 1.1)",
+    D_F04: "Eine richtige Fiche", D_R4: "Abfrage: was falsch war (bis Fassung 1.1)", D_W2: "Rapport"
   };
 
   /* ---------- Lehrkraft: Lösungen, Freischalten ---------- */
@@ -861,25 +861,23 @@ window.GAME = (function () {
     ["R1", "1986 (Falle 1900)"],
     ["P00", "Lampadaires, colonnes, statues, jeweils auf beiden Bildern antippen; Boot und Fahrrad nur heute"],
     ["P01", "Bout cassé, ruban adhésif, gant blanc; freiwillig: der Stativfuß am linken Rand (setzt pied_vu)"],
-    ["P01b", "Cette baguette ressemble à un accessoire de théâtre"],
     ["P02", "Beide Fragen: Marcel (Invalides), Chloé (14 h, stand 6)"],
     ["P03", "costumes → tombe → ramasse → recommence"], ["P03b", "la date exacte des photos"],
     ["I01", "Lucien était un acteur sur ces photos · La séance photo était l'année dernière"],
     ["I02", "en septembre, l'année dernière · La baguette est tombée · avec trois morceaux de ruban adhésif"],
     ["Itemps", "faisait, tenait, est tombée, a mis (freiwillig, Tisch mit den Requisiten)"],
     ["I03", "Bout cassé und ruban adhésif, jeweils auf beiden Bildern antippen"],
-    ["R2", "Chloé · 14 h"], ["I05", "La légende de la photo A est fausse. Et Marcel reconnaît sa baguette…"],
+    ["I05", "La légende de la photo A est fausse. Et Marcel reconnaît sa baguette… Maintenant, on attend la photographe."], ["R2", "Chloé · 14 h"],
     ["C01", "A → P17, B → P18, C → P19 (Falle P16); dann: Assistentin mit Smartphone (P17), LED-Lampe auf Stativ (P18), Filmklappe (P19)"],
     ["C02", "septembre 2025 = date · Paris 1900 = titre · 18 € = copies · 180 € = album"],
-    ["R3", "(en) septembre 2025 · le titre de la série"],
     ["W1", "Mindestens 25 Wörter mit Jahr (2025), Titel oder Serie und etwas zum Zeigen (photos entières, fiche…)"],
     ["F01", "Pflicht: fiche de vente = photos de 1900, pas des copies; dazu zwei aus: photos entières = mêmes photos, bords coupés · fiche de Chloé = septembre 2025 · photo de la baguette = photo B de 2025"],
-    ["F03", "séance 2025 → copies → bords coupés → collées → fiche"], ["F03b", "L'album est ancien, mais les photos sont récentes…"],
+    ["F02", "Chloé vous a expliqué le titre (Fallen: brunes, Lucien)"],
+    ["F03", "séance 2025 → copies → bords coupés → collées → fiche"],
     ["F04", "Album ancien · Copies de photos prises en 2025 · Série en costumes « Paris 1900 »"],
-    ["R4", "la date des photos (auch: pas de 1900, 2025, copies statt originales); Falle: la couverture"],
     ["W2", "Mindestens 40 Wörter, ein imparfait, ein passé composé, drei Themenwörter"]
   ];
-  G.profUnlock = ["O01_done", "O02_done", "O04_done", "O06_done", "R1_done", "pied_vu", "p02_marcel", "p02_chloe", "P_done", "I02_done", "I03_done", "R2_done", "I_done", "C01_done", "C02_done", "R3_done", "W1_done"];
+  G.profUnlock = ["O01_done", "O02_done", "O04_done", "O06_done", "R1_done", "pied_vu", "p02_marcel", "p02_chloe", "P_done", "I02_done", "I03_done", "I05_done", "R2_done", "I_done", "C01_done", "C02_done", "W1_done"];
 
   /* ---------- Abspann ---------- */
   G.credits = {

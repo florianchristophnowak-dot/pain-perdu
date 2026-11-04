@@ -216,7 +216,7 @@ window.GAME = (function () {
       hotspots: [
         { id: "assistante", label: "l'assistante", x: 2, y: 33, w: 17, h: 30, who: "assistante", actions: { parler: [{ if: "V01q_done", node: "V02" }, { if: "L02_done", node: "V01q" }, { node: "V01" }] } },
         { id: "scene", label: "la scène", x: 22, y: 10, w: 26, h: 56, actions: { regarder: "V00s" } },
-        { id: "marcel", label: "Marcel", x: 49, y: 34, w: 19, h: 56, who: "marcel", actions: { parler: [{ if: "V05_done", node: "V03r" }, { if: "V03_done", node: "V04" }, { if: "V03_talked", node: "V03q" }, { if: "V02_done", node: "V03" }, { node: "V00m" }] }, showIf: "V01q_done" }
+        { id: "marcel", label: "Marcel", x: 49, y: 34, w: 19, h: 56, who: "marcel", actions: { parler: [{ if: "V05_done", node: "V03r" }, { if: "V03_done", node: "V05" }, { if: "V03_talked", node: "V03q" }, { if: "V02_done", node: "V03" }, { node: "V00m" }] }, showIf: "V01q_done" }
       ]
     },
     /* Phase 2 */
@@ -319,7 +319,11 @@ window.GAME = (function () {
   ] };
 
   /* Père-Lachaise */
+  /* Die Uhr läuft mit: Die Uhrzeit hängt davon ab, ob man vorher im Marais (und in der Buchhandlung) war */
   N.P01 = { type: "lines", once: "P01_seen", lines: [
+    { who: "narrateur", fr: "Quatorze heures. Encore trois heures avant le rendez-vous au Louvre.", onlyIf: "!B01_seen" },
+    { who: "narrateur", fr: "Quinze heures. Encore deux heures avant le rendez-vous au Louvre.", onlyIf: ["B01_seen", "!L01_seen"] },
+    { who: "narrateur", fr: "Seize heures et quart. Encore quarante-cinq minutes avant le rendez-vous au Louvre.", onlyIf: "L01_seen" },
     { who: "marie", fr: "Le Père-Lachaise, le plus grand cimetière de Paris. Des arbres, un gardien et un chien." },
     { who: "lino", fr: "Et une balle. Le chien ne regarde que la balle.", de: "Und ein Ball. Der Hund guckt nur auf den Ball." }
   ] };
@@ -387,6 +391,8 @@ window.GAME = (function () {
 
   /* Marais */
   N.B01 = { type: "lines", once: "B01_seen", lines: [
+    { who: "narrateur", fr: "Quatorze heures. Encore trois heures avant le rendez-vous au Louvre.", onlyIf: "!P01_seen" },
+    { who: "narrateur", fr: "Quinze heures. Encore deux heures avant le rendez-vous au Louvre.", onlyIf: "P01_seen" },
     { who: "narrateur", fr: "Sur le panneau : « Aujourd'hui : pain perdu »" },
     { who: "lino", fr: "Enfin un magasin qui vend mon problème.", de: "Endlich ein Laden, der mein Problem verkauft." },
     { who: "marie", fr: "Le pain perdu, c'est un dessert, Lino. En Allemagne, on dit « Arme Ritter », non ?" }
@@ -450,6 +456,7 @@ window.GAME = (function () {
 
   /* Librairie */
   N.L01 = { type: "lines", once: "L01_seen", lines: [
+    { who: "narrateur", fr: "Seize heures. Encore une heure avant le rendez-vous au Louvre." },
     { who: "lenoir", fr: "Attention à l'échelle ! Les livres restent. Les programmes changent." },
     { who: "lino", fr: "Une échelle trop grande pour une étagère trop petite. J'aime cet homme.", de: "Eine zu große Leiter für ein zu kleines Regal. Ich mag diesen Mann." }
   ] };
@@ -519,6 +526,10 @@ window.GAME = (function () {
       } },
     effects: { flag: "L04_done" },
     after: [{ who: "lenoir", fr: "Parfait, merci ! Ah, j'oubliais : Marcel est passé tout à l'heure. Il a laissé une carte pour vous, sur la porte." }],
+    next: "L05s" };
+  /* Die Uhr tickt: Nowak meldet sich nach dem Stempel (nur einmal, die Karte an der Tür führt direkt zu L05) */
+  N.L05s = { type: "doc", title: "SMS de M. Nowak", icon: "sms", doc: "Lino, il est seize heures trente. Vous êtes où ? Je compte déjà.",
+    lines: [{ who: "narrateur", fr: "Le téléphone de Lino vibre." }, { who: "lino", fr: "Il compte quoi ? Les minutes ou les élèves ?", de: "Was zählt er? Die Minuten oder die Schüler?" }],
     next: "L05" };
   N.L04x = { type: "lines", lines: [{ who: "narrateur", fr: "Des livres, des tampons, une tasse de café froid. Rien sur Marcel." }] };
   N.L04r = { type: "lines", lines: [{ who: "lenoir", fr: "L'affiche est sur la porte. Merci encore !" }] };
@@ -596,26 +607,33 @@ window.GAME = (function () {
     after: [
       { who: "lino", fr: "Voici votre sac. On échange ?" },
       { who: "narrateur", fr: "Marcel cherche longtemps une fermeture éclair invisible... sur un vrai sac." },
-      { who: "lino", fr: "Trop de sacs invisibles. Ça laisse des traces.", de: "Zu viele unsichtbare Taschen. Das hinterlässt Spuren." }
+      { who: "lino", fr: "Trop de sacs invisibles. Ça laisse des traces.", de: "Zu viele unsichtbare Taschen. Das hinterlässt Spuren." },
+      { who: "narrateur", fr: "Le téléphone de Lino vibre. Monsieur Nowak : « On arrive dans dix minutes. Ne bougez pas ! »" }
     ],
-    next: "V04" };
+    next: "V05" };
   N.V03r = { type: "lines", lines: [{ who: "marcel", fr: "Merci encore, et bonne soirée !" }] };
 
+  /* Schlussszene nach dem Bericht: beide hatten denselben falschen Verdacht, dann die Vorahnung auf Teil 2 */
   N.V04 = { type: "cut", bg: "cut_final", lines: [
     { who: "marcel", fr: "Un sac brun, un sac en forme de pain... Pour un mime, c'est presque pareil !" },
     { who: "lino", fr: "Pour vous, peut-être. Bernd, lui, n'est pas d'accord.", de: "Für Sie vielleicht. Bernd sieht das anders." },
+    { who: "marcel", fr: "Quand j'ai ouvert le sac, d'abord, j'ai pensé : on a volé mon sac !" },
+    { who: "lino", fr: "Nous aussi.", de: "Wir auch." },
+    { who: "marie", fr: "Alors, tout le monde avait tort." },
     { who: "narrateur", fr: "Monsieur Nowak arrive avec la classe. Kevin ouvre sa boîte bleue. Monsieur Nowak ouvre son enveloppe rouge : « Plan B : rester calme et recompter. » Il compte : 22... 23. Il regarde Bernd." },
     { who: "lino", fr: "Il ne compte pas. Il juge.", de: "Er zählt nicht. Er beurteilt nur." },
-    { who: "lino", fr: "Note pour moi : ne pas crier « voleur » sans preuves.", de: "Notiz an mich: nicht „Dieb“ rufen ohne Beweise.", onlyIf: "V03_voleur" }
-  ], next: "V05" };
+    { who: "lino", fr: "Note pour moi : ne pas crier « voleur » sans preuves.", de: "Notiz an mich: nicht „Dieb“ rufen ohne Beweise.", onlyIf: "V03_voleur" },
+    { who: "nowak", fr: "Demain, on va à Notre-Dame. Avec un vrai guide officiel. Comme ça, pas de problème." },
+    { who: "lino", fr: "Un guide officiel. Qu'est-ce qui peut arriver ?", de: "Ein offizieller Stadtführer. Was soll da schon passieren?" }
+  ], next: "V06" };
 
   N.V05 = { type: "task", diag: "D_V05", help: "V05", perPlayer: true, title: "Rapport final",
-    task: { kind: "write", intro: "Raconte l'affaire en 6 à 8 phrases : Où est-ce que vous étiez ? Qu'est-ce que le mime a fait ? Quel indice a changé votre idée ? Comment est-ce que vous avez retrouvé le sac ?", min: 50,
+    task: { kind: "write", intro: "En attendant la classe, raconte l'affaire en 6 à 8 phrases : Où est-ce que vous étiez ? Qu'est-ce que le mime a fait ? Quel indice a changé votre idée ? Comment est-ce que vous avez retrouvé le sac ?", min: 50,
       starters: ["On était à Montmartre.", "Lino tenait...", "Pendant que..., le mime a pris...", "Au Père-Lachaise, on a appris...", "Marcel avait déjà...", "Il croyait que...", "À la fin, on a échangé..."],
       model: "On était à Montmartre pour une photo. Lino tenait le sac Bernd. Pendant que nous regardions la photo, le mime a pris notre sac. Au Père-Lachaise, on a appris son nom : Marcel Blanchard. Sur une photo, Marcel avait déjà son sac brun. Donc ce n'était pas un vol. Il croyait que notre sac était son sac. À la librairie, on a trouvé le bon programme. À la fin, on a échangé les sacs au Louvre.",
       topicMin: 3, topic: ["sac", "mime", "marcel", "blanchard", "bernd", "montmartre", "pere", "lachaise", "cimetiere", "gardien", "chloe", "photo", "nora", "boulangerie", "marais", "librairie", "lenoir", "programme", "affiche", "louvre", "erreur", "vol", "echang", "pris", "prend", "trouv", "retrouv", "kevin", "nowak", "boite", "enveloppe", "billets", "escalier", "metro", "indice", "preuve"] },
     effects: { flag: "V05_done" },
-    next: "V06" };
+    next: "V04" };
 
   N.V06 = { type: "end" };
 
