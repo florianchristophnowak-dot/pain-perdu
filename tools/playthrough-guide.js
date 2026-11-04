@@ -1,6 +1,7 @@
 const { chromium } = require('playwright');
 /* Automatischer Testdurchlauf durch Teil 2 « Le guide fantôme »: ganzer Lösungsweg mit zwei Spielenden,
    einige Fehlversuche (Fallen, « Juste : n sur m »), danach Bildschirmfotos auf dem Handy (hoch und quer).
+   Seit Version 2.2 sind die vier Stationen frei: Nach der Ankunft tippt der Durchlauf die Hotspots selbst an.
    Voraussetzungen: Node, das Paket playwright und ein lokaler Server im Hauptordner, z. B. python3 -m http.server 8765
    Aufruf: node tools/playthrough-guide.js   (Umgebung: URL=..., SHOT_DIR=..., CHROMIUM=Pfad zu Chromium, optional) */
 const fs = require('fs');
@@ -63,6 +64,14 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   }
   async function place(name) { await cont(); await page.click('#btn-map'); await page.waitForTimeout(150); await page.locator('.place', { hasText: name }).first().click(); await page.waitForTimeout(200); }
   const S = () => page.evaluate(() => window.PP.S);
+  /* Freie Stationen: Hotspot antippen, Verb wählen; leeres Dialogfeld mit Szenenhilfe; Häkchen an erledigten Hotspots */
+  async function hs(label, verb) {
+    await page.locator('.hotspot', { hasText: label }).first().click(); await page.waitForTimeout(100);
+    await page.locator('.verbs button', { hasText: verb }).first().click(); await page.waitForTimeout(220);
+  }
+  const free = async scene => { await page.waitForTimeout(600); return !(await S()).at[scene] && (await page.locator('#dialogue.idle .btn.aide').count()) === 1; };
+  const ticked = async label => (await page.locator('.hotspot.done', { hasText: label }).count()) === 1;
+  const dlgText = async () => (await page.locator('#dialogue').innerText()).replace(/\s+/g, ' ');
   async function order(texts) {   // Kette: ▲ bis jede Zeile an ihrem Platz ist
     for (let i = 0; i < texts.length; i++) {
       for (let guard = 0; guard < 8; guard++) {
@@ -96,12 +105,20 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await page.screenshot({ path: SHOT + '03_loupe_zoom.png' });
   await loupeTap(91.6, 57.2);
   expect((await S()).flags.prix_vu, 'N04a Preis im Buch (Zoom) gefunden');
-  await cont();                                     // N04a → N05 (das Selfie kommt erst nach der ersten Station)
+  await cont();                                     // N04a, danach ist Notre-Dame frei (das Selfie kommt erst nach der ersten Station)
+  expect(await free('notredame'), 'Notre-Dame frei nach dem Gruppenfoto: Szenenhilfe im leeren Dialogfeld');
+  await hs('Notre-Dame', 'Regarder');
+  expect((await dlgText()).includes('huit cents ans'), 'Bemerkung zur Kathedrale geht auch in der freien Station'); await cont();
+  await hs('M. Nowak', 'Parler');
+  expect((await dlgText()).includes('badge officiel'), 'M. Nowak erinnert sich an den Ausweis (N05n)');
+  await cont();
   log('  N05:', await txt());
   await cont();
   await choose('Beaumont, c\'est bizarre'); await cont();
   await choose('31 février'); await cont();
   expect((await S()).flags.badge_faux, 'N05 Ausweis als falsch erkannt');
+  expect(await free('notredame') && await ticked('M. Nowak') && !(await ticked('la classe')), 'nach dem Ausweis wieder frei: Häkchen bei M. Nowak, die Klasse ist noch offen');
+  await hs('la classe', 'Regarder'); await cont();
   await page.screenshot({ path: SHOT + '04_card.png' });
   await loupeTap(16, 89.5);
   { const c = await page.locator('#modal-body .gc-corner').boundingBox(); const card = await page.locator('#modal-body .gcard').boundingBox();
@@ -131,6 +148,10 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   log('== Tour Eiffel');
   await page.locator('.place', { hasText: 'Tour Eiffel' }).first().click(); await page.waitForTimeout(200);
   await cont();
+  expect(await free('eiffel'), 'Tour Eiffel frei nach der Ankunft');
+  await hs('le vendeur de souvenirs', 'Regarder');
+  expect((await dlgText()).includes('petites tours Eiffel'), 'Bemerkung zum Souvenirverkäufer'); await cont();
+  await hs('le joueur', 'Regarder'); await cont();
   expect((await txt()).includes('trois choses bizarres') || await page.locator('#modal-body .observe').isVisible(), 'E02 Beobachtung offen');
   await page.screenshot({ path: SHOT + '08_observe.png' });
   { const at = async (x, y) => { const box = await page.locator('#modal-body .observe').boundingBox(); await page.mouse.click(box.x + box.width * x / 100, box.y + box.height * y / 100); };
@@ -181,6 +202,10 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await cont();
   log('  G00 Metro:', (await S()).from);
   await choose('Au 2e étage'); await cont();
+  expect(await free('lafayette'), 'Lafayette frei nach dem Plan (2e étage)');
+  await hs('les manteaux', 'Regarder');
+  expect((await dlgText()).includes('pas le sien'), 'Bemerkung zu den Manteaux'); await cont();
+  await hs('la vendeuse', 'Parler'); await cont();
   await choose('il coûte combien'); await cont();
   await choose("l'homme qui le portait"); await cont();
   await choose("L'étiquette sur la manche"); await cont();
@@ -199,18 +224,29 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   log('== Bouquinistes');
   await page.locator('.place', { hasText: 'Bouquinistes' }).first().click(); await page.waitForTimeout(200);
   await cont();
+  expect(await free('bouquinistes'), 'Bouquinistes frei nach der Ankunft');
+  await hs('le vieux livre', 'Regarder');
+  expect((await dlgText()).includes("d'abord à la bouquiniste") && !(await S()).at.bouquinistes, 'das alte Buch wartet auf die Bouquiniste (nur eine Bemerkung)'); await cont();
+  await hs('la bouquiniste', 'Parler'); await cont();
   await choose('huit euros'); await cont();
   await order(['acheté le manteau', 'venu chez', 'acheté le guide', 'fait la visite']); await btn('Valider'); await cont();
+  expect(await free('bouquinistes') && await ticked('la bouquiniste'), 'nach der Reihenfolge wieder frei, Häkchen bei der Bouquiniste');
+  /* andere Reihenfolge als früher: erst das Papier auf den Boîtes, dann das Buch */
+  await hs('les boîtes vertes', 'Regarder');
+  expect((await dlgText()).includes('petit papier'), 'auf den Boîtes liegt das Papier (B05p)'); await cont();
+  for (const [l, o] of [['p. 12', 'le parvis de Notre-Dame'], ['p. 27', 'la rue Chanoinesse'], ['p. 41', 'le quai aux Fleurs']]) await selectRow('.slot', l, o);
+  await btn('Valider'); await cont();
+  expect((await S()).flags.B05_done && !(await S()).flags.R4_done && await free('bouquinistes') && await ticked('les boîtes vertes'), 'Papier erledigt, R4 wartet noch auf das Buch');
+  await hs('le vieux livre', 'Regarder'); await cont();
   for (const [l, c] of [['cette petite porte', 'Mot pour mot dans le livre'], ['porte secrète', 'Changé'], ['Suivez', 'Pas dans le livre'], ['vendait un pain', 'Mot pour mot dans le livre'], ['Les rois', 'Changé'], ['Un jour', 'Mot pour mot dans le livre']]) await selectRow('.crow', l, c);
   await btn('Valider'); await cont();
   await pick(['porte secrète', 'les rois']); await cont();
-  for (const [l, o] of [['p. 12', 'le parvis de Notre-Dame'], ['p. 27', 'la rue Chanoinesse'], ['p. 41', 'le quai aux Fleurs']]) await selectRow('.slot', l, o);
-  await btn('Valider'); await cont();
   await recall('tour Eiffel'); expect((await feedback()).includes('son ami'), 'R4 Falle « tour Eiffel »');
   await recall('devant Notre-Dame'); expect((await feedback()).includes('quelle page'), 'R4 Falle « Notre-Dame »');
   await recall('page 12'); await cont();
   await choose('Aux Galeries Lafayette'); await cont();
   expect((await S()).flags.B_done, 'Bouquinisten erledigt');
+  expect(!(await S()).at.bouquinistes, 'nach dem Schluss (B06e) ist die Station frei, beim Zurückkommen beginnt nichts von vorn');
 
   log('== Finale');
   await page.locator('.place', { hasText: 'Service des retours' }).first().click(); await page.waitForTimeout(250);

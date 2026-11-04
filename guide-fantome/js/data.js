@@ -1,11 +1,12 @@
 /* Le guide fantôme (Pain perdu, Teil 2) – Spieldaten
    Quelle: Drehbuch Teil 2 (25. Oktober 2026). Kennungen wie im Drehbuch: N = Notre-Dame, G = Galeries Lafayette,
    E = Eiffelturm, B = Bouquinisten, F = Finale, Z = Nachspiel, R = Abfragen. Alle Spieltexte sind französisch,
-   auch Linos Hilfe; nur das Glossar ist französisch-deutsch. */
+   auch Linos Hilfe; nur das Glossar ist französisch-deutsch.
+   Version 2.2 (November 2026): Die vier Stationen sind frei (siehe G.scenes), ältere Spielstände passt G.migrate an. */
 window.GAME = (function () {
   const G = {};
 
-  G.version = "2.1.0";
+  G.version = "2.2.0";
 
   /* ---------- Figuren ---------- */
   G.chars = {
@@ -174,34 +175,49 @@ window.GAME = (function () {
   };
 
   /* ---------- Szenen und Hotspots (Koordinaten in % des Bildes) ---------- */
+  /* Version 2.2: Notre-Dame, Lafayette, Tour Eiffel und Bouquinistes sind freie Stationen (free), wie in Teil 3. Nach der Ankunft
+     suchen die Spieler selbst, womit es weitergeht; ein angefangener Abschnitt läuft zu Ende (game.js, openFrom). Erledigtes
+     trägt ein Häkchen (doneIf), die Szenenhilfe (help) hilft beim Suchen. Sind alle Abschnitte erledigt, geht es von allein weiter. */
   G.scenes = {
     notredame: {
-      name: "Notre-Dame · le parvis", bg: "bg_parvis", enter: [{ if: "N08_done", node: "Nr" }, { node: "N00" }],
+      name: "Notre-Dame · le parvis", bg: "bg_parvis", free: true,
+      enter: [{ if: "N08_done", node: "Nr" }, { if: ["N05_done", "N06_done"], node: "N08" }, { if: "N04a_done", node: null }, { node: "N00" }],
+      help: [{ if: "!N08_done", key: "S_notredame" }],
       hotspots: [
-        { id: "nowak", label: "M. Nowak", x: 23, y: 38, w: 12, h: 60, actions: { parler: "Nr" }, showIf: "N08_done" },
-        { id: "classe", label: "la classe", x: 1, y: 40, w: 21, h: 56, actions: { regarder: "Ncl" }, showIf: "N08_done" },
-        { id: "cathedrale", label: "Notre-Dame", x: 52, y: 2, w: 33, h: 68, actions: { regarder: "Nc" }, showIf: "N08_done" }
+        { id: "nowak", label: "M. Nowak", x: 23, y: 38, w: 12, h: 60, actions: { parler: [{ if: "N08_done", node: "Nr" }, { if: "N05_done", node: "Nn" }, { node: "N05n" }] }, showIf: "N04a_done", doneIf: "N05_done" },
+        { id: "classe", label: "la classe", x: 1, y: 40, w: 21, h: 56, actions: { regarder: [{ if: "N06_done", node: "Ncl" }, { node: "N06l" }] }, showIf: "N04a_done", doneIf: "N06_done" },
+        { id: "cathedrale", label: "Notre-Dame", x: 52, y: 2, w: 33, h: 68, actions: { regarder: "Nc" }, showIf: "N04a_done" }
       ]
     },
     lafayette: {
-      name: "Galeries Lafayette · 2e étage", bg: "bg_lafayette", enter: [{ if: "G06_done", node: "Gr" }, { node: "G00" }],
+      name: "Galeries Lafayette · 2e étage", bg: "bg_lafayette", free: true,
+      enter: [{ if: "G06_done", node: "Gr" }, { if: "G01_done", node: null }, { node: "G00" }],
+      help: [{ if: "!G06_done", key: "S_lafayette" }],
       hotspots: [
-        { id: "vendeuse", label: "la vendeuse", x: 26, y: 32, w: 15, h: 40, actions: { parler: "Gr" }, showIf: "G06_done" },
-        { id: "coupole", label: "la coupole", x: 20, y: 0, w: 78, h: 28, actions: { regarder: "Gc" }, showIf: "G06_done" }
+        { id: "vendeuse", label: "la vendeuse", x: 26, y: 32, w: 15, h: 40, actions: { parler: [{ if: "G06_done", node: "Gr" }, { node: "G02" }] }, showIf: "G01_done", doneIf: "G06_done" },
+        { id: "manteaux", label: "les manteaux", x: 0.5, y: 35, w: 23, h: 55, actions: { regarder: "Gm" }, showIf: "G01_done" },
+        { id: "coupole", label: "la coupole", x: 20, y: 0, w: 78, h: 28, actions: { regarder: "Gc" }, showIf: "G01_done" }
       ]
     },
     eiffel: {
-      name: "Tour Eiffel · pilier nord", bg: "bg_eiffel", enter: [{ if: "E05_done", node: "Er" }, { node: "E00" }],
+      name: "Tour Eiffel · pilier nord", bg: "bg_eiffel", free: true,
+      enter: [{ if: "E05_done", node: "Er" }, { if: "E_arr", node: null }, { node: "E00" }],
+      help: [{ if: "!E05_done", key: "S_eiffel" }],
       hotspots: [
-        { id: "joueur", label: "le joueur", x: 36, y: 41, w: 13.5, h: 52, actions: { regarder: "Er" }, showIf: "E05_done" },
-        { id: "tour", label: "la tour Eiffel", x: 2, y: 0, w: 50, h: 42, actions: { regarder: "Et" }, showIf: "E05_done" }
+        { id: "joueur", label: "le joueur", x: 36, y: 41, w: 13.5, h: 52, actions: { regarder: [{ if: "E05_done", node: "Er" }, { node: "E01" }] }, showIf: "E_arr", doneIf: "E05_done" },
+        { id: "souvenirs", label: "le vendeur de souvenirs", x: 72, y: 40, w: 14, h: 55, actions: { regarder: "Es" }, showIf: "E_arr" },
+        { id: "tour", label: "la tour Eiffel", x: 2, y: 0, w: 50, h: 42, actions: { regarder: "Et" }, showIf: "E_arr" }
       ]
     },
     bouquinistes: {
-      name: "Les bouquinistes · quai de Montebello", bg: "bg_quai", enter: [{ if: "B06_done", node: "Br" }, { if: "R4_done", node: "B06" }, { if: "B05_done", node: "R4" }, { node: "B00" }],
+      name: "Les bouquinistes · quai de Montebello", bg: "bg_quai", free: true,
+      enter: [{ if: "B06_done", node: "Br" }, { if: "R4_done", node: "B06" }, { if: ["B04_done", "B05_done"], node: "R4" }, { if: "B_arr", node: null }, { node: "B00" }],
+      help: [{ if: "!B02_done", key: "S_bouquinistes1" }, { if: "!R4_done", key: "S_bouquinistes2" }],
       hotspots: [
-        { id: "bouquiniste", label: "la bouquiniste", x: 27, y: 30, w: 15, h: 36, actions: { parler: "Br" }, showIf: "B06_done" },
-        { id: "boites", label: "les boîtes vertes", x: 0, y: 66, w: 58, h: 32, actions: { regarder: "Bb" }, showIf: "B06_done" }
+        { id: "bouquiniste", label: "la bouquiniste", x: 27, y: 30, w: 15, h: 36, actions: { parler: [{ if: "B06_done", node: "Br" }, { if: "R4_done", node: "B06" }, { if: "B02_done", node: "Bq" }, { node: "B01" }] }, showIf: "B_arr", doneIf: "B02_done" },
+        { id: "livre", label: "le vieux livre", x: 8, y: 52, w: 12, h: 14, actions: { regarder: [{ if: "B04_done", node: "Bl" }, { if: "B02_done", node: "B03" }, { node: "Bx" }] }, showIf: "B_arr", doneIf: "B04_done", openIf: "B02_done" },
+        { id: "boites", label: "les boîtes vertes", x: 0, y: 66, w: 58, h: 32, actions: { regarder: [{ if: "B05_done", node: "Bb" }, { if: "B02_done", node: "B05p" }, { node: "Bb" }] }, showIf: "B_arr", doneIf: "B05_done", openIf: "B02_done" },
+        { id: "gravures", label: "les gravures", x: 0, y: 26, w: 26.5, h: 24, actions: { regarder: "Bg" }, showIf: "B_arr" }
       ]
     },
     retours: {
@@ -233,7 +249,7 @@ window.GAME = (function () {
     { if: "G06_done", unless: "R2_done", who: "nowak", sms: true, fr: "Marie, encore une question, s'il te plaît.", node: "R2" },
     { if: "E05_done", unless: "R3_done", who: "nowak", sms: true, fr: "Marie ? La policière a une question.", node: "R3" },
     { if: "R3_done", unless: "R3b_done", who: "nowak", sms: true, fr: "Marie ? La policière a encore une question.", node: "R3b" },
-    { if: "B05_done", unless: "R4_done", scene: "bouquinistes", who: "lino", fr: "Attends, j'ai une question.", node: "R4" },
+    { if: ["B04_done", "B05_done"], unless: "R4_done", scene: "bouquinistes", who: "lino", fr: "Attends, j'ai une question.", node: "R4" },
     { if: "F03_done", unless: "R5_done", scene: "retours", who: "agent", fr: "Mademoiselle ? Cette carte, qu'est-ce que c'est ?", node: "R5" }
   ];
 
@@ -306,7 +322,7 @@ window.GAME = (function () {
         { x: 91.6, y: 57.2, text: "8 €", cls: "pencil", minZoom: 2 }
       ],
       material: [{ x: 78, y: 30, w: 21, h: 46 }] },
-    next: "N05" };
+    effects: { flag: "N04a_done" }, doneAt: true };   // danach frei: M. Nowak (Ausweis, N05) und die Klasse (Karten, N06)
   N.N04b = { type: "task", title: "Le selfie de Lino", help: "N04b", diag: "D_N04b",
     task: { kind: "loupe", img: "doc_selfie", ar: 1.3333, status: "Détails sur M. Beaumont : {n} sur {m}",
       intro: "Sur le selfie de Lino, M. Beaumont n'a pas de parapluie. Trouve deux détails pour le reconnaître.",
@@ -329,8 +345,9 @@ window.GAME = (function () {
       { fr: "La photo : il ne sourit pas.", kind: "wrong", reply: [lino("Sur un badge, personne ne sourit.")] },
       { fr: "Le mot « officiel » est mal écrit.", kind: "wrong", reply: [lino("Non, « officiel », c'est juste. Regarde les chiffres.")] }
     ],
-    effects: { flag: "N05_done" }, next: "N06l" };
-  N.N06l = { type: "lines", lines: [lino("J'ai le numéro 42. Kevin aussi. Tout le monde.")], next: "N06" };
+    effects: { flag: "N05_done" }, doneAt: true, next: [{ if: "N06_done", node: "N08" }] };
+  N.N05n = { type: "lines", lines: [L("nowak", "Il avait un badge officiel. Il me l'a montré.")], next: "N05" };
+  N.N06l = { type: "lines", lines: [L("narrateur", "Les élèves montrent leurs cartes."), lino("J'ai le numéro 42. Kevin aussi. Tout le monde.")], next: "N06" };
   N.N06 = { type: "task", title: "Les cartes", help: "N06", diag: "D_N06",
     task: { kind: "loupe", render: "card", ar: 1.6, maxZoom: 3, status: "Trouvé : {n} sur {m}",
       intro: "Regarde la carte de près. Les deux côtés.",
@@ -344,7 +361,7 @@ window.GAME = (function () {
       ],
       material: [{ x: 80, y: 4, w: 17, h: 26 }] },
     after: [lino("C'est une visite ou une promotion ?"), marie("Pour l'instant, surtout une disparition.")],
-    effects: { flag: "N06_done" }, next: "N08" };
+    effects: { flag: "N06_done" }, doneAt: true, next: [{ if: "N05_done", node: "N08" }] };
   /* Personenbeschreibung für die Polizei: kommt direkt nach der ersten Station (R2, R3b oder B06e führen hierher), sonst über G.pending */
   N.N07 = { type: "lines", lines: [L("nowak", "Marie, la policière veut aussi une description de M. Beaumont. En français, s'il te plaît.", { sms: true })], next: "N04b" };
   N.N07a = { type: "task", title: "La fiche de signalement", help: "N07a", diag: "D_N07a",
@@ -377,7 +394,7 @@ window.GAME = (function () {
       msgs: { question: "Ça, ce sont des questions. Réponds avec des phrases : Il parlait… Il était…", verb: "Écris des phrases, pas seulement des mots : Il parlait… Il était…" },
       matImgs: ["doc_selfie"] },
     next: "N07c" };
-  N.N07c = { type: "task", title: "La fiche de signalement", help: "N07c", diag: "D_N07c",
+  N.N07c = { type: "task", title: "La fiche de signalement", help: "N07c", diag: "D_N07c", doneAt: true,   // Version 2.2: kommt die Beschreibung an Notre-Dame (G.pending), bleibt die Station danach frei
     task: { kind: "cols", intro: "Qu'est-ce qu'il peut changer facilement ?",
       columns: [{ id: "facile", label: "Il peut le changer facilement" }, { id: "difficile", label: "C'est plus difficile" }],
       cards: [
@@ -425,6 +442,7 @@ window.GAME = (function () {
   N.Ncl = { type: "lines", amb: true, lines: [lino("Kevin veut savoir si la visite est remboursée."), marie("Pas encore."),
     L("lino", "Et Kevin a regardé l'heure quand le guide est parti : midi moins le quart. Il avait déjà faim.", { onlyIf: "!R1_done" })], next: "RESUME" };
   N.Nc = { type: "lines", amb: true, lines: [lino("Elle est là depuis huit cents ans. Elle, elle ne part pas avec l'argent.")], next: "RESUME" };
+  N.Nn = { type: "lines", amb: true, lines: [L("nowak", "J'appelle encore la police. Et vous, regardez les cartes avec la classe.")], next: "RESUME" };
 
   /* ===== 3 Galeries Lafayette ===== */
   N.G00 = { type: "cut", bg: "bg_lafayette", lines: [
@@ -449,7 +467,7 @@ window.GAME = (function () {
       { fr: "Au 1er étage.", kind: "wrong", reply: [lino("Mode femme. Son manteau est un manteau d'homme.")] },
       { fr: "Au 4e étage.", kind: "wrong", reply: [lino("La maison ? Il n'a pas acheté un canapé.")] }
     ],
-    effects: { flag: "G01_done" }, next: "G02" };
+    effects: { flag: "G01_done" }, doneAt: true };   // danach frei: die Vendeuse (G02 bis G06)
   N.G02 = { type: "choice", who: "vendeuse", help: "G02", diag: "D_G02",
     lines: [L("narrateur", "La vendeuse regarde la photo de groupe. Elle regarde seulement le manteau.")],
     prompt: L("vendeuse", "Ah, ce manteau. Vous voulez acheter le manteau ?"),
@@ -513,6 +531,7 @@ window.GAME = (function () {
     effects: { flag: "G06_done" }, doneAt: true, next: "R2" };
   N.Gr = { type: "lines", amb: true, lines: [L("vendeuse", "Encore vous ? Je vous ai déjà tout dit.")], next: "RESUME" };
   N.Gc = { type: "lines", amb: true, lines: [lino("Une coupole. Comme une cathédrale. Mais avec des parfums.")], next: "RESUME" };
+  N.Gm = { type: "lines", amb: true, lines: [lino("Des manteaux, des manteaux… Mais pas le sien.")], next: "RESUME" };
 
   /* ===== 4 Tour Eiffel ===== */
   N.E00 = { type: "cut", bg: "bg_eiffel", lines: [
@@ -521,7 +540,7 @@ window.GAME = (function () {
     L("narrateur", "Il est treize heures. Au pilier nord, il y a des touristes, des vendeurs de petites tours Eiffel… et pas de guide."),
     lino("Pas de parapluie rouge."),
     marie("Mais il y a du monde, là-bas. Regarde.")
-  ], next: "E01" };
+  ], effects: { flag: "E_arr" }, doneAt: true };   // danach frei: der Joueur (E01 bis E05)
   N.E01 = { type: "lines", lines: [
     L("joueur", "Regardez bien ! Elle est où, la petite balle ?"),
     L("spectateur", "Là ! À droite !"),
@@ -583,6 +602,7 @@ window.GAME = (function () {
   ], effects: { flag: "E05_done" }, next: "R3" };
   N.Er = { type: "lines", amb: true, lines: [marie("On ne joue pas. Et on ne lui parle pas.")], next: "RESUME" };
   N.Et = { type: "lines", amb: true, lines: [lino("Trois cent trente mètres. Et pas un seul guide.")], next: "RESUME" };
+  N.Es = { type: "lines", amb: true, lines: [lino("Il vend des petites tours Eiffel. Cinq euros, ou deux pour huit euros."), marie("Tu en veux une ?"), lino("Non. J'ai déjà un sac en forme de pain. Ça suffit.")], next: "RESUME" };
 
   /* ===== 5 Bouquinistes (freiwillig) ===== */
   N.B00 = { type: "cut", bg: "bg_quai", lines: [
@@ -592,7 +612,7 @@ window.GAME = (function () {
     L("narrateur", "Quai de Montebello, en face de Notre-Dame. Des boîtes vertes pleines de vieux livres, de cartes postales et d'affiches."),
     lino("Des livres dans des boîtes. Comme une bibliothèque, mais dehors."),
     marie("Ce sont les bouquinistes. Ils vendent de vieux livres ici depuis plus de quatre cents ans.")
-  ], next: "B01" };
+  ], effects: { flag: "B_arr" }, doneAt: true };   // danach frei: erst die Bouquiniste (B01 bis B02), dann Buch (B03, B04) und Papier (B05)
   N.B01 = { type: "choice", who: "bouquiniste", help: "B01", diag: "D_B01",
     prompt: L("bouquiniste", "Bonjour ! Vous cherchez quelque chose ? Un livre, une affiche ?"),
     choices: [
@@ -612,7 +632,7 @@ window.GAME = (function () {
         { parts: ["Il a fait la visite avec la classe."] }
       ],
       wrong: lino("Pas encore. Écoute bien les heures.") },
-    next: "B03" };
+    effects: { flag: "B02_done" }, doneAt: true };
   N.B03 = { type: "task", title: "Mot pour mot ?", audio: "au_beaumont", help: "B03", diag: "D_B03",
     task: { kind: "cols", intro: "La bouquiniste ouvre son deuxième « Paris insolite ». Compare avec la visite de M. Beaumont. Range ses phrases.",
       docs: [
@@ -643,9 +663,13 @@ window.GAME = (function () {
       ],
       matText: "Sous l'image de la page 27 : « Entrée de livraison ».",
       wrong: lino("Pas encore. Compare avec la page 27."), success: lino("Une porte secrète pour les livraisons. Très secret.") },
-    effects: { item: "page_guide", flag: "B04_done" }, next: "B05" };
+    effects: { item: "page_guide", flag: "B04_done" }, doneAt: true, next: [{ if: "B05_done", node: "R4" }] };
+  N.B05p = { type: "lines", lines: [
+    L("narrateur", "Sur une boîte verte, il y a un petit papier."),
+    L("bouquiniste", "Ah, ça ? C'est le papier de votre guide. Il l'a oublié ce matin.")
+  ], next: "B05" };
   N.B05 = { type: "task", title: "Le papier", help: "B05", diag: "D_B05", doneAt: true,
-    task: { kind: "sort", who: "bouquiniste", intro: "Ah, et il a oublié ça sur ma boîte.",
+    task: { kind: "sort", who: "bouquiniste", intro: "Comparez avec le sommaire de mon « Paris insolite ».",
       docs: [
         { label: "Le papier de M. Beaumont", text: "1. p. 12 – 2. p. 27 – 3. p. 41 – photo – 15 h : p. 12", cls: "hand" },
         { label: "Paris insolite : sommaire", text: "p. 12 Le parvis de Notre-Dame · p. 27 La rue Chanoinesse · p. 41 Le quai aux Fleurs · p. 56 La Sainte-Chapelle", cls: "book sommaire" }
@@ -664,7 +688,7 @@ window.GAME = (function () {
       ],
       wrong: lino("Pas encore. Cherche chaque page dans le sommaire.") },
     after: [marie("Regarde la fin du papier. Il y a une heure : 15 heures.")],
-    effects: { item: "papier", flag: "B05_done" }, next: "R4" };
+    effects: { item: "papier", flag: "B05_done" }, next: [{ if: "B04_done", node: "R4" }] };
   N.B06 = { type: "choice", who: "marie", diag: "D_B06", store: true, doneAt: true,
     prompt: marie("Il y a deux possibilités. Où est-ce qu'on l'attend ?"),
     choices: [
@@ -678,9 +702,14 @@ window.GAME = (function () {
     marie("Il a encore son parapluie. Pour un faux guide, ça suffit."),
     L("marie", "Mais pour le magasin, il nous manque encore une piste.", { onlyIf: "!R2_done" }),
     L("marie", "Mais pour le magasin, il nous manque encore une piste.", { onlyIf: ["R2_done", "!R3b_done"] })
-  ], effects: { flags: ["B_done", "station1_done"] }, next: [{ if: "!N07_done", node: "N07" }, { node: "MAP" }] };
+  ], effects: { flags: ["B_done", "station1_done"] }, doneAt: true, next: [{ if: "!N07_done", node: "N07" }, { node: "MAP" }] };   // doneAt: danach ist die Station frei (Version 2.2)
   N.Br = { type: "lines", amb: true, lines: [L("bouquiniste", "Revenez quand vous voulez ! J'ai encore mille livres.")], next: "RESUME" };
   N.Bb = { type: "lines", amb: true, lines: [lino("Des vieux livres, des cartes postales… et pas de parapluie rouge.")], next: "RESUME" };
+  /* Version 2.2: Bemerkungen in der freien Station; Buch und Boîtes warten auf die Bouquiniste */
+  N.Bx = { type: "lines", amb: true, lines: [marie("Des vieux livres sur Paris, il y en a mille ici. On demande d'abord à la bouquiniste.")], next: "RESUME" };
+  N.Bl = { type: "lines", amb: true, lines: [marie("« Paris insolite ». Ses histoires viennent de là.")], next: "RESUME" };
+  N.Bq = { type: "lines", amb: true, lines: [L("bouquiniste", "Regardez bien autour de vous. Les livres, les boîtes…")], next: "RESUME" };
+  N.Bg = { type: "lines", amb: true, lines: [marie("Des vieilles gravures de Paris. Celles-là sont vraiment vieilles.")], next: "RESUME" };
 
   /* ===== 6 Finale im Kaufhaus ===== */
   N.F00 = { type: "cut", bg: "bg_retours", lines: [
@@ -959,6 +988,12 @@ window.GAME = (function () {
 
   /* ---------- Linos Hilfestufen (alles auf Französisch). Stufe 2 und 3 können eine Aktion auslösen. ---------- */
   G.help = {
+    /* Version 2.2: Szenenhilfen der freien Stationen (game.js, showIdle). Stufe 2 lässt die offenen Hotspots leuchten. */
+    S_notredame: ["Le guide est parti. Qui peut encore nous aider ici ?", { fr: "Regarde ce qui brille.", action: "material" }, "M. Nowak se souvient du guide. Et la classe a les cartes.", "Clique sur M. Nowak : parler. Et sur la classe : regarder."],
+    S_lafayette: ["On est au rayon des manteaux. Qui a vendu son manteau ?", { fr: "Regarde ce qui brille.", action: "material" }, "La vendeuse connaît peut-être ce manteau.", "Clique sur la vendeuse : parler."],
+    S_eiffel: ["Pas de guide. Mais il y a du monde, là-bas. Pourquoi ?", { fr: "Regarde ce qui brille.", action: "material" }, "Un homme joue avec des gobelets. Les gens regardent.", "Clique sur le joueur : regarder."],
+    S_bouquinistes1: ["Qui connaît les vieux livres ici ?", { fr: "Regarde ce qui brille.", action: "material" }, "La bouquiniste vend des livres ici. Elle a peut-être vu notre guide.", "Clique sur la bouquiniste : parler."],
+    S_bouquinistes2: ["Il a acheté un livre ici. Et il a peut-être oublié quelque chose.", { fr: "Regarde ce qui brille.", action: "material" }, "Regarde le vieux livre. Et regarde les boîtes vertes.", "Clique sur le vieux livre : regarder. Et sur les boîtes vertes : regarder."],
     N03: ["On ne cherche pas ce qui est vrai. On cherche ce qu'il a dit.", { fr: "Écoute encore M. Beaumont.", action: "replay" }, { fr: "Voici ce qu'il a dit. Cherche les mots porte, rois et boulanger.", action: "transcript" }, "Prends chaque phrase et cherche-la dans la transcription. Tu ne la trouves pas ? Alors, il ne l'a pas dite."],
     N04a: ["Regarde M. Beaumont de la tête aux pieds.", { fr: "Regarde surtout ses mains et ses bras.", action: "material" }, "Il y a quelque chose devant son visage, sur sa manche, dans sa main et à son bras.", "Le parapluie devant le visage, l'étiquette sur la manche, le livre à la main, le sac au bras."],
     N04b: ["Regarde son visage et ses mains.", { fr: "Zoome sur M. Beaumont, à côté de Kevin.", action: "material" }, "Il y a quelque chose sous son nez et à son poignet.", "Une moustache grise et une montre dorée."],
@@ -992,6 +1027,9 @@ window.GAME = (function () {
 
   /* ---------- Diagnose: Beschreibungen für die Lehrkraft ---------- */
   G.diag = {
+    S_notredame: "Notre-Dame frei erkunden: Nowak und die Klasse (Szenenhilfe)", S_lafayette: "Lafayette frei erkunden: die Vendeuse (Szenenhilfe)",
+    S_eiffel: "Tour Eiffel frei erkunden: der Joueur (Szenenhilfe)", S_bouquinistes1: "Bouquinistes frei erkunden: die Bouquiniste (Szenenhilfe)",
+    S_bouquinistes2: "Bouquinistes frei erkunden: Buch und Boîtes (Szenenhilfe)",
     D_N03: "Führung verstanden (3 aus 6)", D_N04a: "Foto genau angesehen", D_N04b: "Selfie: Gesicht", D_N05: "Falsches Datum erkannt",
     D_N06: "Aufkleber und Rückseite gefunden", D_N07a: "Zeiten in der Beschreibung", D_N07b: "Personenbeschreibung (frei)", D_N07c: "Feste und ablegbare Merkmale",
     D_N08: "Hinweise zu Orten", D_N08w: "Erster Weg (Begründung)", D_R1: "Abfrage: Uhrzeit des Verschwindens",
@@ -1007,15 +1045,18 @@ window.GAME = (function () {
     ["N03", "Porte secrète au Moyen Âge · les rois passaient par là la nuit · pain plein d'air"],
     ["N04a", "Parapluie, étiquette (manche), sac, livre; Bonus: Preis 8 € im Buch (ab Zoom 2)"],
     ["N04b", "Moustache grise, montre dorée"],
+    ["Notre-Dame (frei)", "Nach dem Gruppenfoto (N04a) M. Nowak (Ausweis, N05) und die Klasse (Karten, N06) in beliebiger Reihenfolge; dann von allein N08"],
     ["N05", "Le 31 février n'existe pas"],
     ["N06", "Nummer N° 042, Aufkleber an der Ecke oben rechts abziehen, Karte umdrehen"],
     ["N07a", "était, avait, portait, avait, est parti"],
     ["N07c", "facile: parapluie, manteau, badge · difficile: moustache, voix, taille"],
     ["N08", "étiquette → Lafayette, sac → Lafayette, rendez-vous → tour Eiffel, livre → bouquinistes"],
+    ["Lafayette, Tour Eiffel (frei)", "Nach der Ankunft selbst die Vendeuse (G02) bzw. den Joueur (E01) finden"],
     ["G01", "2e étage"], ["G02", "Non, on cherche l'homme qui le portait"], ["G03", "L'étiquette sur la manche"],
     ["G04", "W-Fragen: vendu quand (F1), quelles questions (F2), comment rendre (F3), jusqu'à quelle heure (F4)"],
     ["E02", "Die zwei Gewinner zwinkern sich in Bild 3 zu, die Tasche mit Karten am Boden, danach das klingelnde Telefon"],
     ["E04", "dit: Lucien ? / Tu rapportes… / Il reste… · déduit: s'appelle Lucien / va rendre / travaillent ensemble / billets = cartes · utile: Lafayette / Nowak / ne pas jouer · faux: a rendu / joueur = Beaumont / parler au joueur"],
+    ["Bouquinistes (frei)", "Erst die Bouquiniste (B01 bis B02), dann das alte Buch (B03, B04) und die Boîtes (Papier, B05) in beliebiger Reihenfolge; dann R4"],
     ["B02", "manteau → bouquiniste → guide → visite"],
     ["B03", "mot pour mot: Regardez cette petite porte / Le boulanger… / Un jour… · changé: porte secrète / les rois · pas dans le livre: Suivez le parapluie rouge"],
     ["B04", "porte secrète statt entrée des livraisons; les rois statt les marchands"],
@@ -1025,7 +1066,23 @@ window.GAME = (function () {
     ["F04", "10 h manteau → 11 h visite → 220 euros/cartes (pas) → midi moins le quart (jamais) → maintenant (rien)"],
     ["F05", "carte = bon de réduction · badge = 31 février · photo = manteau avec étiquette · selfie = moustache et montre · page_guide = vieux livre"]
   ];
-  G.profUnlock = ["N04_done", "N05_done", "badge_faux", "N06_done", "carte_peeled", "N07_done", "N08_done", "R1_done", "G01_done", "G02_done", "G03_done", "G05_done", "G06_done", "R2_done", "E03_done", "E04_done", "E05_done", "R3_done", "R3b_done", "B04_done", "B05_done", "R4_done", "B06_done", "B_done", "prix_vu"];
+  /* Ältere Spielstände (bis Version 2.1): Die Stationen waren Ketten. Wer dort schon weiter war, bekommt die Flags, die es seit
+     Version 2.2 dafür gibt; sonst fehlten Hotspots, oder ein Abschnitt käme noch einmal. game.js ruft das beim Laden. */
+  G.migrate = function (S) {
+    const f = S.flags || (S.flags = {}), at = S.at || (S.at = {});
+    const was = (scene, ids) => ids.includes(at[scene]);
+    // Notre-Dame: N00 … N04a → N05 → N06l → N06 → N08 … (ganz alte Stände: das Selfie N04b vor dem Ausweis)
+    if ((at.notredame && !["N00", "N01", "N02", "N03", "N04", "N04a"].includes(at.notredame)) || f.N05_done || f.N06_done || f.N08_done) f.N04a_done = true;
+    // Abschnitte, die früher ohne doneAt endeten: Ist ihr Ende schon erreicht, ist die Station frei
+    if (f.N07_done && at.notredame === "N07c") delete at.notredame;
+    if (f.B_done && at.bouquinistes === "B06e") delete at.bouquinistes;
+    // Tour Eiffel: E00 → E01 → E02 …
+    if ((at.eiffel && at.eiffel !== "E00") || f.E03_done || f.E04_done || f.E05_done) f.E_arr = true;
+    // Bouquinistes: B00 → B01 → B01a → B02 → B03 → B04 → B05 → R4
+    if ((at.bouquinistes && at.bouquinistes !== "B00") || f.B04_done || f.B05_done || f.R4_done || f.B06_done) f.B_arr = true;
+    if (f.B04_done || f.B05_done || f.R4_done || f.B06_done || was("bouquinistes", ["B03", "B04", "B05", "B06", "B06e"])) f.B02_done = true;
+  };
+  G.profUnlock = ["N04_done", "N04a_done", "N05_done", "badge_faux", "N06_done", "carte_peeled", "N07_done", "N08_done", "R1_done", "G01_done", "G02_done", "G03_done", "G05_done", "G06_done", "R2_done", "E_arr", "E03_done", "E04_done", "E05_done", "R3_done", "R3b_done", "B_arr", "B02_done", "B04_done", "B05_done", "R4_done", "B06_done", "B_done", "prix_vu"];
 
   /* ---------- Teil 3: Der Endbildschirm zeigt das Schlüsselwort (wie Teil 1 für Teil 2) und öffnet Teil 3 auf diesem Gerät.
      key und store wie G.part3 in js/data.js; der Knopf führt ins gemeinsame Startmenü zum Intro von Teil 3. ---------- */

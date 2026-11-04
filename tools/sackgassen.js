@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 /* Test gegen Sackgassen und Abkürzungen: Stellen, an denen man das Spiel früher festfahren oder Pflichtschritte überspringen
    konnte, weil man mitten im Nachspann einer Aufgabe oder mitten in einem Gespräch einen Hotspot oder die Karte antippte.
-   Teil 1 (französisch und deutsch), Teil 2 und Teil 3. Dazu die freien Stationen von Teil 3: ein angefangener Abschnitt
+   Teil 1 (französisch und deutsch), Teil 2 und Teil 3. Dazu die freien Stationen (Teil 2 und 3): ein angefangener Abschnitt
    geht vor, Unterbrechen über die Karte, Neuladen in der freien Station, ältere Spielstände mitten in einer früheren Kette. Voraussetzungen wie bei den anderen Tests (lokaler Server auf Port 8765).
    Aufruf: node tools/sackgassen.js   (Umgebung: URL=... bis einschließlich des Hauptordners, CHROMIUM=Pfad, optional) */
 const BASE = process.env.URL || 'http://127.0.0.1:8765/';
@@ -202,6 +202,51 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     await cont('Continuer', clicks);
     check(await node() === next, 'Teil 3: alter Spielstand bei ' + id + ' geht weiter zu ' + next + ' (' + await node() + ')');
   }
+
+  /* ===== Teil 2, Version 2.2: freie Stationen ===== */
+  await start(BASE + 'guide-fantome/index.html?test=1');
+  const T2 = ['N04_done', 'N04a_done', 'N05_done', 'badge_faux', 'N06_done', 'N08_done', 'R1_done'];
+  /* Notre-Dame in der anderen Reihenfolge als im Durchlauf: erst die Klasse (hier als Flag), dann M. Nowak; danach von allein N08 */
+  await setup(['N04_done', 'N04a_done', 'N06_done'], 'notredame', null);
+  check(await idleHelp() && (await page.locator('.hotspot.done', { hasText: 'la classe' }).count()) === 1, 'Teil 2: Notre-Dame frei, Häkchen bei der Klasse, Szenenhilfe im leeren Dialogfeld');
+  await use('M. Nowak'); await cont('Continuer', 3);
+  await click('#modal-body button', '31 février'); await cont('Continuer', 3);
+  check(await node() === 'N08', 'Teil 2: Klasse zuerst, dann der Ausweis: danach kommt von allein N08 (' + await node() + ')');
+  /* Bouquinistes: das Papier angefangen, Unterbrechen über die Karte, zurück: es geht beim Papier weiter */
+  await page.evaluate(() => { PP.S.resume = null; PP.save(); });
+  await setup(T2.concat(['B_arr', 'B02_done']), 'bouquinistes', null);
+  check(await idleHelp(), 'Teil 2: Bouquinistes frei nach der Bouquiniste, die Szenenhilfe steht im leeren Dialogfeld');
+  await use('les boîtes vertes');
+  await tryUse('le vieux livre');
+  check(await node() === 'B05p' && /on finit ça/.test(await toasts()), 'Teil 2: Papier angefangen: das alte Buch führt nicht vorbei (' + await node() + ' · ' + await toasts() + ')');
+  /* wie eine Fahrt über die Karte (die Métro-Frage unterwegs lässt der Test aus) */
+  await page.evaluate(() => PP.enterScene('eiffel', true)); await page.waitForTimeout(300); await cont('Continuer', 6);
+  await page.evaluate(() => PP.enterScene('bouquinistes', true)); await page.waitForTimeout(300);
+  check(await page.evaluate(() => PP.S.at.bouquinistes) === 'B05p' && (await dlgText()).includes('petit papier'), 'Teil 2: nach der Unterbrechung geht es beim Papier weiter (' + await page.evaluate(() => PP.S.at.bouquinistes) + ')');
+  await page.evaluate(() => { document.getElementById('dialogue').innerHTML = ''; document.getElementById('dialogue').classList.remove('active'); });
+  await tryUse('le vieux livre');
+  check(await node() === 'B05p', 'Teil 2: leeres Dialogfeld, Abschnitt offen: das alte Buch führt zurück zum Papier (' + await node() + ')');
+  /* Neuladen in Lafayette nach dem Plan: frei, die Vendeuse ist da, kein Abschnitt beginnt von selbst */
+  await page.evaluate(() => { PP.S.resume = null; PP.save(); });
+  await setup(T2.concat(['G01_done']), 'lafayette', null);
+  await reloadWith({});
+  check(!(await modalOpen()) && !(await page.evaluate(() => PP.S.at.lafayette)) && await idleHelp() && (await page.locator('.hotspot', { hasText: 'la vendeuse' }).count()) === 1,
+    'Teil 2: Neuladen in Lafayette nach dem Plan: frei, die Vendeuse ist da, Szenenhilfe da');
+  /* Ältere Spielstände (bis Version 2.1) mitten in einer Kette */
+  await reloadWith({ flags: { N04_done: true, N05_done: true, badge_faux: true }, at: { notredame: 'N06l' }, resume: 'N06l', scene: 'notredame' });
+  check(await page.evaluate(() => PP.S.flags.N04a_done) && (await dlgText()).includes('cartes') && (await page.locator('.hotspot', { hasText: 'M. Nowak' }).count()) === 1,
+    'Teil 2: alter Spielstand bei N06l: Gruppenfoto nachgetragen, die Karten gehen weiter, M. Nowak ist da');
+  await reloadWith({ flags: Object.fromEntries(T2.concat(['B04_done']).map(f => [f, true])), at: { bouquinistes: 'B05' }, resume: 'B05', scene: 'bouquinistes' });
+  check(await page.evaluate(() => PP.S.flags.B_arr && PP.S.flags.B02_done) && (await modalText()).includes('Le papier'), 'Teil 2: alter Spielstand bei B05: Ankunft und Bouquiniste nachgetragen, das Papier geht weiter');
+  for (const [l, o] of [['p. 12', 'le parvis de Notre-Dame'], ['p. 27', 'la rue Chanoinesse'], ['p. 41', 'le quai aux Fleurs']]) await page.locator('#modal-body .slot', { hasText: l }).first().locator('select').selectOption({ label: o });
+  await click('#modal-body button', 'Valider'); await cont('Continuer', 3);
+  check(await node() === 'R4', 'Teil 2: alter Spielstand: nach dem Papier kommt R4, das Buch wird nicht noch einmal verlangt (' + await node() + ')');
+  await reloadWith({ flags: Object.fromEntries(T2.concat(['E01x']).map(f => [f, true])), at: { eiffel: 'E01' }, resume: 'E01', scene: 'eiffel' });
+  check(await page.evaluate(() => PP.S.flags.E_arr) && (await page.locator('.hotspot', { hasText: 'le joueur' }).count()) === 1, 'Teil 2: alter Spielstand bei E01: Ankunft nachgetragen, der Joueur ist da');
+  /* Alter fertiger Stand: Früher blieb die Station nach dem Schluss B06e stehen und spielte ihn beim Zurückkommen noch einmal */
+  await reloadWith({ flags: Object.fromEntries(T2.concat(['B04_done', 'B05_done', 'R4_done', 'B06_done', 'B_done', 'station1_done', 'N07_done']).map(f => [f, true])), at: { bouquinistes: 'B06e' }, resume: null, scene: 'bouquinistes' });
+  await page.evaluate(() => PP.enterScene('bouquinistes', true)); await page.waitForTimeout(300);
+  check(!(await page.evaluate(() => PP.S.at.bouquinistes)) && (await dlgText()).includes('Revenez quand vous voulez'), 'Teil 2: alter fertiger Stand bei B06e: zurück an den Bouquinistes nur die Begrüßung, kein Schluss von vorn (' + (await dlgText()).slice(0, 50) + ')');
 
   /* ===== Teil 3, Fassung 1.3: freie Stationen ===== */
   await start(BASE + 'voyageur/index.html?test=1&listen=1');
