@@ -5,7 +5,7 @@
 window.GAME = (function () {
   const G = {};
 
-  G.version = "2.0.0";
+  G.version = "2.1.0";
 
   /* ---------- Figuren ---------- */
   G.chars = {
