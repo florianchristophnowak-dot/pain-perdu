@@ -249,12 +249,12 @@ window.GAME = (function () {
       name: "Le Petit Palais · « Paris en 1900 »", bg: "bg_petitpalais", free: true,
       enter: [{ if: "X_done", node: "Xr" }, { if: "X_arr", node: null }, { node: "X00" }],
       help: [{ if: "!X_done", key: "S_petitpalais" }],
-      labels: [{ x: 15, y: 27.5, text: "Paris en 1900", cls: "paint mid" }],
+      labels: [{ x: 14.2, y: 28.4, text: "Paris en 1900", cls: "paint mid" }],
       hotspots: [
-        { id: "vitrine", label: "la vitrine", x: 37, y: 38, w: 25, h: 40, actions: { regarder: [{ if: "X_done", node: "Xv" }, { node: "X02" }] }, showIf: "X_arr", doneIf: "X_done" },
-        { id: "panneau", label: "le panneau", x: 6, y: 22, w: 18, h: 40, actions: { lire: "X01" }, showIf: "X_arr", doneIf: "X01_done" },
-        { id: "appareil", label: "l'appareil photo", x: 66, y: 40, w: 12, h: 42, actions: { regarder: "Xa" }, showIf: "X_arr" },
-        { id: "fenetre", label: "la fenêtre", x: 83, y: 6, w: 16, h: 56, actions: { regarder: "Xf" }, showIf: "X_arr", lab: "r" }
+        { id: "vitrine", label: "la vitrine", x: 34.8, y: 35.5, w: 26.4, h: 46, actions: { regarder: [{ if: "X_done", node: "Xv" }, { node: "X02" }] }, showIf: "X_arr", doneIf: "X_done" },
+        { id: "panneau", label: "le panneau", x: 5.2, y: 21, w: 17.8, h: 41.5, actions: { lire: "X01" }, showIf: "X_arr", doneIf: "X01_done" },
+        { id: "appareil", label: "l'appareil photo", x: 64, y: 38, w: 13.8, h: 47, actions: { regarder: "Xa" }, showIf: "X_arr" },
+        { id: "fenetre", label: "la fenêtre", x: 81.4, y: 3, w: 18.2, h: 63.5, actions: { regarder: "Xf" }, showIf: "X_arr", lab: "r" }
       ]
     },
     finale: {
