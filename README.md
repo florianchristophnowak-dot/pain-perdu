@@ -191,6 +191,14 @@ Sprachniveau A2 in allen drei Teilen:
 - Wörter über A2, die öfter vorkommen oder für eine Aufgabe wichtig sind, stehen im Glossar des jeweiligen Teils (`G.glossary`).
 - Die Hörtext-Skripte (`G.audio`) entsprechen den Aufnahmen Wort für Wort. Wer ein Skript ändert, muss die Aufnahme neu machen.
 
+Arbeitsaufträge (November 2026 in allen drei Teilen überprüft):
+
+- Ein Suchauftrag nennt nie, was man finden soll. Er gibt einen Anlass oder eine Frage (« Vous connaissez quelqu'un ? », « Qu'est-ce qui ne va pas ? »), die Anzahl steht in der Statuszeile. Auch Titel, Zeilen direkt vor der Aufgabe, Bemerkungen in früheren Aufgaben und Inventartexte verraten das Gesuchte nicht; was man gefunden hat, steht erst danach im Inventar (`desc2`).
+- Die Hilfe wird stufenweise genauer: Stufe 1 gibt die Richtung, Stufe 2 zeigt den Bereich, Stufe 3 nennt die Stellen, Stufe 4 die Lösung.
+- Steht vor einem Auftrag ein Sprecher (`task.who`), ist der Text ein Satz dieser Figur (« Des questions sur mes photos ? Allez-y. »), keine Systemanweisung, die über sie spricht.
+- Falsche Antworten in Auswahlaufgaben gibt es im Bild oder im Text wirklich (`P06`: Halstuch und Mütze auf dem Foto), sie sind keine erfundenen Farben. Eine Auswahl wiederholt nicht wörtlich, was eine Figur gerade gesagt hat.
+- Soll man einen Weg aus einer Wegbeschreibung finden, zeigt der Plan das Ziel erst nach der Lösung (`P04`).
+
 ## Teil 2: Le guide fantôme
 
 Zweiter Fall, unabhängig von Teil 1 spielbar: Vor Notre-Dame kassiert ein falscher Stadtführer, « M. Beaumont », die Anzahlung der Klasse und verschwindet. Die Lernenden spielen Marie, eine Freundin von Lino aus Paris; Lino begleitet sie und gibt die Hilfe, in vier Stufen und nur auf Französisch (das Glossar bleibt französisch-deutsch). Stationen: Auftakt an Notre-Dame, Galeries Lafayette, Tour Eiffel, freiwillig die Bouquinisten, Finale am Service des retours, nach den Bouquinisten ein kurzes Nachspiel, danach der Rapport und zum Schluss für alle das Bild mit dem roten Regenschirm vor Notre-Dame (`Z03`). Selfie und Personenbeschreibung (`N04b`) kommen erst nach der ersten Station: M. Nowak schreibt, dass die Policière eine Beschreibung braucht (`N07`). Grundlage sind das Spielkonzept und das Drehbuch Teil 2; die Kennungen (N03, G04, E02, R1 …) stimmen mit dem Drehbuch überein.

@@ -55,7 +55,6 @@ const PATCHES = [
       st.showTranscript = () => { if (trBox.hidden) tr.click(); };`],
   [R`(who ? "<b>" + esc(who) + " :</b> " : "")`, R`(who ? "<b>" + esc(who) + ":</b> " : "")`],
   [R`fill="#555">le banc rouge</text>`, R`fill="#555">die rote Bank</text>`],
-  [R`fill="#555">sortie</text>`, R`fill="#555">Ausgang</text>`, 2],
   [R`fill="#555">carrefour</text>`, R`fill="#555">Kreuzung</text>`],
   [R`text-anchor="end">entrée</text>`, R`text-anchor="end">Eingang</text>`],
   [R`el("button", "btn small", "C'est celui-ci")`, R`el("button", "btn small", "Dieser hier")`],

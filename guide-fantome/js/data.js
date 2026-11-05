@@ -159,7 +159,7 @@ window.GAME = (function () {
     photo_groupe: { emoji: "🖼️", name: "la photo de groupe", desc: "La classe devant Notre-Dame. M. Beaumont tient son parapluie rouge devant son visage.", img: "doc_photo_groupe" },
     selfie: { emoji: "🤳", name: "le selfie de Lino", desc: "Lino, Kevin et M. Beaumont, sans parapluie. On voit son visage.", img: "doc_selfie" },
     badge: { emoji: "🪪", name: "la photo du badge", desc: "GUIDE OFFICIEL · Ville de Paris · M. Beaumont · valable jusqu'au 31 février", render: "badge" },
-    carte: { emoji: "🎟️", name: "une carte « Visite exclusive »", desc: "N° 042. Un coin de l'autocollant se décolle.", desc2: { if: "carte_peeled", text: "N° 042. Sous l'autocollant : RÉDUCTION – DEUXIÈME ARTICLE À MOITIÉ PRIX." }, render: "card" },
+    carte: { emoji: "🎟️", name: "une carte « Visite exclusive »", desc: "M. Beaumont a donné cette carte à chaque élève.", desc2: { if: "carte_peeled", text: "N° 042. Sous l'autocollant : RÉDUCTION – DEUXIÈME ARTICLE À MOITIÉ PRIX." }, render: "card" },
     fiche: { emoji: "📝", name: "la fiche de signalement", desc: "Notre description de M. Beaumont : Il était grand. Il avait une moustache grise. Il portait un manteau beige et une montre dorée. Il avait un parapluie rouge. À midi moins le quart, il est parti avec 220 euros.", cards: "N07b" },   // Text aus N07a, dahinter die eigenen Sätze aus N07b
     plan: { emoji: "🗺️", name: "le plan de Paris", desc: "Notre-Dame, les Galeries Lafayette, la tour Eiffel. Et les quais de la Seine." },
     telephone: { emoji: "📱", name: "le téléphone de Marie", desc: "Pour écrire à M. Nowak." },
@@ -347,19 +347,19 @@ window.GAME = (function () {
     ],
     effects: { flag: "N05_done" }, doneAt: true, next: [{ if: "N06_done", node: "N08" }] };
   N.N05n = { type: "lines", lines: [L("nowak", "Il avait un badge officiel. Il me l'a montré.")], next: "N05" };
-  N.N06l = { type: "lines", lines: [L("narrateur", "Les élèves montrent leurs cartes."), lino("J'ai le numéro 42. Kevin aussi. Tout le monde.")], next: "N06" };
+  N.N06l = { type: "lines", lines: [L("narrateur", "Les élèves montrent leurs cartes."), lino("Tout le monde a une carte. Mais une carte pour quoi ?")], next: "N06" };
   N.N06 = { type: "task", title: "Les cartes", help: "N06", diag: "D_N06",
     task: { kind: "loupe", render: "card", ar: 1.6, maxZoom: 3, status: "Trouvé : {n} sur {m}",
-      intro: "Regarde la carte de près. Les deux côtés.",
+      intro: "Qu'est-ce que c'est, cette carte ? Regarde-la de près. Les deux côtés.",
       points: [
-        { id: "numero", need: true, chip: "le numéro", side: "front", x: 3, y: 82, w: 26, h: 15, line: marie("Le même numéro sur toutes les cartes. Ce n'est pas normal pour des billets.") },
+        { id: "numero", need: true, chip: "le numéro", side: "front", x: 3, y: 82, w: 26, h: 15, line: marie("Le 42. Lino a aussi le 42, et Kevin aussi. Le même numéro sur toutes les cartes ? Ce n'est pas normal pour des billets.") },
         { id: "peel", need: true, chip: "l'autocollant", action: "peel", line: lino("Il y a quelque chose dessous ! Lis.") },
         { id: "flip", need: true, chip: "le dos", action: "flip", line: marie("Un rendez-vous pour les groupes. Mais à nous, il n'a rien dit.") },
         { id: "dessous", neutral: true, side: "front", onlyIf: "carte_peeled", x: 48, y: 6, w: 47, h: 42, line: lino("Une réduction ? Pour une visite ?") },
         { id: "sticker", neutral: true, side: "front", x: 5, y: 6, w: 90, h: 72, line: lino("Visite exclusive… Paris secret. Très secret.") },
         { id: "stamp", neutral: true, side: "back", x: 8, y: 50, w: 84, h: 40, line: marie("Treize heures, tour Eiffel, pilier nord.") }
       ],
-      material: [{ x: 80, y: 4, w: 17, h: 26 }] },
+      material: [{ x: 3, y: 82, w: 26, h: 15 }, { x: 80, y: 4, w: 17, h: 26 }] },
     after: [lino("C'est une visite ou une promotion ?"), marie("Pour l'instant, surtout une disparition.")],
     effects: { flag: "N06_done" }, doneAt: true, next: [{ if: "N05_done", node: "N08" }] };
   /* Personenbeschreibung für die Polizei: kommt direkt nach der ersten Station (R2, R3b oder B06e führen hierher), sonst über G.pending */
@@ -487,7 +487,7 @@ window.GAME = (function () {
     ],
     effects: { flag: "G03_done" }, next: "G04" };
   N.G04 = { type: "task", title: "Poser les bonnes questions", help: "G04", diag: "D_G04",
-    task: { kind: "ask", who: "vendeuse", intro: "Pose des questions à la vendeuse. Il te faut quatre informations sur ce client.",
+    task: { kind: "ask", who: "vendeuse", intro: "Ce client ? Oui, je me souviens de lui. Qu'est-ce que vous voulez savoir ?",
       progress: "Informations : {n} sur {m}", facts: ["F1", "F2", "F3", "F4"],
       questions: [
         { q: "Vous l'avez vendu ?", a: "Oui.", yn: true },
@@ -669,17 +669,18 @@ window.GAME = (function () {
     L("bouquiniste", "Ah, ça ? C'est le papier de votre guide. Il l'a oublié ce matin.")
   ], next: "B05" };
   N.B05 = { type: "task", title: "Le papier", help: "B05", diag: "D_B05", doneAt: true,
-    task: { kind: "sort", who: "bouquiniste", intro: "Comparez avec le sommaire de mon « Paris insolite ».",
+    task: { kind: "sort", who: "bouquiniste", ordered: true, intro: "Qu'est-ce que votre guide a noté ? Comparez avec le sommaire de mon « Paris insolite ».",
       docs: [
         { label: "Le papier de M. Beaumont", text: "1. p. 12 – 2. p. 27 – 3. p. 41 – photo – 15 h : p. 12", cls: "hand" },
-        { label: "Paris insolite : sommaire", text: "p. 12 Le parvis de Notre-Dame · p. 27 La rue Chanoinesse · p. 41 Le quai aux Fleurs · p. 56 La Sainte-Chapelle", cls: "book sommaire" }
+        { label: "Paris insolite : sommaire", text: "p. 8 Le pont Neuf · p. 12 Le parvis de Notre-Dame · p. 27 La rue Chanoinesse · p. 41 Le quai aux Fleurs · p. 56 La Sainte-Chapelle", cls: "book sommaire" }
       ],
       slots: [
-        { id: "p12", label: "p. 12", answer: "parvis" },
-        { id: "p27", label: "p. 27", answer: "chanoinesse" },
-        { id: "p41", label: "p. 41", answer: "fleurs" }
+        { id: "p12", label: "1.", answer: "parvis" },
+        { id: "p27", label: "2.", answer: "chanoinesse" },
+        { id: "p41", label: "3.", answer: "fleurs" }
       ],
       options: [
+        { id: "pontneuf", label: "le pont Neuf", reply: lino("Le pont Neuf ? Il est dans le livre. Mais pas sur son papier.") },
         { id: "parvis", label: "le parvis de Notre-Dame" },
         { id: "chanoinesse", label: "la rue Chanoinesse" },
         { id: "fleurs", label: "le quai aux Fleurs" },
@@ -998,7 +999,7 @@ window.GAME = (function () {
     N04a: ["Regarde M. Beaumont de la tête aux pieds.", { fr: "Regarde surtout ses mains et ses bras.", action: "material" }, "Il y a quelque chose devant son visage, sur sa manche, dans sa main et à son bras.", "Le parapluie devant le visage, l'étiquette sur la manche, le livre à la main, le sac au bras."],
     N04b: ["Regarde son visage et ses mains.", { fr: "Zoome sur M. Beaumont, à côté de Kevin.", action: "material" }, "Il y a quelque chose sous son nez et à son poignet.", "Une moustache grise et une montre dorée."],
     N05: ["Lis tout, même les petits chiffres.", { fr: "Regarde la dernière ligne.", action: "material" }, "Combien de jours est-ce qu'il y a en février ?", "Le 31 février n'existe pas. Le badge est faux."],
-    N06: ["Une carte a deux côtés. Et ce coin est bizarre.", { fr: "Regarde le coin en haut à droite.", action: "material" }, "Tire sur le coin de l'autocollant. Après, retourne la carte.", "Sous l'autocollant, il y a une réduction. Derrière, il y a un rendez-vous : 13 heures, tour Eiffel."],
+    N06: ["Lis tout, même les petits chiffres. Et une carte a deux côtés.", { fr: "Regarde le numéro. Et regarde le coin en haut à droite.", action: "material" }, "Touche le numéro. Tire sur le coin de l'autocollant. Après, retourne la carte.", "Tout le monde a le numéro 42. Sous l'autocollant, il y a une réduction. Derrière, il y a un rendez-vous : 13 heures, tour Eiffel."],
     N07a: ["M. Nowak dit toujours : c'est le décor ou l'action ?", "Le décor, c'est comment il était. L'action, c'est ce qu'il a fait.", "Le décor répond à : comment c'était ? L'action répond à : qu'est-ce qui s'est passé ?", "Comment il était, ce qu'il avait, ce qu'il portait : c'est le décor, alors l'imparfait. Ce qu'il a fait une fois, à midi moins le quart : c'est l'action, alors le passé composé."],
     N07b: ["Comment est-ce qu'il parlait ? Vite, lentement, poliment ?", { fr: "Regarde le selfie : ses cheveux, sa moustache.", action: "material" }, "Tu peux écrire : Il parlait lentement.", "Deux phrases, au moins sept mots : comment il parlait (lentement, vite, poliment…) et comment il était (grand, poli, avec une moustache…)."],
     N07c: ["Qu'est-ce qu'on peut enlever, fermer ou rendre ?", { fr: "Regarde encore la photo et le selfie.", action: "material" }, "Un parapluie, on le ferme. Une moustache, on la garde.", "Pour chaque chose, demande-toi : est-ce qu'il peut l'enlever, la fermer ou la rendre en une minute ? Si oui, il peut la changer facilement."],
@@ -1014,7 +1015,7 @@ window.GAME = (function () {
     B02: ["Elle dit : il avait déjà son manteau. Qu'est-ce que ça veut dire ?", { fr: "Écoute encore la bouquiniste.", action: "replay" }, { fr: "Déjà, ça veut dire : avant. Le manteau, c'était avant le livre.", action: "transcript" }, "Cherche les heures dans la transcription : dix heures et demie, puis la visite à onze heures. Et déjà veut dire : avant ce moment."],
     B03: ["Lis le livre, puis écoute encore M. Beaumont. C'est pareil ou pas ?", { fr: "Écoute encore la visite.", action: "replay" }, "Cherche les mots porte, rois et boulanger dans le livre.", "Mets chaque phrase à côté du livre. Les mêmes mots : mot pour mot. Un mot différent : changé. Rien dans le livre : pas dans le livre."],
     B04: ["Regarde l'image. Qu'est-ce qui est écrit sous la porte ?", { fr: "Regarde la page 27.", action: "material" }, "Une différence parle de personnes. L'autre parle de la porte.", "Lis la page 27 et la visite, mot à mot. Deux choses ne sont pas les mêmes. Les autres sont dans le livre."],
-    B05: ["Les chiffres sur le papier, ce sont des pages.", { fr: "Regarde le sommaire du livre.", action: "material" }, "La page 12, c'est le début de la visite.", "Trouve chaque numéro dans le sommaire. Le lieu est écrit à côté du numéro."],
+    B05: ["Sur le papier, « p. », c'est une page du livre.", { fr: "Regarde le sommaire du livre.", action: "material" }, "1., 2., 3. : ce sont les lieux de sa visite, dans l'ordre. Le 1., c'est la page 12. Cherche la page 12 dans le sommaire.", "1. p. 12 : le parvis de Notre-Dame. 2. p. 27 : la rue Chanoinesse. 3. p. 41 : le quai aux Fleurs."],
     F01: ["Moi, je regarde ce qu'il ne peut pas changer.", { fr: "Regarde ta fiche de signalement et le selfie.", action: "material" }, "Le parapluie et le manteau, il peut les changer. La moustache grise et la montre, non.", "C'est l'homme avec la moustache grise et la montre dorée. Son manteau est dans le sac."],
     F01b: ["Qu'est-ce qu'on voit sur le selfie et sur lui maintenant ?", { fr: "Regarde encore le selfie.", action: "material" }, "Une chose est sous son nez. Une chose est à son poignet.", "Il n'a plus de parapluie, plus de manteau, plus de badge. Choisis ce qu'on voit sur le selfie et encore sur lui maintenant."],
     F03: ["Quand est-ce qu'il était notre guide ?", { fr: "La visite, c'était à onze heures. Regarde bien les mots de temps.", action: "material" }, "La visite, c'était aujourd'hui, avant midi.", "Ce matin, c'était notre guide."],
@@ -1060,7 +1061,7 @@ window.GAME = (function () {
     ["B02", "manteau → bouquiniste → guide → visite"],
     ["B03", "mot pour mot: Regardez cette petite porte / Le boulanger… / Un jour… · changé: porte secrète / les rois · pas dans le livre: Suivez le parapluie rouge"],
     ["B04", "porte secrète statt entrée des livraisons; les rois statt les marchands"],
-    ["B05", "p. 12 parvis · p. 27 rue Chanoinesse · p. 41 quai aux Fleurs"],
+    ["B05", "1. = p. 12 parvis · 2. = p. 27 rue Chanoinesse · 3. = p. 41 quai aux Fleurs (Ablenker: p. 8 pont Neuf steht nicht auf dem Papier)"],
     ["F01", "Der vierte Mann von links (grauer Schnurrbart, goldene Uhr, Mantel in der Tüte)"],
     ["F01b", "moustache grise, montre dorée"], ["F03", "Ce matin, c'était notre guide"],
     ["F04", "10 h manteau → 11 h visite → 220 euros/cartes (pas) → midi moins le quart (jamais) → maintenant (rien)"],

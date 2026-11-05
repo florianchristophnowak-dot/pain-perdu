@@ -598,9 +598,9 @@
       '<path id="p_gauche" d="M200 150 L70 150" stroke="#8a7f66" stroke-width="22" fill="none" stroke-linecap="round"/>' +
       '<path id="p_droite" d="M200 150 L330 150 L370 110" stroke="#8a7f66" stroke-width="22" fill="none" stroke-linecap="round"/>' +
       '<circle cx="200" cy="150" r="14" fill="#c9bfa6"/>' +
-      '<rect x="40" y="135" width="30" height="14" rx="3" fill="#c0392b"/><text x="30" y="180" font-size="13" fill="#555">le banc rouge</text>' +
-      '<rect x="365" y="95" width="26" height="26" fill="#777"/><text x="300" y="90" font-size="13" fill="#555">sortie</text>' +
-      '<text x="300" y="282" font-size="13" fill="#555">sortie</text>' +
+      /* Das Ziel steht erst nach der Lösung auf dem Plan: den Weg findet man über die Wegbeschreibung, nicht über den Plan */
+      '<g id="goal" visibility="hidden"><rect x="40" y="135" width="30" height="14" rx="3" fill="#c0392b"/><text x="30" y="180" font-size="13" fill="#555">le banc rouge</text></g>' +
+      '<rect x="365" y="95" width="26" height="26" fill="#777"/>' +
       '<text x="205" y="110" font-size="13" fill="#555">carrefour</text>' +
       '<text x="160" y="290" font-size="13" fill="#555" text-anchor="end">entrée</text>' +
       '<circle id="pos" cx="200" cy="280" r="10" fill="#2c6fad"/></svg>';
@@ -618,7 +618,7 @@
             walked.push(o.id); const p = $("#p_" + o.id, svg); if (p) p.setAttribute("stroke", "#2c6fad");
             const pos = posFor[o.id]; if (pos) { $("#pos", svg).setAttribute("cx", pos[0]); $("#pos", svg).setAttribute("cy", pos[1]); }
             step++;
-            if (step >= T.steps.length) { btns.innerHTML = ""; prompt.textContent = ""; api.complete({ text: walked.join(" → ") }); } else render();
+            if (step >= T.steps.length) { btns.innerHTML = ""; prompt.textContent = ""; $("#goal", svg).setAttribute("visibility", "visible"); api.complete({ text: walked.join(" → ") }); } else render();
           } else { const p = $("#p_" + o.id, svg); if (p) { p.setAttribute("stroke", "#c0392b"); setTimeout(() => p.setAttribute("stroke", "#8a7f66"), 900); } api.wrong({ who: T.who, fr: o.reply }); }
         };
         b.addEventListener("click", click);
