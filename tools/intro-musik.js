@@ -1,9 +1,9 @@
 const { chromium } = require('playwright');
 /* Test für den Schalter „Musique“ im Intro (js/game.js, playIntro) in der französischen und der deutschen Fassung:
-   Schalter im Intro und im Startmenü, Einstellung bleibt auf dem Gerät (pp_intro_music), Teil 1 und 2 ohne Musik stumm,
-   Teil 3 ohne Musik mit der Fassung intro_teil3_ohne_musik.mp4 (Wechsel mitten im Video an derselben Stelle),
-   gesperrter Ton (Browser ohne vorherigen Klick), fehlende Fassung ohne Musik, Darstellung auf Computer und Handy.
-   Startet selbst einen kleinen Server mit Range-Anfragen (sonst springt das Video beim Wechsel an den Anfang).
+   Schalter im Intro und im Startmenü, Einstellung bleibt auf dem Gerät (pp_intro_music), alle drei Teile ohne Musik stumm
+   (auch Teil 3: dort gibt es keine Fassung mit Nowaks Stimme mehr), gesperrter Ton (Browser ohne vorherigen Klick),
+   Darstellung auf Computer und Handy.
+   Startet selbst einen kleinen Server mit Range-Anfragen wie GitHub Pages.
    Aufruf: node tools/intro-musik.js   (Umgebung, optional: URL=... statt des eigenen Servers, z. B. file:///…/pain-perdu/ für das
    entpackte Offline-Paket; DE_URL=... für die deutsche Fassung, Standard URL + de/, für ihr Offline-Paket file:///…/pain-perdu-deutsch/;
    SHOT_DIR=..., CHROMIUM=Pfad). Bildschirmfotos in test-shots/intro-musik/. */
@@ -103,7 +103,7 @@ function serve(root) {
   check(!v.muted && v.src === 'intro_teil2.mp4', 'Teil 2 mit Musik');
   await page.click('.introvid .skip'); await page.waitForTimeout(1100);
 
-  console.log('== Teil 3: Fassung ohne Musik mit Nowaks Stimme');
+  console.log('== Teil 3: nur die Musik, ohne Musik stumm');
   await page.evaluate(() => { localStorage.setItem('pp_partie3', '1'); localStorage.setItem('pp_intro_music', '1'); });
   await page.reload();
   check(await playing(page), 'Intro von Teil 3 läuft');
@@ -111,20 +111,14 @@ function serve(root) {
   check(v.src === 'intro_teil3.mp4' && !v.muted, 'Teil 3 mit Musik: ' + JSON.stringify(v));
   await waitFor(page, async () => (await vid(page)).t > 2.2, 4000);
   const t0 = (await vid(page)).t;
-  await sw(page).click();
-  const held = await page.locator('.introvid .ihold').count();
-  check(held === 1, 'beim Wechsel: Standbild über dem Video');
-  check(await playing(page) && await waitFor(page, async () => (await vid(page)).src === 'intro_teil3_ohne_musik.mp4', 2000), 'wechselt auf intro_teil3_ohne_musik.mp4');
-  await page.waitForTimeout(250);
+  await sw(page).click(); await page.waitForTimeout(250);
   v = await vid(page);
-  check(!v.muted && !v.paused, 'ohne Musik mit Ton (Stimme), läuft weiter');
-  check(Math.abs(v.t - t0) < 1.2 && v.t >= t0 - 0.1, 'an derselben Stelle weiter: vorher ' + t0.toFixed(2) + ' s, jetzt ' + v.t.toFixed(2) + ' s');
-  check(await waitFor(page, async () => await page.locator('.introvid .ihold').count() === 0, 2000), 'Standbild wieder weg');
+  check(v.src === 'intro_teil3.mp4' && v.muted && !v.paused && v.t >= t0, 'Musik aus: dieselbe Datei läuft stumm weiter, bei ' + v.t.toFixed(2) + ' s');
+  check(await page.locator('.introvid .snd').isHidden(), 'ohne Musik kein Knopf „Son“');
   await page.screenshot({ path: SHOT + '04_teil3_ohne_musik.png' });
-  const t1 = (await vid(page)).t;
-  await sw(page).click(); await page.waitForTimeout(400);
+  await sw(page).click(); await page.waitForTimeout(250);
   v = await vid(page);
-  check(v.src === 'intro_teil3.mp4' && !v.muted && !v.paused && v.t >= t1 - 0.1, 'wieder an: zurück auf die Fassung mit Musik, bei ' + v.t.toFixed(2) + ' s');
+  check(v.src === 'intro_teil3.mp4' && !v.muted && !v.paused, 'wieder an: Musik zu hören');
   await sw(page).click(); await page.waitForTimeout(100);
   check(await waitFor(page, () => page.locator('.introvid.titled').count().then(n => n === 1), 12000), 'Video endet, der Titel erscheint');
   check(await page.locator('.introvid .ictl').isHidden(), 'unter dem Titel keine Schalter');
@@ -132,20 +126,8 @@ function serve(root) {
   await page.reload();
   check(await playing(page), 'nächstes Laden: Intro von Teil 3 läuft');
   v = await vid(page);
-  check(v.src === 'intro_teil3_ohne_musik.mp4' && !v.muted, 'gleich mit der Fassung ohne Musik: ' + JSON.stringify(v));
+  check(v.src === 'intro_teil3.mp4' && v.muted, 'gleich ohne Musik, stumm: ' + JSON.stringify(v));
   await page.click('.introvid .skip'); await page.waitForTimeout(1100);
-
-  if (!BASE.startsWith('file:')) {   // Dateien lassen sich nur über einen Server abfangen
-    console.log('== Teil 3: Fassung ohne Musik fehlt');
-    await page.route('**/intro_teil3_ohne_musik.mp4', r => r.fulfill({ status: 404, body: '' }));
-    await page.reload();
-    check(await playing(page, 5000), 'Intro läuft trotzdem');
-    v = await vid(page);
-    check(v.src === 'intro_teil3.mp4' && v.muted, 'statt dessen die Fassung mit Musik, stumm: ' + JSON.stringify(v));
-    check(await page.locator('.introvid .snd').isHidden(), 'kein Knopf „Son“');
-    await page.unroute('**/intro_teil3_ohne_musik.mp4');
-    await page.click('.introvid .skip'); await page.waitForTimeout(1100);
-  }
 
   console.log('== Deutsche Fassung');
   await page.goto(DE + 'index.html');
@@ -182,16 +164,15 @@ function serve(root) {
   v = await vid(page);
   check(!v.muted && !v.paused, 'Schalter an: Musik zu hören (der Klick erlaubt den Ton)');
 
-  console.log('== Ton gesperrt: Teil 3 ohne Musik');
+  console.log('== Ton gesperrt: Teil 3');
   await page.evaluate(() => { localStorage.setItem('pp_partie3', '1'); localStorage.setItem('pp_intro_music', '0'); });
   await page.reload();
   check(await playing(page), 'Intro von Teil 3 läuft');
   v = await vid(page);
-  check(v.src === 'intro_teil3_ohne_musik.mp4' && v.muted, 'Fassung ohne Musik, gesperrt stumm');
-  check(await page.locator('.introvid .snd').isVisible(), 'Knopf „Son“ für die Stimme');
-  await page.click('.introvid .snd'); await page.waitForTimeout(200);
+  check(v.src === 'intro_teil3.mp4' && v.muted && await page.locator('.introvid .snd').isHidden(), 'ohne Musik: stumm, kein „Son“ (keine Stimme mehr)');
+  await sw(page).click(); await page.waitForTimeout(300);
   v = await vid(page);
-  check(!v.muted && v.src === 'intro_teil3_ohne_musik.mp4', '„Son“: Stimme ohne Musik');
+  check(!v.muted && !v.paused && v.src === 'intro_teil3.mp4', 'Schalter an: Musik zu hören');
   await page.click('.introvid .skip'); await page.waitForTimeout(1100);
   await browser.close();
 

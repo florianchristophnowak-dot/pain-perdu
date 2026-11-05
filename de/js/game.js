@@ -1144,10 +1144,9 @@
      Teil 3 intro_teil3.mp4), dann großer Titel, dann Startmenü. ?intro=0 überspringt es. Fehlt die Datei oder spielt der
      Browser sie nicht, erscheint sofort das Startmenü. Ohne Klick erlauben Browser nur stummes Abspielen: dann gibt es einen Knopf für den Ton.
      Musik: Der Schalter „Musique“ (im Startmenü #btn-music, im Intro eine Kopie davon unten links) schaltet die Musik ab. Das gilt
-     auf diesem Gerät für alle Teile und beide Sprachen (pp_intro_music). Teil 1 und 2 haben als Ton nur die Musik und laufen dann
-     stumm; Teil 3 spielt intro_teil3_ohne_musik.mp4 (Originalton mit Nowaks Stimme) und wechselt auch mitten im Video an derselben Stelle. */
+     auf diesem Gerät für alle Teile und beide Sprachen (pp_intro_music). Alle drei Intros haben als Ton nur die Musik
+     („Waltz du Café“, in Teil 3 ohne den Originalton mit Nowaks Stimme) und laufen ohne sie stumm. */
   const MUSIC_KEY = "pp_intro_music";
-  const NOMUSIC = { 3: "_ohne_musik" };   // Teile mit eigener Fassung ohne Musik
   function introMusic() { try { return localStorage.getItem(MUSIC_KEY) !== "0"; } catch (e) { return true; } }
   function setIntroMusic(on) {
     try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch (e) { /* privat */ }
@@ -1157,10 +1156,8 @@
     const box = el("div", "introvid");
     const v = document.createElement("video");
     const vid = "../assets/video/" + (part > 1 ? "intro_teil" + part : "intro");
-    let alt = NOMUSIC[part] || "";   // Endung der Fassung ohne Musik; ohne sie gibt es ohne Musik nichts zu hören
     let music = introMusic(), muted = false, locked = false;   // muted: kein Ton (gesperrt oder „Son“ aus); locked: der Browser hat den Ton gesperrt
-    const file = () => vid + (music ? "" : alt) + ".mp4";
-    v.src = file(); v.poster = vid + "_poster.jpg";
+    v.src = vid + ".mp4"; v.poster = vid + "_poster.jpg";
     v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto";
     const title = el("div", "ititle");
     title.innerHTML = "<h1>" + esc($("#title").textContent) + "</h1><p>" + esc($("#subtitle").textContent) + "</p>";
@@ -1171,43 +1168,23 @@
     const big = el("button", "bigplay", "▶"); big.hidden = true; big.setAttribute("aria-label", "Intro starten");
     let done = false, timer = null;
     const apply = () => {
-      v.muted = muted || (!music && !alt);
+      v.muted = muted || !music;
       snd.textContent = muted ? "🔇 Ton" : "🔊 Ton";
-      snd.hidden = !locked || (!music && !alt);   // ohne Musik und ohne eigene Fassung hilft der Knopf nicht
-    };
-    /* Standbild über dem Video, solange die andere Fassung lädt und an die Stelle springt */
-    const hold = () => {
-      if (!v.videoWidth || v.readyState < 2) return;
-      const c = document.createElement("canvas"); c.className = "ihold"; c.width = v.videoWidth; c.height = v.videoHeight;
-      try { c.getContext("2d").drawImage(v, 0, 0, c.width, c.height); } catch (e) { return; }
-      box.insertBefore(c, title);
-      const off = () => { c.remove(); v.removeEventListener("seeked", off); v.removeEventListener("playing", off); };
-      v.addEventListener("seeked", off); v.addEventListener("playing", off); setTimeout(off, 4000);
-    };
-    const swap = run => {
-      const t = v.currentTime;
-      hold();
-      v.src = file();
-      if (t) v.addEventListener("loadedmetadata", () => { v.currentTime = Math.min(t, v.duration || t); }, { once: true });
-      apply();
-      if (run) v.play().catch(() => {});
+      snd.hidden = !locked || !music;   // ohne Musik gibt es nichts zu hören, der Knopf hilft dann nicht
     };
     const end = () => { if (done) return; done = true; clearTimeout(timer); box.classList.add("out"); setTimeout(() => { box.remove(); cb(); }, 900); };
     const showTitle = () => { if (done || box.classList.contains("titled")) return; box.classList.add("titled"); skip.hidden = true; ctl.hidden = true; big.hidden = true; timer = setTimeout(end, 3400); };
     skip.addEventListener("click", end);
     title.addEventListener("click", end);
     v.addEventListener("ended", showTitle);
-    v.addEventListener("error", () => {
-      if (!music && alt) { alt = ""; swap(big.hidden); return; }   // Fassung ohne Musik fehlt: weiter ohne Ton
-      if (!box.classList.contains("titled")) end();
-    });
+    v.addEventListener("error", () => { if (!box.classList.contains("titled")) end(); });
     snd.addEventListener("click", () => { muted = !muted; apply(); });
     if (mus) {
       mus.removeAttribute("id"); mus.classList.add("btn"); mus.setAttribute("aria-checked", music ? "true" : "false");
       mus.addEventListener("click", () => {
         music = !music; setIntroMusic(music);
         if (music) muted = false;   // wer die Musik einschaltet, will sie hören; nach dem Klick erlaubt der Browser den Ton
-        if (alt) swap(!v.paused && !v.ended); else apply();
+        apply();
       });
       ctl.appendChild(mus);
     }
