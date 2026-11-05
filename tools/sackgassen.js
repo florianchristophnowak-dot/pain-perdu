@@ -238,7 +238,7 @@ const check = (ok, what) => { console.log((ok ? 'ok    ' : 'FEHLER ') + what); i
     'Teil 2: alter Spielstand bei N06l: Gruppenfoto nachgetragen, die Karten gehen weiter, M. Nowak ist da');
   await reloadWith({ flags: Object.fromEntries(T2.concat(['B04_done']).map(f => [f, true])), at: { bouquinistes: 'B05' }, resume: 'B05', scene: 'bouquinistes' });
   check(await page.evaluate(() => PP.S.flags.B_arr && PP.S.flags.B02_done) && (await modalText()).includes('Le papier'), 'Teil 2: alter Spielstand bei B05: Ankunft und Bouquiniste nachgetragen, das Papier geht weiter');
-  for (const [l, o] of [['p. 12', 'le parvis de Notre-Dame'], ['p. 27', 'la rue Chanoinesse'], ['p. 41', 'le quai aux Fleurs']]) await page.locator('#modal-body .slot', { hasText: l }).first().locator('select').selectOption({ label: o });
+  for (const [l, o] of [['1.', 'le parvis de Notre-Dame'], ['2.', 'la rue Chanoinesse'], ['3.', 'le quai aux Fleurs']]) await page.locator('#modal-body .slot', { hasText: l }).first().locator('select').selectOption({ label: o });
   await click('#modal-body button', 'Valider'); await cont('Continuer', 3);
   check(await node() === 'R4', 'Teil 2: alter Spielstand: nach dem Papier kommt R4, das Buch wird nicht noch einmal verlangt (' + await node() + ')');
   await reloadWith({ flags: Object.fromEntries(T2.concat(['E01x']).map(f => [f, true])), at: { eiffel: 'E01' }, resume: 'E01', scene: 'eiffel' });

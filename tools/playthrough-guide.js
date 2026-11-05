@@ -234,7 +234,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   /* andere Reihenfolge als früher: erst das Papier auf den Boîtes, dann das Buch */
   await hs('les boîtes vertes', 'Regarder');
   expect((await dlgText()).includes('petit papier'), 'auf den Boîtes liegt das Papier (B05p)'); await cont();
-  for (const [l, o] of [['p. 12', 'le parvis de Notre-Dame'], ['p. 27', 'la rue Chanoinesse'], ['p. 41', 'le quai aux Fleurs']]) await selectRow('.slot', l, o);
+  for (const [l, o] of [['1.', 'le parvis de Notre-Dame'], ['2.', 'la rue Chanoinesse'], ['3.', 'le quai aux Fleurs']]) await selectRow('.slot', l, o);
   await btn('Valider'); await cont();
   expect((await S()).flags.B05_done && !(await S()).flags.R4_done && await free('bouquinistes') && await ticked('les boîtes vertes'), 'Papier erledigt, R4 wartet noch auf das Buch');
   await hs('le vieux livre', 'Regarder'); await cont();

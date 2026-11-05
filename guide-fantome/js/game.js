@@ -654,7 +654,7 @@
   /* Zuordnen: jede Zeile (slot) bekommt eine Option; Optionen dürfen mehrfach passen */
   TASKS.sort = function (T, area, api) {
     const sels = {}, opts = shuffled(T.options);
-    shuffled(T.slots).forEach(s => {
+    (T.ordered ? T.slots : shuffled(T.slots)).forEach(s => {   // ordered: Plätze mit Reihenfolge (B05: 1., 2., 3.) bleiben in ihrer Reihenfolge
       const row = el("div", "slot"); row.appendChild(el("label", "", gl(s.label)));
       const sel = selectOf(opts); sels[s.id] = sel; row.appendChild(sel); area.appendChild(row);
     });
