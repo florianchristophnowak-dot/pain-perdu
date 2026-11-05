@@ -315,7 +315,7 @@ window.GAME = (function () {
   N.P03a = { type: "lines", lines: [{ who: "marie", fr: "Der Wärter redet schnell. Zum Glück gibt es am Eingang einen Plan." }], next: "SCENE_pere_lachaise" };
 
   N.P04 = { type: "task", diag: "D_P04", help: "P04", audio: "au_gardien", title: "Der Plan: welcher Weg?",
-    task: { kind: "route", intro: "Klicke Schritt für Schritt auf Chloés Weg.",
+    task: { kind: "route", intro: "Habt ihr alles verstanden? Zeigt mir den Weg auf dem Plan, Schritt für Schritt.",
       steps: [
         { id: "s1", prompt: "Vom Eingang aus ...", opts: [{ id: "droit", label: "geradeaus", ok: true }, { id: "descend", label: "der Weg bergab", ok: false, reply: "Nein, nicht da lang! Der führt bergab zum anderen Ausgang." }] },
         { id: "s2", prompt: "An der Kreuzung ...", opts: [{ id: "gauche", label: "links", ok: true }, { id: "droite", label: "rechts", ok: false, reply: "Nein! Rechts geht's zu Jim Morrison. Schon wieder der!" }] }
@@ -340,7 +340,7 @@ window.GAME = (function () {
 
   N.P06 = { type: "task", diag: "D_P06", help: "P06", title: "Vergleichen: das Foto und die Tasche",
     task: { kind: "pick", img: "doc_photo_chloe", intro: "Foto von heute Morgen: Chloé und Marcel Blanchard. Schau dir seine Tasche genau an ... und die braune Tasche in unserem Inventar.", question: "Welche zwei Details sind auf dem Foto und an der Tasche gleich?", n: 2,
-      options: [{ id: "fr", label: "der rote Reißverschluss", ok: true }, { id: "aj", label: "der gelbe Aufkleber", ok: true }, { id: "fb", label: "der blaue Reißverschluss", ok: false }, { id: "av", label: "der grüne Aufkleber", ok: false }, { id: "vp", label: "das Brotgesicht", ok: false }],
+      options: [{ id: "fr", label: "der rote Reißverschluss", ok: true }, { id: "aj", label: "der gelbe Aufkleber", ok: true }, { id: "fo", label: "das rote Halstuch", ok: false }, { id: "be", label: "die schwarze Baskenmütze", ok: false }, { id: "vp", label: "das Brotgesicht", ok: false }],
       wrong: { who: "marie", fr: "Schau dir die Tasche auf dem Foto genau an. Was siehst du?" } },
     effects: { flag: "P06_done" },
     after: [
@@ -605,12 +605,12 @@ window.GAME = (function () {
 
   /* ---------- Phase 2 ---------- */
   N.P07 = { type: "choice", who: "gardien", diag: "D_P07", count: true,
-    lines: [{ who: "gardien", fr: "Könnt ihr Gaston helfen? Gebt ihm den Ball, der unter der Bank liegt, nicht den Ball in meinem Korb." }],
+    lines: [{ who: "gardien", fr: "Könnt ihr Gaston helfen? Er will seinen Ball. Aber welchen? Schaut ihn euch genau an." }],
     choices: [
-      { fr: "Den Ball unter der Bank geben.", kind: "ok", reply: [
+      { fr: "Den roten Ball unter der Bank geben.", kind: "ok", reply: [
         { who: "narrateur", fr: "Gaston nimmt den Ball und setzt sich ... genau vor die Kamera." },
         { who: "lino", fr: "Sehr professionell. Man sieht nichts mehr." }], next: "END" },
-      { fr: "Den Ball aus dem Korb geben.", kind: "wrong", reply: [{ who: "gardien", fr: "Nein, nicht diesen Ball! Der ist für morgen." }], next: "P07" }
+      { fr: "Den gelben Ball aus dem Korb geben.", kind: "wrong", reply: [{ who: "gardien", fr: "Nein, nicht diesen Ball! Der ist für morgen. Schaut mal: Wo guckt Gaston hin?" }], next: "P07" }
     ],
     effects: { flag: "P07_done" } };
   N.P07r = { type: "lines", lines: [{ who: "narrateur", fr: "Gaston schläft. Vor der Kamera." }] };
@@ -704,7 +704,7 @@ window.GAME = (function () {
     M04b: ["Was hat die Kioskfrau genau gesagt?", { fr: "Lies noch mal, was die Kioskfrau gesagt hat. Hier ist ihr Text.", action: "transcript" }, "Achte auf die Kleidung, auf das Foto, auf die Treppe und auf die Métro.", "Jede Lücke steht fast wörtlich im Text der Kioskfrau. Such die Stelle und vergleiche Wort für Wort."],
     P02: ["Zeig ihm das Foto.", { fr: "Im Inventar: das Gruppenfoto.", action: "material" }, "Du kannst sagen: Haben Sie diesen Pantomimen gesehen?", "Zeig ihm das Gruppenfoto und frag, ob er den Pantomimen gesehen hat."],
     P04: ["Geradeaus, dann ... links oder rechts? Lies noch mal nach.", { fr: "Hier ist noch mal, was der Wärter gesagt hat.", action: "transcript" }, "Im Text stehen drei Hinweise: geradeaus, links, nicht bergab.", "Der Wärter nennt zwei Schritte: erst bis zur Kreuzung, dann eine Richtung. Lies genau, welche, und welchen Weg ihr nicht nehmen sollt."],
-    P06: ["Schau dir die Tasche auf dem Foto genau an. Was siehst du?", { fr: "Achte auf den Reißverschluss und den Aufkleber.", action: "material" }, "Schau dir auch die braune Tasche im Inventar an: den Reißverschluss, den Aufkleber.", "Reißverschluss und Aufkleber: auf dem Foto und an der Tasche im Inventar."],
+    P06: ["Schau dir die Tasche auf dem Foto genau an. Was siehst du?", { fr: "Schau nur auf die Tasche. Marcels Kleidung gehört nicht dazu.", action: "material" }, "Schau dir auch die braune Tasche im Inventar an: den Reißverschluss, den Aufkleber.", "Reißverschluss und Aufkleber: auf dem Foto und an der Tasche im Inventar."],
     B02: ["Lino, wir suchen keinen Nachtisch. Was suchen wir?", { fr: "Schau dir den Flyer an: „Le Pain perdu“ ist eine Show.", action: "material" }, "Sag ihr: Ich suche einen Rucksack ... oder: Ich suche die Show ...", "Sag ihr, was ihr sucht: den Rucksack oder die Show, nicht den Nachtisch."],
     B04: ["Lies noch mal genau. Was sagt er wirklich?", { fr: "Hier ist noch mal Marcels Nachricht.", action: "transcript" }, "Such im Text: „Das gehört nicht mir“, „Ich glaube“, „das Programm hat sich geändert“.", "Sicher ist nur, was er wörtlich sagt. Was er will oder wo er ist, sagt er nicht."],
     B06: ["Drei Dinge: was passiert ist, warum, wohin wir gehen.", { fr: "Schau dir die Satzanfänge an.", action: "material" }, "Du kannst so anfangen: Der Pantomime hatte eine braune Tasche, genau wie wir.", "Schreib, was passiert ist (die Taschen sahen ähnlich aus, er hat unseren Rucksack genommen) und wohin ihr jetzt geht."],

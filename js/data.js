@@ -349,7 +349,7 @@ window.GAME = (function () {
   N.P03a = { type: "lines", lines: [{ who: "marie", fr: "Il parle vite, ce gardien. Heureusement, il y a un plan à l'entrée." }], next: "SCENE_pere_lachaise" };
 
   N.P04 = { type: "task", diag: "D_P04", help: "P04", audio: "au_gardien", title: "Le plan : quel chemin ?",
-    task: { kind: "route", intro: "Clique sur le chemin de Chloé, étape par étape.",
+    task: { kind: "route", intro: "Vous avez compris ? Montrez-moi le chemin sur le plan, étape par étape.",
       steps: [
         { id: "s1", prompt: "Depuis l'entrée...", opts: [{ id: "droit", label: "tout droit", ok: true }, { id: "descend", label: "le chemin qui descend", ok: false, reply: "Non, pas par là ! Ça descend vers l'autre sortie." }] },
         { id: "s2", prompt: "Au carrefour...", opts: [{ id: "gauche", label: "à gauche", ok: true }, { id: "droite", label: "à droite", ok: false, reply: "Non ! À droite, c'est Jim Morrison. Encore lui !" }] }
@@ -374,7 +374,7 @@ window.GAME = (function () {
 
   N.P06 = { type: "task", diag: "D_P06", help: "P06", title: "Comparer : la photo et le sac",
     task: { kind: "pick", img: "doc_photo_chloe", intro: "Photo de ce matin : Chloé et Marcel Blanchard. Regarde bien son sac... et le sac brun dans notre inventaire.", question: "Quels deux détails sont pareils sur la photo et sur le sac ?", n: 2,
-      options: [{ id: "fr", label: "la fermeture rouge", ok: true }, { id: "aj", label: "l'autocollant jaune", ok: true }, { id: "fb", label: "la fermeture bleue", ok: false }, { id: "av", label: "l'autocollant vert", ok: false }, { id: "vp", label: "le visage de pain", ok: false }],
+      options: [{ id: "fr", label: "la fermeture rouge", ok: true }, { id: "aj", label: "l'autocollant jaune", ok: true }, { id: "fo", label: "le foulard rouge", ok: false }, { id: "be", label: "le béret noir", ok: false }, { id: "vp", label: "le visage de pain", ok: false }],
       wrong: { who: "marie", fr: "Regarde bien le sac sur la photo. Qu'est-ce que tu vois ?" } },
     effects: { flag: "P06_done" },
     after: [
@@ -639,12 +639,12 @@ window.GAME = (function () {
 
   /* ---------- Phase 2 ---------- */
   N.P07 = { type: "choice", who: "gardien", diag: "D_P07", count: true,
-    lines: [{ who: "gardien", fr: "Vous pouvez aider Gaston ? Donnez-lui la balle qui est sous le banc, pas la balle dans mon panier." }],
+    lines: [{ who: "gardien", fr: "Vous pouvez aider Gaston ? Il veut sa balle. Mais quelle balle ? Regardez-le bien." }],
     choices: [
-      { fr: "Donner la balle qui est sous le banc.", kind: "ok", reply: [
+      { fr: "Donner la balle rouge, sous le banc.", kind: "ok", reply: [
         { who: "narrateur", fr: "Gaston prend la balle et se place... exactement devant la caméra." },
         { who: "lino", fr: "Très professionnel. On ne voit plus rien.", de: "Sehr professionell. Man sieht nichts mehr." }], next: "END" },
-      { fr: "Donner la balle qui est dans le panier.", kind: "wrong", reply: [{ who: "gardien", fr: "Non, pas cette balle ! Elle est pour demain." }], next: "P07" }
+      { fr: "Donner la balle jaune, dans le panier.", kind: "wrong", reply: [{ who: "gardien", fr: "Non, pas cette balle ! Elle est pour demain. Regardez Gaston : il regarde quoi ?" }], next: "P07" }
     ],
     effects: { flag: "P07_done" } };
   N.P07r = { type: "lines", lines: [{ who: "narrateur", fr: "Gaston dort. Devant la caméra." }] };
@@ -738,7 +738,7 @@ window.GAME = (function () {
     M04b: ["C'est le décor ou l'action ?", { fr: "Écoute encore la dame du kiosque.", action: "replay" }, "Le décor, c'est l'imparfait : il portait. L'action, c'est le passé composé : il a pris.", "Hintergrund und Zustand: imparfait. Ereignis: passé composé."],
     P02: ["Montre-lui la photo.", { fr: "Dans l'inventaire : la photo de groupe.", action: "material" }, "Tu peux dire : Vous avez vu ce mime ?", "Zeig ihm das Gruppenfoto und frag, ob er den Pantomimen gesehen hat."],
     P04: ["Tout droit, puis... à gauche ou à droite ? Écoute encore.", { fr: "Écoute encore le gardien.", action: "replay" }, { fr: "Voici la transcription : tout droit, à gauche, ne prenez pas.", action: "transcript" }, "Der Wärter nennt zwei Schritte: zuerst bis zum carrefour (Kreuzung), dann eine Richtung. à gauche = links, à droite = rechts. Und « ne prenez pas » heißt: Diesen Weg nicht nehmen."],
-    P06: ["Regarde bien le sac sur la photo. Qu'est-ce que tu vois ?", { fr: "Zoom sur le sac : la fermeture et l'autocollant.", action: "material" }, "Regarde aussi le sac brun dans l'inventaire : la fermeture, l'autocollant.", "Reißverschluss und Aufkleber: auf dem Foto und an der Tasche im Inventar."],
+    P06: ["Regarde bien le sac sur la photo. Qu'est-ce que tu vois ?", { fr: "Regarde seulement le sac. Les vêtements de Marcel, ce n'est pas le sac.", action: "material" }, "Regarde aussi le sac brun dans l'inventaire : la fermeture, l'autocollant.", "Reißverschluss und Aufkleber: auf dem Foto und an der Tasche im Inventar."],
     B02: ["Lino, on ne cherche pas un dessert. Qu'est-ce qu'on cherche ?", { fr: "Regarde le flyer : Le Pain perdu, c'est un spectacle.", action: "material" }, "Dis-lui : Je cherche un sac... ou Je cherche le spectacle...", "Sag ihr, was ihr sucht: die Tasche oder die Aufführung, nicht das Gericht."],
     B04: ["Écoute encore. Qu'est-ce qu'il dit vraiment ?", { fr: "Écoute encore le message de Marcel.", action: "replay" }, { fr: "Voici la transcription. Cherche : « ce n'est pas à moi », « je crois que », « le programme a changé ».", action: "transcript" }, "Sicher ist nur, was er wörtlich sagt. Was er will oder wo er ist, sagt er nicht."],
     B06: ["Trois choses : ce qui s'est passé, pourquoi, où on va.", { fr: "Regarde les débuts de phrases.", action: "material" }, "Tu peux commencer : Le mime avait un sac brun, comme nous.", "Was passiert ist (Hintergrund im imparfait, Handlung im passé composé) und wohin ihr geht."],
@@ -776,7 +776,7 @@ window.GAME = (function () {
     ["la preuve", "der Beweis"], ["le voleur, voler", "der Dieb, stehlen"], ["l'erreur (f), par erreur", "der Irrtum, aus Versehen"], ["le mauvais sac", "die falsche Tasche"],
     ["pressé, pressée", "in Eile"], ["échanger, échange, échangé", "tauschen"], ["la compagnie", "die Theatergruppe"], ["la répétition, répéter", "die Probe, proben"], ["le décor", "die Kulisse"],
     ["le crâne", "der Schädel"], ["les feuilles mortes", "das welke Laub"], ["l'échelle (f)", "die Leiter"], ["l'étagère (f)", "das Regal"], ["le panier", "der Korb"], ["la Joconde", "die Mona Lisa"], ["l'urgence (f)", "der Notfall; pour les urgences: für Notfälle"], ["en carton", "aus Pappe"], ["le panneau", "das Schild; auch: die Tafel (für Aushänge)"], ["le pain perdu", "Arme Ritter (Süßspeise)"], ["mouillé", "nass"], ["le gant", "der Handschuh"],
-    ["rayé", "gestreift"], ["le béret", "die Baskenmütze"], ["tenir, tient, tenait", "halten"], ["apporter, apporté", "bringen, mitbringen"], ["laisser un message", "eine Nachricht hinterlassen"],
+    ["rayé", "gestreift"], ["le béret", "die Baskenmütze"], ["le foulard", "das Halstuch"], ["tenir, tient, tenait", "halten"], ["apporter, apporté", "bringen, mitbringen"], ["laisser un message", "eine Nachricht hinterlassen"],
     ["les affaires (f)", "die Sachen"], ["dedans", "darin, drinnen"], ["là-bas", "dort, dorthin"], ["ressembler à, ressemble à", "aussehen wie"], ["la cour", "der Hof"], ["l'entrée (f)", "der Eingang"],
     ["le rendez-vous", "das Treffen, die Verabredung"], ["avoir l'air inquiet, avait l'air inquiet", "besorgt aussehen"], ["le numéro", "die Nummer: der Auftritt; auch: die Telefonnummer"], ["le public", "das Publikum"],
     ["l'ombre (f)", "der Schatten"], ["allumer, allume", "anschalten"], ["le miroir", "der Spiegel"],
