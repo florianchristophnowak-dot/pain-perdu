@@ -137,7 +137,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await loupeTap(...toSlot('P17', 20, 84));
   expect((await feedback()).includes('ancienne. Ou ajoutée'), 'O02 braune Farbe: Bemerkung');
   await loupeTap(...toSlot('P18', 52, 26));
-  expect((await feedback()).includes('ruban adhésif ? Bizarre'), 'O02 Baguette auf B: nur eine Bemerkung');
+  { const f = await feedback(); expect(f.includes('je ne le connais pas') && !f.includes('ruban'), 'O02 Baguette auf B: nur eine Bemerkung, sie verrät das Klebeband für P01 nicht'); }
   await loupeTap(...toSlot('P17', 43, 26.5));
   expect((await feedback()).includes("On regarde d'abord") && (await status()).includes('1 sur 2'), 'O02 Gesicht gefunden, Lino urteilt nicht mehr vorschnell: ' + await status());
   expect((await page.locator('#modal-body .help-bubble, #modal-body .btn.aide').first().getAttribute('data-who')) === 'marie', 'O02 Hilfe von Marie (Lino ermittelt)');
@@ -262,7 +262,8 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   expect((await read()).includes('ton téléphone dans la main'), 'Invalides: Bemerkung zu den Hüten');
   /* Fassung 1.3: erst die Baguettes auf dem Tisch, dann Marcel (in Fassung 1.2 umgekehrt) */
   await hs('les baguettes', 'Regarder');
-  expect((await read()).includes('Comme sur la photo B'), 'I03p: die Baguette auf dem Tisch, vor Marcel');
+  { const seen = await read(); expect(seen.includes('ressemble à la baguette de la photo B') && !seen.includes('ruban'), 'I03p: die Baguette auf dem Tisch, vor Marcel, ohne die gesuchten Details'); }
+  expect(!(await page.evaluate(() => window.GAME.items.photo_baguette.desc)).includes('ruban'), 'I03p: der Inventartext nennt die Details erst nach I03 (desc2)');
   expect((await S()).inv.includes('photo_baguette'), 'I03p Foto der Baguette im Inventar');
   await tapIn('.compare .lz', 1, 65, 50); expect((await feedback()).includes('Ça peut changer'), 'I03 Farbe: Falle');
   await tapIn('.compare .lz', 0, ...toCrop('P18', 45, 28.5)); await tapIn('.compare .lz', 1, 11, 50);

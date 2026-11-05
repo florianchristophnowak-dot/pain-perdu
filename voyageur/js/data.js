@@ -173,7 +173,7 @@ window.GAME = (function () {
     fiche_vente: { emoji: "🏷️", name: "la fiche de vente", desc: "Album Paris 1900 · Couverture et pages anciennes · Trois photographies prises en 1900 · Photos originales, pas des copies · Prix : 180 € · Vendeur : Victor Delmas" },
     fiche_orsay: { emoji: "📄", name: "la fiche sur Orsay", desc: "La gare d'Orsay. En 1900, il y avait une grande exposition à Paris : l'Exposition universelle. Pour cette exposition, on a construit une gare. Les gens prenaient le train ici. En 1986, la gare est devenue un musée : le musée d'Orsay. Aujourd'hui, on regarde des tableaux ici. Le bâtiment est vieux, mais ce n'est plus une gare." },
     programme: { emoji: "📋", name: "le programme", desc: "Les Images de Paris · Aujourd'hui · Pont Alexandre III : information · Esplanade des Invalides : livres et costumes · Marcel Blanchard : accessoires de théâtre, le matin · Chloé : photos, à partir de 14 h, stand 6" },
-    photo_baguette: { emoji: "🥖", name: "la photo de la baguette", desc: "La baguette de Marcel aujourd'hui : le bout cassé et trois morceaux de ruban adhésif.", img: "doc_baguette" },
+    photo_baguette: { emoji: "🥖", name: "la photo de la baguette", desc: "Une baguette de Marcel, aujourd'hui. Elle ressemble à la baguette de la photo B.", desc2: { if: "I03_done", text: "La baguette de Marcel aujourd'hui : le même bout cassé et les mêmes trois morceaux de ruban adhésif que sur la photo B." }, img: "doc_baguette" },
     photos_entieres: { emoji: "📁", name: "les photos entières", desc: "Les photos de Chloé : P17, P18 et P19. On voit aussi les bords.", render: "fulls", photos: ["P17", "P18", "P19"] },
     carte_1900: { emoji: "🖼️", name: "la carte postale de 1900", desc: "Une carte postale du Petit Palais, gratuite : une vraie photo de 1900. Le pont Alexandre III pendant l'Exposition universelle, avec beaucoup de monde. Et sans boulanger.", img: "doc_1900" },
     fiche_chloe: { emoji: "📝", name: "la fiche de Chloé", desc: "Compagnie Marcel Blanchard · Série « Paris 1900 » · Séance photo en costumes : septembre 2025 · Photographe : Chloé · P17 Orsay · P18 pont Alexandre III · P19 Invalides — Vente du 12 octobre 2026 · Trois copies, photos des coulisses : P17, P18, P19 · 6 € la photo, total : 18 € · Acheteur : Victor Delmas" }
@@ -326,14 +326,14 @@ window.GAME = (function () {
     L("delmas", "Bien sûr. Mais ne touchez pas les pages, s'il vous plaît."),
     lino("D'accord. Mes mains restent en 2026.")
   ], effects: { flag: "O01_done" }, doneAt: true };   // danach frei: das Album zuerst, dann der Händler und die Fiche
-  N.O02 = { type: "task", title: "Un visage connu", help: "O02", diag: "D_O02",
-    task: { kind: "loupe", render: "album", maxZoom: 5, status: "Sur la photo A : {n} sur {m}",
-      intro: "Regardez les trois photos. Sur la photo A, trouvez le visage et la montre du monsieur.",
+  N.O02 = { type: "task", title: "Trois vieilles photos", help: "O02", diag: "D_O02",
+    task: { kind: "loupe", render: "album", maxZoom: 5, status: "Détails : {n} sur {m}",
+      intro: "Regardez les trois photos de près. Vous connaissez quelqu'un ? Trouvez deux détails.",
       points: [
         { id: "visage", need: true, chip: "le visage", photo: "P17", x: 39, y: 20.5, w: 8, h: 12.5, lines: [lino("Marie ! Le monsieur sur la photo A, c'est Lucien ! Notre voleur… Non. Attends. On regarde d'abord."), marie("C'est ma phrase, ça."), lino("Je l'ai apprise à Montmartre.")] },
         { id: "montre", need: true, chip: "la montre", photo: "P17", x: 42, y: 46.5, w: 9.5, h: 8, line: marie("La même montre, peut-être.") },
         { id: "lucien_c", neutral: true, photo: "P19", x: 22, y: 11, w: 20, h: 72.5, line: lino("Encore le même monsieur. Mais regarde d'abord la photo A.") },
-        { id: "baguette", neutral: true, photo: "P18", x: 43.5, y: 21.5, w: 20, h: 11, line: lino("Une baguette avec du ruban adhésif ? Bizarre.") },
+        { id: "baguette", neutral: true, photo: "P18", x: 43.5, y: 21.5, w: 20, h: 11, line: lino("Un boulanger avec une baguette. Lui, je ne le connais pas.") },
         { id: "brun_a", neutral: true, weak: true, photo: "P17", x: 11, y: 7, w: 64, h: 93, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
         { id: "brun_b", neutral: true, weak: true, photo: "P18", x: 10, y: 0, w: 90, h: 100, line: marie("La couleur peut être ancienne. Ou ajoutée.") },
         { id: "brun_c", neutral: true, weak: true, photo: "P19", x: 18, y: 0, w: 62, h: 83.8, line: marie("La couleur peut être ancienne. Ou ajoutée.") }
@@ -347,7 +347,7 @@ window.GAME = (function () {
     ],
     effects: { items: ["photo_a", "photo_b", "photo_c"], flag: "O02_done" }, doneAt: true };
   N.O03 = { type: "task", title: "Des questions au vendeur", help: "O03", diag: "D_O03",
-    task: { kind: "ask", who: "delmas", asker: "lino", intro: "Posez des questions au vendeur. Il vous faut deux informations sur les photos.",
+    task: { kind: "ask", who: "delmas", asker: "lino", intro: "Des questions sur mes photos ? Allez-y. Je réponds, si je peux.",
       progress: "Informations : {n} sur {m}", facts: ["F1", "F2"],
       questions: [
         { q: "L'album est vieux ?", a: "Oui.", yn: true },
@@ -464,9 +464,9 @@ window.GAME = (function () {
       material: [{ img: 0, x: 12, y: 0, w: 88, h: 55 }, { img: 1, x: 14, y: 0, w: 82, h: 52 }],
       success: marie("Le même endroit, ce n'est pas la même année.") },
     next: "P01" };
-  N.P01 = { type: "task", title: "Le pain qui ne vieillit pas", help: "P01", diag: "D_P01",
-    task: { kind: "loupe", render: "crop", photo: "P18", maxZoom: 5, status: "La baguette : {n} sur {m}",
-      intro: "Regardez la photo B de près. Trouvez trois détails sur la baguette.",
+  N.P01 = { type: "task", title: "Un boulanger de 1900 ?", help: "P01", diag: "D_P01",
+    task: { kind: "loupe", render: "crop", photo: "P18", maxZoom: 5, status: "Détails : {n} sur {m}",
+      intro: "Regardez la photo B de près. Le boulanger et sa baguette : qu'est-ce qui ne va pas ? Trouvez trois détails.",
       points: [
         { id: "bout", need: true, chip: "le bout cassé", photo: "P18", x: 43.6, y: 25.3, w: 3, h: 6.6, line: marie("Le bout est cassé.") },
         { id: "ruban", need: true, chip: "le ruban adhésif", photo: "P18", x: 46.6, y: 24.2, w: 4, h: 7, lines: [lino("Regarde ce pain. Il a trois pansements."), marie("Du pain avec du ruban adhésif ?")] },
@@ -633,7 +633,7 @@ window.GAME = (function () {
   /* Der Tisch mit den Requisiten: vor oder nach Marcel */
   N.I03p = { type: "lines", lines: [
     narr("Sur la table, il y a des accessoires de théâtre : une malle, des chapeaux et des baguettes."),
-    L("marie", "Une baguette avec du ruban adhésif ! Comme sur la photo B.", { onlyIf: "!I02_done" }),
+    L("marie", "Regarde cette baguette. Elle ressemble à la baguette de la photo B.", { onlyIf: "!I02_done" }),
     L("lino", "Je la prends en photo. Pour comparer.", { onlyIf: "!I02_done" }),
     L("marie", "Voilà la baguette de Marcel. On compare ?", { onlyIf: "I02_done" })
   ], effects: { item: "photo_baguette" }, next: "I03" };
@@ -959,12 +959,12 @@ window.GAME = (function () {
     S_invalides: ["Qui connaît les accessoires de la photo B ? Et qu'est-ce qu'on peut comparer ?", { fr: "Regarde ce qui brille.", action: "material" }, "Parle avec Marcel. Et regarde les baguettes sur la table.", "Clique sur Marcel : parler. Et sur les baguettes : regarder."],
     S_petitpalais: ["Une exposition sur 1900. Qu'est-ce qui nous aide pour l'album ?", { fr: "Regarde ce qui brille.", action: "material" }, "Dans la vitrine, il y a une vraie photo de 1900. Compare-la avec la photo B.", "Clique sur la vitrine. Puis : regarder."],
     S_stand6: ["Chloé a des photos. Et elle sait des choses.", { fr: "Regarde ce qui brille.", action: "material" }, "Regarde le dossier de Chloé. Et parle avec elle.", "Clique sur le dossier : regarder. Et sur Chloé : parler."],
-    O02: ["Regarde d'abord la photo A. Regarde le monsieur.", { fr: "Regarde son visage et ses mains.", action: "material" }, "Il y a quelque chose sous son nez. Et à son poignet.", "Touche son visage. Et touche sa montre, à son poignet."],
+    O02: ["Ce monsieur, tu l'as déjà vu ? Regarde d'abord la photo A.", { fr: "Regarde son visage et ses mains.", action: "material" }, "Il y a quelque chose sous son nez. Et à son poignet.", "Touche son visage. Et touche sa montre, à son poignet."],
     O03: ["Il répond seulement à ta question. Essaie avec quand ou quel.", { fr: "Regarde les mots en couleur dans les questions.", action: "material" }, "Par exemple : Quand est-ce qu'on a pris les photos ?", "Il dit seulement oui. Alors, on demande : Quand ? Quelles photos ?"],
     O04: ["Il parle du livre ou des photos ?", { fr: "Voici la fiche de vente.", action: "material" }, "Cherche la date et le mot « copies ».", "Deux phrases parlent des photos. La couverture, c'est le livre."],
     O06: ["Avant, c'était une gare.", { fr: "Relis la fiche sur Orsay.", action: "material" }, "Regarde les deux années : 1900 et 1986.", "La légende est fausse. Mais ça ne donne pas la date de la photo."],
     P00: ["Cherche les choses sur les deux images.", { fr: "Regarde le pont sur les deux images.", action: "material" }, "Le bateau et le vélo sont seulement sur l'image d'aujourd'hui.", "Les lampadaires, les colonnes, les statues : trouve-les sur la photo B et sur l'image d'aujourd'hui."],
-    P01: ["Regarde le bout du pain.", { fr: "Zoome sur la baguette.", action: "material" }, "Il y a quelque chose au bout, sur le pain et à la main.", "Le bout cassé, le ruban adhésif et le gant blanc."],
+    P01: ["Un vrai boulanger, un vrai pain ? Regarde-les de près.", { fr: "Zoome sur la baguette et sur la main.", action: "material" }, "Il y a quelque chose au bout, sur le pain et à la main.", "Le bout cassé, le ruban adhésif et le gant blanc."],
     P03: ["Écoute les mots : tout à coup, ramassée, recommencé.", { fr: "Écoute encore l'assistante.", action: "replay" }, { fr: "Voici ses mots. Cherche : costumes, tombée, ramassée, recommencé.", action: "transcript" }, "D'abord les costumes. Puis la baguette tombe. Marcel la ramasse. À la fin, Chloé recommence la photo."],
     P03b: ["Écoute la fin.", { fr: "Écoute encore l'assistante.", action: "replay" }, { fr: "Voici ses mots. Lis les deux dernières phrases.", action: "transcript" }, "Elle dit : la date exacte ? Je ne sais pas."],
     X03: ["Regarde d'abord la vraie photo, puis la photo B.", "Le pont, la couleur, les vêtements : c'est sur une photo ou sur les deux ?", "Les deux photos sont brunes, et les gens portent des vêtements de 1900. Le boulanger est seulement sur la photo B.", "Les deux : le pont, brune, les vêtements. La vraie photo : beaucoup de monde, le carton. La photo B : le boulanger."],
