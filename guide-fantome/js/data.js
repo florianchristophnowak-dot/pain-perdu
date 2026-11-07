@@ -168,6 +168,17 @@ window.GAME = (function () {
     papier: { emoji: "📄", name: "le papier de M. Beaumont", desc: "1. p. 12 – 2. p. 27 – 3. p. 41 – photo – 15 h : p. 12" }
   };
 
+  /* Lesbare Schrift in einem Bild kommt vom Spiel (im Bild ist die Fläche leer) und gehört zum Bild, nicht zu einer Aufgabe: Das Spiel
+     legt sie überall darüber, wo das Bild erscheint (Bildlupe, Zwischenbild, Inventar, Material der Hilfe). minZoom: winzige Schrift,
+     erst ab dieser Zoomstufe in der Bildlupe, sonst nirgends. */
+  G.imgLabels = {
+    doc_photo_groupe: [
+      { x: 93.5, y: 68.8, text: "Galeries\nLafayette", cls: "bag" },
+      { x: 95.35, y: 61.6, text: "Galeries\nLafayette", cls: "tag", minZoom: 2.5 },
+      { x: 91.6, y: 57.2, text: "8 €", cls: "pencil", minZoom: 2 }
+    ]
+  };
+
   /* ---------- Hörtexte ---------- */
   G.audio = {
     au_beaumont: { who: "beaumont", text: "Mesdames, messieurs, bienvenue dans le Paris secret ! Regardez cette petite porte. Au Moyen Âge, c'était une porte secrète. Les rois passaient par là, la nuit. Venez, venez… Ici, il y avait une boulangerie. Le boulanger vendait un pain très léger : il était plein d'air. Un jour, les clients ont compris. Et maintenant, une petite pause photo !" },
@@ -316,11 +327,6 @@ window.GAME = (function () {
         { id: "prix", chip: "le prix", minZoom: 2, x: 90.6, y: 56, w: 2.2, h: 2.6, flag: "prix_vu", also: ["livre"], line: marie("Il y a un prix au crayon : huit euros.") },
         { id: "notre_dame", neutral: true, x: 52, y: 0, w: 40, h: 30, line: lino("Ça, c'est Notre-Dame. Elle n'a rien fait.") },
         { id: "classe", neutral: true, x: 0, y: 38, w: 76, h: 56, line: lino("La classe. Tout le monde sourit. Sauf M. Nowak.") }
-      ],
-      labels: [
-        { x: 93.5, y: 68.8, text: "Galeries\nLafayette", cls: "bag" },
-        { x: 95.35, y: 61.6, text: "Galeries\nLafayette", cls: "tag", minZoom: 2.5 },
-        { x: 91.6, y: 57.2, text: "8 €", cls: "pencil", minZoom: 2 }
       ],
       material: [{ x: 78, y: 30, w: 21, h: 46 }] },
     effects: { flag: "N04a_done" }, doneAt: true };   // danach frei: M. Nowak (Ausweis, N05) und die Klasse (Karten, N06)
