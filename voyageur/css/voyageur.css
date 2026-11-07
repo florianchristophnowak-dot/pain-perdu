@@ -227,4 +227,6 @@
 .slabel.paint { background: none; border: none; box-shadow: none; padding: 0; color: #3a2a1c; }
 .slabel.big { font-size: 3cqw; }
 .slabel.mid { font-size: 2cqw; }
+/* Hotspot auf einem beschrifteten Schild (lab: "t"): Beschriftung über dem Kasten, sonst verdeckt sie auf dem Handy den Schriftzug */
+.hotspot.lab-t > span { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); margin: 0 0 .2rem; }
 .material .paper.fiche { box-shadow: 0 0 0 3px rgba(241,194,125,.6); }
