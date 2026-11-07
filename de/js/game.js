@@ -272,7 +272,7 @@
     const body = openModal("cut nocl");
     const pic = el("div", "cutpic"); setBg(pic, n.bg); body.appendChild(pic);
     const box = el("div", "cutbox"); body.appendChild(box);
-    showLines(n.lines, () => { applyEffects(n.effects, id); closeModal(); finish(); goNode(n.next); }, { box });
+    showLines(n.lines, () => { applyEffects(n.effects, id); closeModal(); finish(); goNode(resolve(n.next)); }, { box });
   }
   function runLines(id, n, finish) {
     if (n.once && flag(n.once)) { finish(); return; }
@@ -289,12 +289,12 @@
     if (n.doc) body.appendChild(el("div", "paper " + (n.icon || ""), gl(n.doc)));
     (n.docs || []).forEach(d => { const c = el("div", "doccard"); c.appendChild(el("div", "doclabel", esc(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
     const box = el("div", "dlg-inline"); body.appendChild(box);
-    const done = () => { closeModal(); finish(); if (n.next) goNode(n.next); };
+    const done = () => { closeModal(); finish(); goNode(resolve(n.next)); };
     showLines(n.lines, () => {
       if (n.choices) {
         box.innerHTML = ""; box.classList.add("active");
         renderChoices(box, n.choices, ch => {
-          if (ch.kind === "ok") { applyEffects(ch.effects, id + ":" + ch.fr); closeModal(); finish(); goNode(ch.next); }
+          if (ch.kind === "ok") { applyEffects(ch.effects, id + ":" + ch.fr); closeModal(); finish(); goNode(resolve(ch.next)); }
           else showLines(ch.reply, () => runDoc(id, n, finish), { box });
         });
       } else { const b = el("button", "btn primary", n.next ? G.ui.btn.continuer : G.ui.btn.fermer); b.addEventListener("click", done); const bar = el("div", "bar"); bar.appendChild(b); box.appendChild(bar); box.classList.add("active"); }
@@ -304,9 +304,11 @@
   function runChoice(id, n, finish) {
     const st = { wrongs: 0, first: null, help: 0, t0: Date.now() };
     const helpAfter = n.helpAfter || 1;
-    let hc = null;
+    let hc = null, first = true;
     function ask() {
-      showLines(n.lines, () => {
+      /* firstOnly: die Einleitung nur beim ersten Mal; nach einer Reparatur-Antwort grüßt die Figur nicht noch einmal (P02, B02) */
+      const lines = first || !n.firstOnly ? n.lines : null; first = false;
+      showLines(lines, () => {
         dlg.innerHTML = ""; dlg.classList.add("active");
         const row = el("div", "line"); row.appendChild(portrait(n.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[n.who].name) + "</div>")); dlg.appendChild(row);
         let extra = null;
@@ -314,7 +316,7 @@
           hc = helpCtl(n.help, { wrongs: () => st.wrongs, after: helpAfter, material: () => { $$(".choice", dlg).forEach(b => b.classList.add("hl")); } });
           extra = el("div", "help-row"); extra.appendChild(hc.btn); dlg.appendChild(hc.bubble); hc.update();
         }
-        const avail = n.choices.filter(ch => !ch.unless || !flag(ch.unless) || ch.replyIf);
+        const avail = n.choices.filter(ch => (!ch.onlyIf || cond(ch.onlyIf)) && (!ch.unless || !flag(ch.unless) || ch.replyIf));   // onlyIf: erst, wenn man es wissen kann (B02: das Spektakel nach dem Flyer)
         const choices = avail.some(ch => ch.kind !== "ok") ? shuffled(avail) : avail;   // gibt es eine falsche Antwort, jedes Mal neu gemischt
         renderChoices(dlg, choices, ch => {
           if (st.first === null) st.first = ch.fr;
@@ -327,10 +329,10 @@
               record({ id: n.diag, result: n.count ? "ok" : classify(st.wrongs, help), attempts: st.wrongs, help, first: st.first, duration: Math.round((Date.now() - st.t0) / 1000) });
               if (help > 0) toast("Marie: " + G.ui.marie.afterHelp);
             }
-            showLines(reply, () => { applyEffects(n.effects, id); if (ch.next === id) ask(); else { finish(); goNode(ch.next); } });
+            showLines(reply, () => { applyEffects(n.effects, id); if (ch.next === id) ask(); else { finish(); goNode(resolve(ch.next)); } });
           } else {
             st.wrongs++;
-            showLines(reply, () => { if (ch.next === id || !ch.next) ask(); else { finish(); goNode(ch.next); } });
+            showLines(reply, () => { if (ch.next === id || !ch.next) ask(); else { finish(); goNode(resolve(ch.next)); } });
           }
         }, extra);
         if (hc) dlg.appendChild(hc.bubble);
@@ -348,7 +350,7 @@
     S.transcripts[n.audio] = true; save();
     body.appendChild(el("p", "hint", "Lies genau: Diese Infos brauchst du gleich."));
     const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.btn.continuer);
-    b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(n.next); });
+    b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(resolve(n.next)); });
     /* Nicht wegklicken: „Continuer“ erst, wenn die Aufnahme einmal ganz gelaufen ist */
     S.heard = S.heard || {};
     const wait = el("p", "hint wait", esc(G.ui.listen));
@@ -369,7 +371,7 @@
         if (n.task.kind === "write") { S.cards[id] = results.map(r => ({ player: r.player, text: r.text })); save(); }
         closeModal();
         afterRun = true;
-        showLines(n.after, () => { afterRun = false; finish(); goNode(n.next); });
+        showLines(n.after, () => { afterRun = false; finish(); goNode(resolve(n.next)); });
         return;
       }
       const pi = idxs[k++];
@@ -532,7 +534,7 @@
     const used = new Set();
     const chips = el("div", "chips");
     const ta = el("textarea"); ta.rows = 6; ta.placeholder = "…";
-    T.starters.forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\.\.\.$/, " ") ; ta.focus(); count(); }); chips.appendChild(c); });
+    T.starters.forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\s*\.\.\.$/, " "); ta.focus(); count(); }); chips.appendChild(c); });
     area.appendChild(chips); area.appendChild(ta);
     const cnt = el("div", "count"); area.appendChild(cnt);
     const W = G.ui.write;
@@ -679,7 +681,7 @@
     if ((f.traps || []).some(t => (t.answers || []).some(a => normAns(a) === v))) return false;
     if (!/\d/.test(v) && (f.answers || []).some(a => { const na = normAns(a); return na.length >= 5 && !/\d/.test(na) && oneEdit(na, v); })) return true;
     if (f.number !== undefined) { const m = v.match(/\d+/); if (m && +m[0] === f.number) return true; }
-    if (f.keywords) return f.keywords.some(g => g.every(k => v.includes(normAns(k))));
+    if (f.keywords) return f.keywords.some(g => g.every(k => (" " + v + " ").includes(" " + normAns(k))));   // am Wortanfang, wie in Teil 2 und 3 („übermorgen“ enthält nicht „morgen“)
     return false;
   }
   TASKS.recall = function (T, area, api) {
@@ -762,7 +764,7 @@
               picked.add(i); b.classList.add("on"); b.disabled = true;
               if (picked.size < step.pick) { return; }
             }
-            showLines(step.after, () => { si++; if (si >= n.steps.length) { const help = hc.level(); record({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, text: st.picks.join(" | "), duration: Math.round((Date.now() - st.t0) / 1000) }); applyEffects(n.effects, id); finish(); goNode(n.next); } else stepUI(); });
+            showLines(step.after, () => { si++; if (si >= n.steps.length) { const help = hc.level(); record({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, text: st.picks.join(" | "), duration: Math.round((Date.now() - st.t0) / 1000) }); applyEffects(n.effects, id); finish(); goNode(resolve(n.next)); } else stepUI(); });
           } else { st.wrongs++; showLines(ch.reply, () => stepUI()); }
         }, extra);
         dlg.appendChild(hc.bubble); hc.update();
@@ -870,6 +872,13 @@
     im.onerror = () => { if (im.src.endsWith(".png")) im.src = "../assets/img/it_" + id + ".jpg"; };
     im.src = "../assets/img/it_" + id + ".png";
     return pic;
+  }
+  /* « Montrer à » + Name: à le → au, à les → aux (le gardien → « Montrer au gardien ») */
+  function showTo(name) {
+    const to = G.ui.inv.showTo;
+    if (/^le /.test(name)) return to.replace(/à$/, "au") + " " + name.slice(3) + " :";
+    if (/^les /.test(name)) return to.replace(/à$/, "aux") + " " + name.slice(4) + " :";
+    return to + " " + name + " :";
   }
   function openInventory(pickCb) {
     const body = openModal("inv", !!pickCb);
@@ -1041,7 +1050,7 @@
     sol.innerHTML = [
       "<i>Die Antworten stehen im Spiel jedes Mal in anderer Reihenfolge.</i>",
       "<b>M03</b> Haben Sie diesen Mann gesehen?", "<b>M04</b> heute Morgen = Père-Lachaise · heute Nachmittag = Le Marais · heute Abend = weiß man nicht",
-      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> Nein, wir suchen einen Mann. Haben Sie diesen Pantomimen gesehen? (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber",
+      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> Nein, wir suchen einen Mann. Haben Sie diesen Pantomimen gesehen? (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber", "<b>P05</b> Nein. Marcel hat in Montmartre unseren Rucksack genommen. / Wir suchen Marcel. War er heute Morgen hier? (gestohlen = falsch, Rucksack Bernd = Umweg)", "<b>P07</b> den roten Ball unter der Bank (nicht den gelben aus dem Korb)",
       "<b>B02</b> Ich suche einen Rucksack … oder Ich suche die Show … (Pain perdu bestellen = Umweg)", "<b>B02b</b> Braun, groß, mit einem Brotgesicht.", "<b>B04</b> Sachen, die ihm nicht gehören · die falsche Tasche · das Programm hat sich geändert", "<b>L02</b> C, Belege: Name + Fassung", "<b>L04</b> ÄNDERUNG auf C (Zusatz: ALTES PROGRAMM auf A)",
       "<b>V03</b> Schritt 1: Entschuldigung, ich glaube, wir haben … vertauscht / Entschuldigung, Sie haben unseren Rucksack. · Schritt 2: Während wir das Foto angeschaut haben … / In Montmartre haben Sie unseren Rucksack genommen.", "<b>C03</b> die alten Schilder · aus Pappe · seine braune Tasche", "<b>V02b</b> rechts · hinter · aus · an"
     ].join("<br>");
@@ -1052,6 +1061,8 @@
       const T = G.nodes[id].task; const fs = (T.fields || []).concat((T.parts || []).filter(x => typeof x === "object"));
       return "<b>" + id + " · " + esc(G.nodes[id].title || "") + "</b> (" + esc(G.chars[T.who].name) + ")<br>" + fs.map(f => "– " + esc(f.label || "Lücke " + f.id) + " → <b>" + esc((f.answers || [])[0] || (f.keywords ? f.keywords.map(g => g.join(" + ")).join(" / ") : "")) + "</b>" + (f.where ? " · <i>" + esc(f.where) + "</i>" : "")).join("<br>");
     }).join("<br><br>")));
+    const mods = Object.keys(G.nodes).filter(id => G.nodes[id].type === "task" && G.nodes[id].task.model);
+    if (mods.length) { body.appendChild(el("h3", "", "Mustertexte (Schreibaufgaben)")); body.appendChild(el("div", "paper small", mods.map(id => "<b>" + id + " · " + esc(G.nodes[id].title || "") + "</b><br>" + esc(G.nodes[id].task.model)).join("<br><br>"))); }
     body.appendChild(el("h3", "", "Lesetexte (statt Hörtexte)"));
     Object.keys(G.audio).forEach(k => body.appendChild(el("div", "paper small", "<b>" + k + " · " + esc(G.chars[G.audio[k].who].name) + "</b><br>" + esc(G.audio[k].text))));
     body.appendChild(el("h3", "", "Ergebnisse auf diesem Gerät"));

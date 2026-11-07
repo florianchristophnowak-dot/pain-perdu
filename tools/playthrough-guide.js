@@ -139,7 +139,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await choose('La tour Eiffel, parce qu'); await cont();
   log('  R1:', await txt());
   await recall('12 h');
-  expect((await feedback()).includes('Un quart d\'heure avant'), 'R1 Falle « 12 h »');
+  expect((await feedback()).includes('la police veut l\'heure exacte'), 'R1 Falle « 12 h »');
   await recall('à midi moins le quart'); await cont();
   expect((await S()).flags.R1_done && await page.locator('.modal.map').isVisible(), 'R1 gelöst, Karte offen');
   await page.screenshot({ path: SHOT + '07_map.png' });

@@ -870,7 +870,7 @@
     const chips = el("div", "chips");
     const ta = el("textarea"); ta.rows = T.rows || 6; ta.placeholder = "…"; ta.spellcheck = false;
     ta.setAttribute("autocorrect", "off"); ta.setAttribute("autocapitalize", "sentences");
-    (T.starters || []).forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\.\.\.$/, " "); ta.focus(); count(); }); chips.appendChild(c); });
+    (T.starters || []).forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\s*\.\.\.$/, " "); ta.focus(); count(); }); chips.appendChild(c); });
     if (T.starters) area.appendChild(chips);
     area.appendChild(ta);
     const cnt = el("div", "count"); area.appendChild(cnt);
@@ -1483,12 +1483,15 @@
     if (sceneId === S.scene) { enterScene(sceneId, true); return; }
     S.travel++;
     S.from = S.scene;
+    const route = G.ui.travelBy && G.ui.travelBy[S.from + ">" + sceneId];   // zu Fuß oder im selben Haus statt « Métro… » (G.ui.travelBy)
+    const label = route === undefined ? "<b>M</b> Métro…" : route;
     const lines = [];
-    if (S.travel === 2) lines.push(...G.ui.travel);
+    if (S.travel === 2 && label.includes("Métro")) lines.push(...G.ui.travel);
     if (twoPlayers()) { S.mouse = 1 - S.mouse; lines.push({ who: "narrateur", fr: fmtTpl(G.ui.partner, { p1: pname(1 - S.mouse), p2: pname(S.mouse) }) }); }
     save();
+    if (!label && !lines.length) { enterScene(sceneId, true); return; }
     const body = openModal("travel nocl");
-    body.appendChild(el("div", "metro", "<b>M</b> Métro…"));
+    if (label) body.appendChild(el("div", "metro", label));
     const box = el("div", "dlg-inline"); body.appendChild(box);
     const go = () => { closeModal(); enterScene(sceneId, true); };
     if (lines.length) showLines(lines, go, { box }); else setTimeout(go, 600);

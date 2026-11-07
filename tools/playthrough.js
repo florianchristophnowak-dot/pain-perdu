@@ -181,7 +181,7 @@ const URL = process.env.URL || 'http://127.0.0.1:8765/index.html?intro=0&test=1'
   await cont(1); log('L04 after:', await dlgText()); await cont(1);
   log('L05s (SMS Nowak):', await modalText()); await cont(3);
   log('L05:', await modalText()); await cont(2); await btn('Fermer');
-  await hotspot('M. Lenoir', 'Parler'); await cont(1); await btn('Pourquoi il y a deux Marcel'); await cont(1); await cont(1); await btn('Merci, au revoir');
+  await hotspot('M. Lenoir', 'Parler'); await cont(1); await btn('Vous connaissez Marcel, le mime'); await cont(1); await cont(1); await btn('Merci, au revoir');
   await hotspot('la carte de Marcel', 'Regarder'); log('L05 again:', (await modalText()).slice(0, 60)); await cont(2); await btn('Fermer');
   await btn('Carnet'); await page.screenshot({ path: SHOT + '11_carnet.png' }); log('CARNET:', (await modalText()).slice(0, 160)); await btn('Fermer');
   await btn('Carte'); await page.screenshot({ path: SHOT + '13_map2.png' }); await page.locator('.place', { hasText: 'Vosges' }).click(); await page.waitForTimeout(200);

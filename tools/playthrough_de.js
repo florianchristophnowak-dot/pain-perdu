@@ -194,7 +194,7 @@ const VW = +(process.env.VW || 1200), VH = +(process.env.VH || 900);
   await cont(1); log('L04 after:', await dlgText()); await cont(1);
   log('L05s (SMS Nowak):', await modalText()); await cont(3);
   log('L05:', await modalText()); await cont(2); await btn('Schließen');
-  await hotspot('Herr Lenoir', 'Sprechen'); await cont(1); await btn('Warum gibt es zwei Marcels'); await cont(1); await cont(1); await btn('Danke, auf Wiedersehen');
+  await hotspot('Herr Lenoir', 'Sprechen'); await cont(1); await btn('Kennen Sie Marcel, den Pantomimen'); await cont(1); await cont(1); await btn('Danke, auf Wiedersehen');
   await hotspot('Marcels Karte', 'Ansehen'); log('L05 again:', (await modalText()).slice(0, 60)); await cont(2); await btn('Schließen');
   await btn('Fallakte'); await page.screenshot({ path: SHOT + '11_fallakte.png' }); log('FALLAKTE:', (await modalText()).slice(0, 170)); await btn('Schließen');
   await btn('Inventar'); await page.locator('.item', { hasText: 'das Handy' }).click(); await page.waitForTimeout(100);
