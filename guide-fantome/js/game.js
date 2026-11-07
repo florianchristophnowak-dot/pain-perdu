@@ -130,22 +130,6 @@
     im.src = list[i++];
     return im;
   }
-  /* Schrift vom Spiel in einem Bild (G.imgLabels): überall dieselbe, damit z. B. die Tüte nicht einmal beschriftet und einmal leer ist.
-     Außerhalb der Bildlupe nur die Schrift ohne minZoom. Position in % des Bildes, Größe in cqw (der Rahmen ist so breit wie das Bild). */
-  function imgLabels(name) { return (G.imgLabels && G.imgLabels[name]) || []; }
-  function labelEl(l) {
-    const d = el("div", "llabel" + (l.cls ? " " + l.cls : ""), esc(l.text));
-    d.style.left = l.x + "%"; d.style.top = l.y + "%"; if (l.size) d.style.fontSize = l.size;
-    return d;
-  }
-  function addLabels(node, name) { imgLabels(name).filter(l => !l.minZoom).forEach(l => node.appendChild(labelEl(l))); }
-  function labeledImg(name) {
-    if (!imgLabels(name).some(l => !l.minZoom)) return docImg(name);
-    const fig = el("div", "limg");
-    fig.appendChild(docImg(name, ar => fig.style.setProperty("--ar", ar.toFixed(4))));
-    addLabels(fig, name);
-    return fig;
-  }
   function portrait(who) {
     const c = G.chars[who] || { name: who, initials: "?", color: "#777" };
     const p = el("div", "pt");
@@ -376,7 +360,7 @@
 
   function runCut(id, n, finish) {
     const body = openModal("cut nocl");
-    const pic = el("div", "cutpic"); setBg(pic, n.bg); addLabels(pic, n.bg); body.appendChild(pic);
+    const pic = el("div", "cutpic"); setBg(pic, n.bg); body.appendChild(pic);
     const box = el("div", "cutbox"); body.appendChild(box);
     showLines(n.lines, () => { applyEffects(n.effects, id); closeModal(); finish(); goNode(resolve(n.next)); }, { box });
   }
@@ -391,7 +375,7 @@
     if (!n.choices) applyEffects(n.effects, id);
     if (n.diag && n.count) record({ id: n.diag, result: "gelesen", count: true });
     body.appendChild(el("h2", "", esc(n.title)));
-    if (n.img) body.appendChild(labeledImg(n.img));
+    if (n.img) body.appendChild(docImg(n.img));
     if (n.render) body.appendChild(RENDER[n.render]({ doc: true }));
     if (n.doc) body.appendChild(el("div", "paper " + (n.icon || ""), gl(n.doc)));
     (n.docs || []).forEach(d => { const c = el("div", "doccard"); c.appendChild(el("div", "doclabel", esc(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
@@ -541,7 +525,7 @@
     body.appendChild(el("h2", "", esc(n.title || "")));
     if (intro) body.appendChild(el("div", "solo", esc(intro)));
     const who = T.who ? G.chars[T.who].name : null;
-    if (T.img && T.kind !== "loupe") body.appendChild(labeledImg(T.img));
+    if (T.img && T.kind !== "loupe") body.appendChild(docImg(T.img));
     if (T.intro) body.appendChild(el("div", "paper intro" + (T.sms ? " sms" : ""), (who ? "<b>" + esc(who) + (T.sms ? " · " + esc(G.ui.sms) : "") + " :</b> " : "") + gl(T.intro)));
     if (T.doc) body.appendChild(el("div", "paper " + (T.docIcon || ""), gl(T.doc)));
     (T.docs || []).forEach(d => { const c = el("div", "doccard" + (d.cls ? " " + d.cls : "")); c.appendChild(el("div", "doclabel", gl(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
@@ -649,7 +633,7 @@
     if (st.matShown || !(T.matImgs || T.matText || T.matFiche || T.matInv)) return;
     st.matShown = true;
     const box = el("div", "matbox");
-    (T.matImgs || []).forEach(i => box.appendChild(labeledImg(i)));
+    (T.matImgs || []).forEach(i => box.appendChild(docImg(i)));
     if (T.matText) box.appendChild(el("div", "paper small", gl(T.matText)));
     if (T.matFiche) box.appendChild(el("div", "paper small", "<b>" + esc(G.items.fiche.name) + "</b><br>" + gl(G.items.fiche.desc)));   // der Text aus N07a
     if (T.matFiche) (S.cards.N07b || []).forEach(c => box.appendChild(el("div", "paper small", "<b>" + esc(G.items.fiche.name) + " · " + esc(c.player) + "</b><br>" + esc(c.text))));
@@ -1132,8 +1116,9 @@
       lz.appendChild(docImg(T.img, ar => frame.style.setProperty("--ar", ar.toFixed(4))));
     }
     const marks = el("div", "lmarks"); lz.appendChild(marks);
-    (T.labels || (T.render ? [] : imgLabels(T.img))).forEach(l => {
-      const d = labelEl(l);
+    (T.labels || []).forEach(l => {
+      const d = el("div", "llabel" + (l.cls ? " " + l.cls : ""), esc(l.text));
+      d.style.left = l.x + "%"; d.style.top = l.y + "%"; if (l.size) d.style.fontSize = l.size;
       if (l.minZoom) { d.dataset.minZoom = l.minZoom; d.hidden = true; }
       lz.appendChild(d);
     });
@@ -1443,7 +1428,7 @@
       $$(".item", grid).forEach(t => t.classList.toggle("on", t.dataset.id === id));
       detail.hidden = false; detail.innerHTML = "";
       const head = el("div", "ihead"); head.appendChild(itemPic(id)); head.appendChild(el("div", "", "<b>" + esc(it.name) + "</b><div class=\"idesc\">" + gl(itemDesc(id)) + "</div>")); detail.appendChild(head);
-      if (it.img) detail.appendChild(labeledImg(it.img));
+      if (it.img) detail.appendChild(docImg(it.img));
       if (it.render) detail.appendChild(RENDER[it.render]({}));
       if (TOUCH) setTimeout(() => detail.scrollIntoView({ block: "nearest", behavior: "smooth" }), 50);
     }

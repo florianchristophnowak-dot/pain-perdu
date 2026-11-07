@@ -188,9 +188,6 @@ window.GAME = (function () {
   };
 
   /* ---------- Szenen und Hotspots (Koordinaten in % des Bildes) ---------- */
-  /* Das Banner über Delmas' Stand hängt rechts höher (rot) und wird rechts unten von seiner Mütze verdeckt: Schrift auf der
-     Mittellinie des Tuchs, etwas links der Mitte, damit das q nicht auf die Mütze reicht. Steht auch in den Zwischenbildern O00, F00, F05. */
-  const BANNER_ORSAY = [{ x: 44.8, y: 28, rot: -2.4, size: 3.2, text: "Brocante du quai", cls: "paint big" }];
   /* Fassung 1.3: Orsay, Pont, Invalides und Stand 6 sind freie Stationen (free). Nach der Ankunft wählen die Spieler selbst,
      womit sie anfangen; ein angefangener Abschnitt läuft zu Ende (game.js, openFrom), danach ist die Station wieder frei.
      Erledigtes trägt ein Häkchen (doneIf), die Szenenhilfe (help) hilft beim Suchen und lässt die offenen Hotspots leuchten
@@ -200,7 +197,8 @@ window.GAME = (function () {
       name: "Musée d'Orsay · la brocante du quai", bg: "bg_orsay", free: true,
       enter: [{ if: "O06_done", node: "Or" }, { if: ["O03_done", "O04_done"], node: "O05" }, { if: "O01_done", node: null }, { node: "O00" }],
       help: [{ if: "!O02_done", key: "S_orsay1" }, { if: "!O06_done", key: "S_orsay2" }],
-      labels: BANNER_ORSAY,
+      /* « Brocante du quai » steht im Bild selbst (tools/aufdrucke.py): Das Banner hängt durch und rechts höher, das kann Schrift
+         des Spiels nicht nachbilden. Die Beschriftung des Hotspots steht deshalb über dem Banner (lab "t"). */
       hotspots: [
         { id: "album", label: "l'album", x: 40, y: 70, w: 30, h: 22, actions: { regarder: [{ if: "O02_done", node: "Oa" }, { node: "O02" }] }, showIf: "O01_done", doneIf: "O02_done" },
         { id: "delmas", label: "le vendeur", x: 41, y: 34, w: 28, h: 35.5, actions: { parler: [{ if: "O03_done", node: "Or" }, { if: "O02_done", node: "O03" }, { node: "Ox" }] }, showIf: "O01_done", doneIf: "O03_done", openIf: "O02_done" },
@@ -262,7 +260,6 @@ window.GAME = (function () {
     },
     finale: {
       name: "Musée d'Orsay · le stand du vendeur", bg: "bg_orsay", enter: [{ if: "finished", node: "Fr" }, { if: "W2_done", node: "F05" }, { if: "F04_done", node: "W2" }, { node: "F00" }],
-      labels: BANNER_ORSAY,
       hotspots: [
         { id: "delmas", label: "le vendeur", x: 41, y: 34, w: 28, h: 35.5, actions: { parler: "Fr" }, showIf: "finished" }
       ]
