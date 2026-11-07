@@ -51,13 +51,14 @@ window.GAME = (function () {
     },
     inv: { title: "Inventaire", empty: "Rien.", hint: "Clique sur un objet pour le regarder de près." },
     partner: "Changement ! {p2} prend la souris, {p1} prend le carnet.",
-    solo: "Cette question, chacun répond seul. D'abord {p1}, puis {p2}.",
+    solo: "À cette question, chacun répond seul. D'abord {p1}, puis {p2}.",
     soloNow: "C'est à {p} de répondre.",
+    travelBy: { "notredame>bouquinistes": "À pied…", "bouquinistes>notredame": "À pied…", "lafayette>retours": "", "retours>lafayette": "" },   // sonst « Métro… »
     travel: [
       { who: "lino", fr: "Encore le métro. Tu connais toutes les lignes ?" },
       { who: "marie", fr: "Toutes. C'est ma ville." }
     ],
-    end: "Bravo ! Le faux guide est démasqué.",
+    end: "Bravo ! Vous avez démasqué le faux guide.",
     endStats: "{places} lieux · {helps} aides de Lino · {mins} min · {q} questions sur 4",
     endExport: "Exporte le carnet et donne les fichiers à ton professeur.",
     mouse: "Souris :",
@@ -106,7 +107,7 @@ window.GAME = (function () {
       junk: "Ça, ce ne sont pas des mots : « {w} ». Écris de vraies phrases.",
       repeat: "Tu répètes toujours les mêmes mots. Écris des phrases différentes.",
       lang: "En français, s'il te plaît ! Écris tes phrases en français.",
-      topic: "Je ne comprends pas : de quoi tu parles ?",
+      topic: "Je ne comprends pas : de quoi est-ce que tu parles ?",
       paste: "Pas de copier-coller : écris avec tes mots."
     },
     full: {
@@ -161,7 +162,7 @@ window.GAME = (function () {
     badge: { emoji: "🪪", name: "la photo du badge", desc: "GUIDE OFFICIEL · Ville de Paris · M. Beaumont · valable jusqu'au 31 février", render: "badge" },
     carte: { emoji: "🎟️", name: "une carte « Visite exclusive »", desc: "M. Beaumont a donné cette carte à chaque élève.", desc2: { if: "carte_peeled", text: "N° 042. Sous l'autocollant : RÉDUCTION – DEUXIÈME ARTICLE À MOITIÉ PRIX." }, render: "card" },
     fiche: { emoji: "📝", name: "la fiche de signalement", desc: "Notre description de M. Beaumont : Il était grand. Il avait une moustache grise. Il portait un manteau beige et une montre dorée. Il avait un parapluie rouge. À midi moins le quart, il est parti avec 220 euros.", cards: "N07b" },   // Text aus N07a, dahinter die eigenen Sätze aus N07b
-    plan: { emoji: "🗺️", name: "le plan de Paris", desc: "Notre-Dame, les Galeries Lafayette, la tour Eiffel. Et les quais de la Seine." },
+    plan: { emoji: "🗺️", name: "le plan de Paris", desc: "Un plan de Paris. Pour l'instant, rien n'est marqué.", desc2: { if: "N08_done", text: "Notre-Dame, les Galeries Lafayette, la tour Eiffel. Et les quais de la Seine." } },
     telephone: { emoji: "📱", name: "le téléphone de Marie", desc: "Pour écrire à M. Nowak." },
     page_guide: { emoji: "📖", name: "une page de « Paris insolite »", desc: "Paris insolite, 1958. Page 27 : une petite porte, l'entrée des livraisons. Pas de porte secrète." },
     papier: { emoji: "📄", name: "le papier de M. Beaumont", desc: "1. p. 12 – 2. p. 27 – 3. p. 41 – photo – 15 h : p. 12" }
@@ -237,7 +238,7 @@ window.GAME = (function () {
       { id: "lafayette", label: "Galeries Lafayette", short: "Lafayette", q: "D'où vient le manteau ?", x: 47, y: 20, labelAbove: true, pick: "way_lafayette", unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R2_done"] },
       { id: "eiffel", label: "Tour Eiffel · pilier nord", short: "Tour Eiffel", q: "Rendez-vous à 13 h", x: 18, y: 50, pick: "way_eiffel", unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R3b_done"] },
       { id: "bouquinistes", label: "Les bouquinistes · quai de Montebello", short: "Bouquinistes", q: "Le vieux livre", x: 69, y: 60, pick: "way_bouquinistes", unlock: "R1_done", lockedMsg: [{ if: "N08_done", fr: "D'abord, réponds à M. Nowak." }], done: ["R4_done", "B06_done"], optional: true },
-      { id: "retours", label: "Galeries Lafayette · service des retours", short: "Service des retours", q: "Il rend le manteau", x: 60, y: 26, unlock: ["R2_done", "R3b_done", "N07_done"], lockedMsg: "Pas encore. On ne sait pas quand il revient.", done: ["F05_done"] }
+      { id: "retours", label: "Galeries Lafayette · service des retours", short: "Service des retours", q: "Il rend le manteau", x: 60, y: 26, unlock: ["R2_done", "R3b_done", "N07_done"], lockedMsg: [{ if: ["R2_done", "R3b_done"], fr: "Pas encore. D'abord, la description pour la policière." }, { if: "R2_done", fr: "Pas encore. Il nous manque la piste de la tour Eiffel." }, { if: "R3b_done", fr: "Pas encore. D'abord, on parle à la vendeuse du manteau." }, { fr: "Pas encore. On ne sait pas quand il revient." }], done: ["F05_done"] }
     ]
   };
 
@@ -274,7 +275,7 @@ window.GAME = (function () {
     L("beaumont", "Excusez-moi de vous déranger. Je m'appelle Beaumont, je suis guide officiel."),
     L("narrateur", "Il montre son badge."),
     lino("Hier, un mime. Aujourd'hui, un guide. Paris aime les costumes."),
-    L("beaumont", "Je vous propose une visite exclusive : le Paris que les autres guides ne connaissent pas. Dix euros par personne maintenant, le reste à la fin."),
+    L("beaumont", "Je vous propose une visite exclusive : le Paris que les autres guides ne connaissent pas. Dix euros d'acompte par personne, le reste à la fin."),
     lino("Il compte mieux que M. Nowak."),
     L("nowak", "Bon. D'accord."),
     L("beaumont", "Avec plaisir. Suivez le parapluie rouge, s'il vous plaît !")
@@ -343,7 +344,7 @@ window.GAME = (function () {
       { fr: "La date : le 31 février n'existe pas.", kind: "ok", effects: { flag: "badge_faux" }, reply: [marie("Février a vingt-huit jours. Vingt-neuf, parfois. Jamais trente et un.")] },
       { fr: "Le nom : Beaumont, c'est bizarre.", kind: "wrong", reply: [lino("Beaumont, c'est un vrai nom. Le problème est ailleurs.")] },
       { fr: "La photo : il ne sourit pas.", kind: "wrong", reply: [lino("Sur un badge, personne ne sourit.")] },
-      { fr: "Le mot « officiel » est mal écrit.", kind: "wrong", reply: [lino("Non, « officiel », c'est juste. Regarde les chiffres.")] }
+      { fr: "Le mot « officiel » est mal écrit.", kind: "wrong", reply: [lino("Non, « officiel », c'est juste. Cherche encore.")] }
     ],
     effects: { flag: "N05_done" }, doneAt: true, next: [{ if: "N06_done", node: "N08" }] };
   N.N05n = { type: "lines", lines: [L("nowak", "Il avait un badge officiel. Il me l'a montré.")], next: "N05" };
@@ -439,7 +440,7 @@ window.GAME = (function () {
   ], effects: { flag: "N08_done" }, next: "R1" };
   /* Nebenbemerkungen nach dem Auftakt */
   N.Nr = { type: "lines", amb: true, lines: [L("nowak", "La police arrive. La classe reste avec moi. Allez-y, mes détectives !")], next: "RESUME" };
-  N.Ncl = { type: "lines", amb: true, lines: [lino("Kevin veut savoir si la visite est remboursée."), marie("Pas encore."),
+  N.Ncl = { type: "lines", amb: true, lines: [lino("Kevin veut savoir si on va lui rendre ses dix euros."), marie("Pas encore."),
     L("lino", "Et Kevin a regardé l'heure quand le guide est parti : midi moins le quart. Il avait déjà faim.", { onlyIf: "!R1_done" })], next: "RESUME" };
   N.Nc = { type: "lines", amb: true, lines: [lino("Elle est là depuis huit cents ans. Elle, elle ne part pas avec l'argent.")], next: "RESUME" };
   N.Nn = { type: "lines", amb: true, lines: [L("nowak", "J'appelle encore la police. Et vous, regardez les cartes avec la classe.")], next: "RESUME" };
@@ -465,7 +466,7 @@ window.GAME = (function () {
       { fr: "Au 2e étage.", kind: "ok", reply: [marie("Mode homme, manteaux. On monte.")] },
       { fr: "Au rez-de-chaussée.", kind: "wrong", reply: [lino("Des parapluies, oui. Des manteaux, non.")] },
       { fr: "Au 1er étage.", kind: "wrong", reply: [lino("Mode femme. Son manteau est un manteau d'homme.")] },
-      { fr: "Au 4e étage.", kind: "wrong", reply: [lino("La maison ? Il n'a pas acheté un canapé.")] }
+      { fr: "Au 4e étage.", kind: "wrong", reply: [lino("La maison ? Il n'a pas acheté de canapé.")] }
     ],
     effects: { flag: "G01_done" }, doneAt: true };   // danach frei: die Vendeuse (G02 bis G06)
   N.G02 = { type: "choice", who: "vendeuse", help: "G02", diag: "D_G02",
@@ -602,7 +603,7 @@ window.GAME = (function () {
   ], effects: { flag: "E05_done" }, next: "R3" };
   N.Er = { type: "lines", amb: true, lines: [marie("On ne joue pas. Et on ne lui parle pas.")], next: "RESUME" };
   N.Et = { type: "lines", amb: true, lines: [lino("Trois cent trente mètres. Et pas un seul guide.")], next: "RESUME" };
-  N.Es = { type: "lines", amb: true, lines: [lino("Il vend des petites tours Eiffel. Cinq euros, ou deux pour huit euros."), marie("Tu en veux une ?"), lino("Non. J'ai déjà un sac en forme de pain. Ça suffit.")], next: "RESUME" };
+  N.Es = { type: "lines", amb: true, lines: [lino("Il vend de petites tours Eiffel. Cinq euros, ou deux pour huit euros."), marie("Tu en veux une ?"), lino("Non. J'ai déjà un sac en forme de pain. Ça suffit.")], next: "RESUME" };
 
   /* ===== 5 Bouquinistes (freiwillig) ===== */
   N.B00 = { type: "cut", bg: "bg_quai", lines: [
@@ -705,12 +706,12 @@ window.GAME = (function () {
     L("marie", "Mais pour le magasin, il nous manque encore une piste.", { onlyIf: ["R2_done", "!R3b_done"] })
   ], effects: { flags: ["B_done", "station1_done"] }, doneAt: true, next: [{ if: "!N07_done", node: "N07" }, { node: "MAP" }] };   // doneAt: danach ist die Station frei (Version 2.2)
   N.Br = { type: "lines", amb: true, lines: [L("bouquiniste", "Revenez quand vous voulez ! J'ai encore mille livres.")], next: "RESUME" };
-  N.Bb = { type: "lines", amb: true, lines: [lino("Des vieux livres, des cartes postales… et pas de parapluie rouge.")], next: "RESUME" };
+  N.Bb = { type: "lines", amb: true, lines: [lino("De vieux livres, des cartes postales… et pas de parapluie rouge.")], next: "RESUME" };
   /* Version 2.2: Bemerkungen in der freien Station; Buch und Boîtes warten auf die Bouquiniste */
-  N.Bx = { type: "lines", amb: true, lines: [marie("Des vieux livres sur Paris, il y en a mille ici. On demande d'abord à la bouquiniste.")], next: "RESUME" };
+  N.Bx = { type: "lines", amb: true, lines: [marie("De vieux livres sur Paris, il y en a mille ici. On demande d'abord à la bouquiniste.")], next: "RESUME" };
   N.Bl = { type: "lines", amb: true, lines: [marie("« Paris insolite ». Ses histoires viennent de là.")], next: "RESUME" };
   N.Bq = { type: "lines", amb: true, lines: [L("bouquiniste", "Regardez bien autour de vous. Les livres, les boîtes…")], next: "RESUME" };
-  N.Bg = { type: "lines", amb: true, lines: [marie("Des vieilles gravures de Paris. Celles-là sont vraiment vieilles.")], next: "RESUME" };
+  N.Bg = { type: "lines", amb: true, lines: [marie("De vieilles gravures de Paris. Celles-là sont vraiment vieilles.")], next: "RESUME" };
 
   /* ===== 6 Finale im Kaufhaus ===== */
   N.F00 = { type: "cut", bg: "bg_retours", lines: [
@@ -741,7 +742,7 @@ window.GAME = (function () {
         { id: "parapluie", label: "Il a un parapluie rouge.", reply: lino("Il n'a pas de parapluie. Et un parapluie, ça ne prouve rien.") },
         { id: "manteau", label: "Il porte un manteau beige.", reply: lino("Il ne le porte pas. Il est dans le sac.") },
         { id: "sac", label: "Il a un sac des Galeries Lafayette.", reply: lino("On est aux Galeries Lafayette. Tout le monde a un sac.") },
-        { id: "badge", label: "Il a un badge de guide.", reply: lino("Je ne vois pas de badge. Aujourd'hui, il n'est plus guide.") }
+        { id: "badge", label: "Il a un badge de guide.", reply: lino("Je ne vois pas de badge. Maintenant, il n'est plus guide.") }
       ],
       matImgs: ["doc_selfie"],
       wrong: lino("Pas encore."), success: marie("Sans parapluie et sans manteau. Mais avec sa moustache et sa montre.") },
@@ -771,7 +772,7 @@ window.GAME = (function () {
     ],
     effects: { flag: "F03_done" }, next: [{ if: "R5_done", node: "F04" }, { node: "R5" }] };   // R5_done vorher nur bei alten Spielständen
   N.F04 = { type: "task", title: "L'explication", help: "F04", diag: "D_F04",
-    task: { kind: "chain", intro: "Explique à la vendeuse et au monsieur de la sécurité. Mets les phrases dans l'ordre et complète avec pas, jamais ou rien.",
+    task: { kind: "chain", intro: "Explique à la vendeuse et au monsieur de la sécurité. Mets les phrases dans l'ordre et complète avec pas, jamais ou rien : chaque mot une fois.",
       words: ["pas", "jamais", "rien"],
       items: [
         { parts: [{ tw: "Ce matin, à dix heures," }, " il a acheté ce manteau pour avoir l'air officiel."] },
@@ -834,7 +835,7 @@ window.GAME = (function () {
     lino("Même maintenant, il est poli."),
     L("lucien", "Mes compliments, mademoiselle. Votre français est excellent."),
     marie("Merci. C'est ma langue."),
-    L("marie", "Je vous en prie, monsieur.", { onlyIf: "formules_5" }),
+    L("marie", "Excusez-moi de vous déranger, monsieur : la police vous attend.", { onlyIf: "formules_5" }),
     L("lino", "Ça, c'est sa phrase à lui !", { onlyIf: "formules_5" }),
     L("lucien", "Un jour guide, un autre jour voyageur. Moi, je suis acteur, mademoiselle.")
   ], next: "F08" };
@@ -910,7 +911,7 @@ window.GAME = (function () {
         answers: ["midi moins le quart", "à midi moins le quart", "11 h 45", "onze heures quarante-cinq", "onze heures quarante cinq"], times: ["1145"],
         keywords: [["midi", "moins", "quart"], ["onze", "quarante"]],
         traps: [
-          { answers: ["midi", "à midi", "12 h", "12h"], times: ["12", "1200"], who: "lino", fr: "Presque. Un quart d'heure avant." },
+          { answers: ["midi", "à midi", "12 h", "12h"], times: ["12", "1200"], who: "lino", fr: "Midi ? Presque, mais la police veut l'heure exacte." },
           { answers: ["midi et quart", "à midi et quart", "midi quinze"], times: ["1215"], keywords: [["midi", "et", "quart"]], who: "lino", fr: "Midi et quart, c'est quand on a compris. Il est parti avant." },
           { answers: ["onze heures", "à onze heures", "11 h"], times: ["11", "1100"], who: "lino", fr: "Onze heures, c'est le début de la visite." }
         ],
@@ -918,11 +919,11 @@ window.GAME = (function () {
       wrongText: "Tu es sûre ? La police veut l'heure exacte.",
       success: L("nowak", "Midi moins le quart. Merci, Marie.", { sms: true }) },
     effects: { flag: "R1_done" }, after: [lino("Bon. On y va ? La carte est ouverte.")], next: "MAP" };
-  N.R2 = { type: "task", gate: true, title: "Le jour même", diag: "D_R2",
+  N.R2 = { type: "task", gate: true, title: "Au magasin", diag: "D_R2",
     task: { kind: "recall", who: "nowak", sms: true, intro: "Et au magasin ? Quand est-ce qu'on peut rendre un manteau ?",
       fields: [{ id: "quand", label: "Quand :", size: 18,
-        answers: ["le jour même", "le même jour", "aujourd'hui", "le jour même de l'achat", "jour même", "même jour"],
-        keywords: [["jour", "meme"], ["meme", "jour"], ["aujourd"]],
+        answers: ["le jour même", "le même jour", "aujourd'hui", "le jour même de l'achat", "jour même", "même jour", "le jour de l'achat"],
+        keywords: [["jour", "meme"], ["meme", "jour"], ["aujourd"], ["jour", "achat"]],
         traps: [
           { answers: ["demain"], keywords: [["demain"]], who: "lino", fr: "Demain, c'est trop tard." },
           { answers: ["jusqu'à 20 h 30", "vingt heures trente"], times: ["2030"], keywords: [["vingt", "heures"]], who: "lino", fr: "Ça, c'est l'heure. Mais quel jour ?" },
@@ -944,12 +945,12 @@ window.GAME = (function () {
     task: { kind: "recall", who: "nowak", sms: true, intro: "La policière demande : qu'est-ce que Lucien va faire maintenant ?",
       fields: [{ id: "va", label: "Il va…", size: 22,
         answers: ["rendre le manteau", "rapporter le manteau", "il rend le manteau", "il rapporte le manteau", "il va rendre le manteau", "il va rapporter le manteau"],
-        keywords: [["rend", "manteau"], ["rapport", "manteau"]],
+        keywords: [["rend", "manteau"], ["rapport", "manteau"], ["ramen", "manteau"], ["le rendre"], ["le rapporter"], ["le ramener"]],
         traps: [
           { keywords: [["a rendu"], ["a rapporte"], ["avoir rendu"]], who: "lino", fr: "Pas encore. Au téléphone, c'est une question." },
           { keywords: [["jou"]], who: "lino", fr: "Ça, c'est son ami." }
         ],
-        where: "Écoute encore la question au téléphone." }],
+        where: "Au téléphone, le joueur a posé une question à Lucien. Pense à cette question." }],
       wrongText: "Tu es sûre ? La policière veut savoir ce qu'il va faire.",
       success: L("nowak", "Rendre le manteau… Merci, Marie. Je le dis à la policière.", { sms: true }) },
     effects: { flags: ["R3b_done", "station1_done"] }, after: [marie("Il rapporte le manteau. Et nous, on va là-bas.")], next: [{ if: "!N07_done", node: "N07" }, { node: "MAP" }] };
@@ -962,7 +963,7 @@ window.GAME = (function () {
         traps: [
           { keywords: [["notre", "dame"], ["parvis"]], who: "lino", fr: "Ça, c'est le lieu. Mais à quelle page ?" },
           { keywords: [["eiffel"]], who: "lino", fr: "Là, il y a son ami. Pas lui." },
-          { times: ["27"], keywords: [["vingt", "sept"], ["chanoinesse"]], who: "lino", fr: "Page 27, c'est la deuxième étape. À quinze heures, il recommence au début." },
+          { times: ["27"], keywords: [["vingt", "sept"], ["chanoinesse"]], who: "lino", fr: "Page 27, c'est la deuxième étape. Relis le papier : à quinze heures, où est-ce qu'il commence ?" },
           { times: ["41"], keywords: [["quarante"], ["fleurs"]], who: "lino", fr: "Page 41. C'est la fin de la visite." }
         ],
         where: "Regarde le papier de M. Beaumont." }],
@@ -999,7 +1000,7 @@ window.GAME = (function () {
     N04a: ["Regarde M. Beaumont de la tête aux pieds.", { fr: "Regarde surtout ses mains et ses bras.", action: "material" }, "Il y a quelque chose devant son visage, sur sa manche, dans sa main et à son bras.", "Le parapluie devant le visage, l'étiquette sur la manche, le livre à la main, le sac au bras."],
     N04b: ["Regarde son visage et ses mains.", { fr: "Zoome sur M. Beaumont, à côté de Kevin.", action: "material" }, "Il y a quelque chose sous son nez et à son poignet.", "Une moustache grise et une montre dorée."],
     N05: ["Lis tout, même les petits chiffres.", { fr: "Regarde la dernière ligne.", action: "material" }, "Combien de jours est-ce qu'il y a en février ?", "Le 31 février n'existe pas. Le badge est faux."],
-    N06: ["Lis tout, même les petits chiffres. Et une carte a deux côtés.", { fr: "Regarde le numéro. Et regarde le coin en haut à droite.", action: "material" }, "Touche le numéro. Tire sur le coin de l'autocollant. Après, retourne la carte.", "Tout le monde a le numéro 42. Sous l'autocollant, il y a une réduction. Derrière, il y a un rendez-vous : 13 heures, tour Eiffel."],
+    N06: ["Lis tout, même les petits chiffres. Et une carte a deux côtés.", { fr: "Regarde les petits détails : en bas de la carte et dans les coins.", action: "material" }, "Touche le numéro. Tire sur le coin de l'autocollant. Après, retourne la carte.", "Tout le monde a le numéro 42. Sous l'autocollant, il y a une réduction. Derrière, il y a un rendez-vous : 13 heures, tour Eiffel."],
     N07a: ["M. Nowak dit toujours : c'est le décor ou l'action ?", "Le décor, c'est comment il était. L'action, c'est ce qu'il a fait.", "Le décor répond à : comment c'était ? L'action répond à : qu'est-ce qui s'est passé ?", "Comment il était, ce qu'il avait, ce qu'il portait : c'est le décor, alors l'imparfait. Ce qu'il a fait une fois, à midi moins le quart : c'est l'action, alors le passé composé."],
     N07b: ["Comment est-ce qu'il parlait ? Vite, lentement, poliment ?", { fr: "Regarde le selfie : ses cheveux, sa moustache.", action: "material" }, "Tu peux écrire : Il parlait lentement.", "Deux phrases, au moins sept mots : comment il parlait (lentement, vite, poliment…) et comment il était (grand, poli, avec une moustache…)."],
     N07c: ["Qu'est-ce qu'on peut enlever, fermer ou rendre ?", { fr: "Regarde encore la photo et le selfie.", action: "material" }, "Un parapluie, on le ferme. Une moustache, on la garde.", "Pour chaque chose, demande-toi : est-ce qu'il peut l'enlever, la fermer ou la rendre en une minute ? Si oui, il peut la changer facilement."],
@@ -1009,12 +1010,12 @@ window.GAME = (function () {
     G03: ["Elle vend des manteaux. Montre-lui le manteau.", { fr: "Dans l'inventaire, il y a les détails de la photo.", action: "material" }, "Sur la manche du manteau, il y a quelque chose du magasin.", "Montre l'étiquette sur la manche."],
     G04: ["Elle répond seulement à ta question. Essaie avec quand, quoi ou comment.", { fr: "Regarde la liste. Quels mots commencent une question ?", action: "material" }, "Par exemple : Quelles questions est-ce qu'il a posées ?", "Elle dit seulement oui ou non. Alors, on demande : Quand ? Quelles questions ? Comment ? Jusqu'à quelle heure ?"],
     G04b: ["Commence par un mot interrogatif : quand, où, comment, pourquoi…", "Après le mot interrogatif, tu peux écrire est-ce que.", "Par exemple : Pourquoi est-ce qu'il…", "Un mot interrogatif au début, au moins quatre mots, et un point d'interrogation à la fin."],
-    E02: ["Ne regarde pas seulement les gobelets. Regarde les gens.", { fr: "Regarde les deux gagnants et le sac par terre.", action: "material" }, "Les gagnants se regardent. Et dans le sac, il y a des cartes.", "Le clin d'œil des gagnants, les cartes dans le sac, et après, le téléphone."],
+    E02: ["Ne regarde pas seulement les gobelets. Regarde les gens.", { fr: "Regarde les gens autour du joueur, et regarde par terre.", action: "material" }, "Les gagnants se regardent. Et dans le sac, il y a des cartes.", "Le clin d'œil des gagnants, les cartes dans le sac, et après, le téléphone."],
     E04: ["Qui a dit ça ? Ou est-ce que c'est une idée à nous ?", { fr: "Écoute encore le téléphone.", action: "replay" }, { fr: "Voici les mots du joueur. Tout le reste, c'est nous qui le pensons.", action: "transcript" }, "Dit : seulement les mots exacts du joueur, compare avec la transcription. Déduit : ce qu'on comprend grâce à ces mots. Utile : ce qu'on fait maintenant. Faux : ce que les mots ne disent pas. Attention : au téléphone, il pose une question."],
     B01: ["On ne cherche pas un livre. On cherche quelqu'un.", { fr: "Dans l'inventaire : la photo de groupe.", action: "material" }, "Tu peux dire : Vous avez vu ce monsieur ?", "Montre la photo et demande si elle a vu le monsieur."],
     B02: ["Elle dit : il avait déjà son manteau. Qu'est-ce que ça veut dire ?", { fr: "Écoute encore la bouquiniste.", action: "replay" }, { fr: "Déjà, ça veut dire : avant. Le manteau, c'était avant le livre.", action: "transcript" }, "Cherche les heures dans la transcription : dix heures et demie, puis la visite à onze heures. Et déjà veut dire : avant ce moment."],
     B03: ["Lis le livre, puis écoute encore M. Beaumont. C'est pareil ou pas ?", { fr: "Écoute encore la visite.", action: "replay" }, "Cherche les mots porte, rois et boulanger dans le livre.", "Mets chaque phrase à côté du livre. Les mêmes mots : mot pour mot. Un mot différent : changé. Rien dans le livre : pas dans le livre."],
-    B04: ["Regarde l'image. Qu'est-ce qui est écrit sous la porte ?", { fr: "Regarde la page 27.", action: "material" }, "Une différence parle de personnes. L'autre parle de la porte.", "Lis la page 27 et la visite, mot à mot. Deux choses ne sont pas les mêmes. Les autres sont dans le livre."],
+    B04: ["Lis la page 27, puis pense à la visite. Est-ce que c'est pareil ?", { fr: "Regarde la page 27.", action: "material" }, "Une différence parle de personnes. L'autre parle de la porte.", "Lis la page 27 et la visite, mot à mot. Deux choses ne sont pas les mêmes. Les autres sont dans le livre."],
     B05: ["Sur le papier, « p. », c'est une page du livre.", { fr: "Regarde le sommaire du livre.", action: "material" }, "1., 2., 3. : ce sont les lieux de sa visite, dans l'ordre. Le 1., c'est la page 12. Cherche la page 12 dans le sommaire.", "1. p. 12 : le parvis de Notre-Dame. 2. p. 27 : la rue Chanoinesse. 3. p. 41 : le quai aux Fleurs."],
     F01: ["Moi, je regarde ce qu'il ne peut pas changer.", { fr: "Regarde ta fiche de signalement et le selfie.", action: "material" }, "Le parapluie et le manteau, il peut les changer. La moustache grise et la montre, non.", "C'est l'homme avec la moustache grise et la montre dorée. Son manteau est dans le sac."],
     F01b: ["Qu'est-ce qu'on voit sur le selfie et sur lui maintenant ?", { fr: "Regarde encore le selfie.", action: "material" }, "Une chose est sous son nez. Une chose est à son poignet.", "Il n'a plus de parapluie, plus de manteau, plus de badge. Choisis ce qu'on voit sur le selfie et encore sur lui maintenant."],
@@ -1103,7 +1104,7 @@ window.GAME = (function () {
   /* ---------- Glossar (französisch-deutsch); alle Formen werden in den Spieltexten markiert.
      Gleiche Schreibung, andere Bedeutung: { after: [...] } = nur direkt nach diesen Wörtern (« une montre », aber « il montre ») ---------- */
   G.glossary = [
-    ["le parvis", "der Vorplatz"], ["l'ami (m), l'amie (f)", "der Freund, die Freundin (befreundet, kein Liebespaar)"], ["la colonie de vacances", "das Ferienlager"], ["franco-allemand, franco-allemande", "deutsch-französisch"], ["le guide", "der Fremdenführer; auch: der Reiseführer (Buch)"], ["officiel, officielle", "offiziell"], ["déranger", "stören"],
+    ["le parvis", "der Vorplatz"], ["l'enquête (f)", "die Ermittlung, die Untersuchung"], ["la gravure, les gravures", "der Stich, das alte Druckbild"], ["le rayon", "die Abteilung (im Kaufhaus)"], ["briller, brille", "glänzen"], ["l'ami (m), l'amie (f)", "der Freund, die Freundin (befreundet, kein Liebespaar)"], ["la colonie de vacances", "das Ferienlager"], ["franco-allemand, franco-allemande", "deutsch-französisch"], ["le guide", "der Fremdenführer; auch: der Reiseführer (Buch)"], ["officiel, officielle", "offiziell"], ["déranger", "stören"],
     ["exclusif, exclusive", "exklusiv"], ["la visite", "die Führung, die Besichtigung"], ["avec plaisir", "gern"], ["le parapluie", "der Regenschirm"],
     ["le Moyen Âge", "das Mittelalter"], ["le roi, les rois", "der König, die Könige"], ["le boulanger, la boulangerie", "der Bäcker, die Bäckerei"], ["léger, légère", "leicht"],
     ["plein, pleine", "voll"], ["l'acompte (m)", "die Anzahlung"], ["l'enveloppe (f)", "der Umschlag"], ["tout de suite", "sofort"], ["moins le quart, et quart", "Viertel vor, Viertel nach"],

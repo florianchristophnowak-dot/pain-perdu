@@ -175,7 +175,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   const o6 = { 'existait en 1900': 'Le document dit oui', 'déjà un musée': 'Le document dit non', 'La légende de la photo A': 'Le document dit non', 'photo A en 2025': 'Le document dit non', 'Toutes les photos': 'Le document ne dit rien' };
   for (const [l, c] of Object.entries(o6)) await selectRow('.crow', l, c);
   await btn('Valider');
-  { const f = await feedback(); expect(/Juste : 4 sur 5/.test(f) && f.includes('Pas encore la date'), 'O06 Zählung und Falle: ' + f.slice(0, 120)); }
+  { const f = await feedback(); expect(/Juste : 4 sur 5/.test(f) && f.includes('la date des photos'), 'O06 Zählung und Falle: ' + f.slice(0, 120)); }
   await selectRow('.crow', 'photo A en 2025', 'Le document ne dit rien'); await btn('Valider'); await cont();
   expect((await S()).flags.O06_done, 'O06 erledigt');
   expect((await txt()).includes('Kevin dit'), 'R1: M. Nowak fragt per SMS, was Kevin behauptet');
@@ -247,7 +247,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   const x03 = { 'On voit le pont': 'Les deux', 'La photo est brune': 'La vraie photo', 'vêtements de 1900': 'Les deux', 'beaucoup de monde': 'La vraie photo', 'Un boulanger': 'La photo B', 'sur un carton': 'La vraie photo' };
   for (const [l, c] of Object.entries(x03)) await selectRow('.crow', l, c);
   await btn('Valider');
-  expect(/Juste : 5 sur 6/.test(await feedback()) && (await feedback()).includes('les deux photos sont brunes'), 'X03 Zählung und Falle « brune »: ' + (await feedback()).slice(0, 120));
+  expect(/Juste : 5 sur 6/.test(await feedback()) && (await feedback()).includes('Regarde la couleur'), 'X03 Zählung und Falle « brune »: ' + (await feedback()).slice(0, 120));
   await selectRow('.crow', 'La photo est brune', 'Les deux'); await btn('Valider');
   expect((await read()).includes('pas seulement une photo brune'), 'X03: braun allein beweist nichts');
   expect((await S()).flags.X_done && (await S()).inv.includes('carte_1900') && await page.locator('.modal.map').isVisible(), 'X03 gelöst: Postkarte im Inventar, danach die Karte');
@@ -280,7 +280,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   await pick(['Lucien a fait l\'album', 'année dernière']); expect((await feedback()).includes("Marcel n'a pas dit ça"), 'I01 Falle');
   await pick(['acteur sur ces photos', 'année dernière']); await cont();
   const gs = page.locator('#modal-body .gaptext select');
-  await gs.nth(0).selectOption({ label: 'hier' }); await gs.nth(1).selectOption({ label: 'La baguette est tombée.' }); await gs.nth(2).selectOption({ label: 'avec trois morceaux de ruban adhésif' });
+  await gs.nth(0).selectOption({ label: "en mars, l'année dernière" }); await gs.nth(1).selectOption({ label: 'La baguette est tombée.' }); await gs.nth(2).selectOption({ label: 'avec trois morceaux de ruban adhésif' });
   await btn('Valider'); expect(/Juste : 2 sur 3/.test(await feedback()), 'I02 Zählung');
   await gs.nth(0).selectOption({ label: "en septembre, l'année dernière" }); await btn('Valider');
   { const seen = await read(); expect(seen.includes('la date de la réparation') && seen.includes('un peu de couleur') && !seen.includes('On peut la comparer'), 'I02 Nachspann nach dem Tisch: Lino zieht den Schluss, Marcel bietet kein Foto mehr an'); }
@@ -360,7 +360,7 @@ function expect(cond, msg) { if (!cond) { fails++; log('  ✗ ' + msg); } else l
   expect(!(await page.locator('.modal.map').isVisible()) && (await page.locator('#toasts').innerText()).includes("on finit l'enquête"), 'Im Finale ist die Karte gesperrt');
   await btn('Les photos sont brunes'); expect((await page.locator('#dialogue').innerText()).includes("ce qu'il savait"), 'F02 Falle « brunes »'); await cont();
   await btn('Chloé vous a expliqué le titre'); await cont();
-  await order(['En septembre 2025', 'Avant-hier', 'coupé les bords', 'collé les photos', 'Sur sa fiche']); await btn('Valider');
+  await order(['En septembre 2025', 'Avant-hier', 'coupé les bords', 'collé les photos']); await btn('Valider');
   expect((await read()).includes("Je n'achète pas"), 'nach F03: M. Nowak kauft nicht (F03b entfällt)');
   await pick(['Album ancien', 'Photos originales de 1900', 'Série en costumes']); expect(/Juste : 2 sur 3/.test(await feedback()), 'F04 Zählung');
   await pick(['Album ancien', 'Copies de photos', 'Série en costumes']);

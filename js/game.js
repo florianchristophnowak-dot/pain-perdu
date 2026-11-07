@@ -271,7 +271,7 @@
     const body = openModal("cut nocl");
     const pic = el("div", "cutpic"); setBg(pic, n.bg); body.appendChild(pic);
     const box = el("div", "cutbox"); body.appendChild(box);
-    showLines(n.lines, () => { applyEffects(n.effects, id); closeModal(); finish(); goNode(n.next); }, { box });
+    showLines(n.lines, () => { applyEffects(n.effects, id); closeModal(); finish(); goNode(resolve(n.next)); }, { box });
   }
   function runLines(id, n, finish) {
     if (n.once && flag(n.once)) { finish(); return; }
@@ -288,12 +288,12 @@
     if (n.doc) body.appendChild(el("div", "paper " + (n.icon || ""), gl(n.doc)));
     (n.docs || []).forEach(d => { const c = el("div", "doccard"); c.appendChild(el("div", "doclabel", esc(d.label))); if (d.text) c.appendChild(el("div", "doctext", gl(d.text))); body.appendChild(c); });
     const box = el("div", "dlg-inline"); body.appendChild(box);
-    const done = () => { closeModal(); finish(); if (n.next) goNode(n.next); };
+    const done = () => { closeModal(); finish(); goNode(resolve(n.next)); };
     showLines(n.lines, () => {
       if (n.choices) {
         box.innerHTML = ""; box.classList.add("active");
         renderChoices(box, n.choices, ch => {
-          if (ch.kind === "ok") { applyEffects(ch.effects, id + ":" + ch.fr); closeModal(); finish(); goNode(ch.next); }
+          if (ch.kind === "ok") { applyEffects(ch.effects, id + ":" + ch.fr); closeModal(); finish(); goNode(resolve(ch.next)); }
           else showLines(ch.reply, () => runDoc(id, n, finish), { box });
         });
       } else { const b = el("button", "btn primary", n.next ? G.ui.btn.continuer : G.ui.btn.fermer); b.addEventListener("click", done); const bar = el("div", "bar"); bar.appendChild(b); box.appendChild(bar); box.classList.add("active"); }
@@ -303,9 +303,11 @@
   function runChoice(id, n, finish) {
     const st = { wrongs: 0, first: null, help: 0, t0: Date.now() };
     const helpAfter = n.helpAfter || 1;
-    let hc = null;
+    let hc = null, first = true;
     function ask() {
-      showLines(n.lines, () => {
+      /* firstOnly: die Einleitung nur beim ersten Mal; nach einer Reparatur-Antwort grüßt die Figur nicht noch einmal (P02, B02) */
+      const lines = first || !n.firstOnly ? n.lines : null; first = false;
+      showLines(lines, () => {
         dlg.innerHTML = ""; dlg.classList.add("active");
         const row = el("div", "line"); row.appendChild(portrait(n.who)); row.appendChild(el("div", "body", '<div class="who">' + esc(G.chars[n.who].name) + "</div>")); dlg.appendChild(row);
         let extra = null;
@@ -313,7 +315,7 @@
           hc = helpCtl(n.help, { wrongs: () => st.wrongs, after: helpAfter, material: () => { $$(".choice", dlg).forEach(b => b.classList.add("hl")); } });
           extra = el("div", "help-row"); extra.appendChild(hc.btn); dlg.appendChild(hc.bubble); hc.update();
         }
-        const avail = n.choices.filter(ch => !ch.unless || !flag(ch.unless) || ch.replyIf);
+        const avail = n.choices.filter(ch => (!ch.onlyIf || cond(ch.onlyIf)) && (!ch.unless || !flag(ch.unless) || ch.replyIf));   // onlyIf: erst, wenn man es wissen kann (B02: das Spektakel nach dem Flyer)
         const choices = avail.some(ch => ch.kind !== "ok") ? shuffled(avail) : avail;   // gibt es eine falsche Antwort, jedes Mal neu gemischt
         renderChoices(dlg, choices, ch => {
           if (st.first === null) st.first = ch.fr;
@@ -326,10 +328,10 @@
               record({ id: n.diag, result: n.count ? "ok" : classify(st.wrongs, help), attempts: st.wrongs, help, first: st.first, duration: Math.round((Date.now() - st.t0) / 1000) });
               if (help > 0) toast("Marie : " + G.ui.marie.afterHelp);
             }
-            showLines(reply, () => { applyEffects(n.effects, id); if (ch.next === id) ask(); else { finish(); goNode(ch.next); } });
+            showLines(reply, () => { applyEffects(n.effects, id); if (ch.next === id) ask(); else { finish(); goNode(resolve(ch.next)); } });
           } else {
             st.wrongs++;
-            showLines(reply, () => { if (ch.next === id || !ch.next) ask(); else { finish(); goNode(ch.next); } });
+            showLines(reply, () => { if (ch.next === id || !ch.next) ask(); else { finish(); goNode(resolve(ch.next)); } });
           }
         }, extra);
         if (hc) dlg.appendChild(hc.bubble);
@@ -353,7 +355,7 @@
     body.appendChild(player.el); body.appendChild(tools); body.appendChild(trBox);
     body.appendChild(el("p", "hint", "Tu peux écouter plusieurs fois."));
     const bar = el("div", "bar"); const b = el("button", "btn primary", G.ui.btn.continuer);
-    b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(n.next); });
+    b.addEventListener("click", () => { closeModal(); applyEffects(n.effects, id); finish(); goNode(resolve(n.next)); });
     /* Nicht wegklicken: „Continuer“ erst, wenn die Aufnahme einmal ganz gelaufen ist */
     S.heard = S.heard || {};
     const wait = el("p", "hint wait", esc(G.ui.listen));
@@ -374,7 +376,7 @@
         if (n.task.kind === "write") { S.cards[id] = results.map(r => ({ player: r.player, text: r.text })); save(); }
         closeModal();
         afterRun = true;
-        showLines(n.after, () => { afterRun = false; finish(); goNode(n.next); });
+        showLines(n.after, () => { afterRun = false; finish(); goNode(resolve(n.next)); });
         return;
       }
       const pi = idxs[k++];
@@ -541,7 +543,7 @@
     const used = new Set();
     const chips = el("div", "chips");
     const ta = el("textarea"); ta.rows = 6; ta.placeholder = "…";
-    T.starters.forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\.\.\.$/, " ") ; ta.focus(); count(); }); chips.appendChild(c); });
+    T.starters.forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\s*\.\.\.$/, " "); ta.focus(); count(); }); chips.appendChild(c); });
     area.appendChild(chips); area.appendChild(ta);
     const cnt = el("div", "count"); area.appendChild(cnt);
     const W = G.ui.write;
@@ -635,7 +637,7 @@
       const card = el("div", "poster");
       card.appendChild(el("div", "pl", esc(p.id)));
       card.appendChild(el("div", "ptext", gl(p.text)));
-      const b = el("button", "btn small", "C'est celui-ci");
+      const b = el("button", "btn small", "C'est celle-ci");
       b.addEventListener("click", () => {
         if (api.locked()) return;
         if (p.ok) { card.classList.add("on"); wall.querySelectorAll("button").forEach(x => x.disabled = true); if (T.proof) proof(p); else api.complete({ text: p.id }, T.success); }
@@ -688,7 +690,7 @@
     if ((f.traps || []).some(t => (t.answers || []).some(a => normAns(a) === v))) return false;
     if (!/\d/.test(v) && (f.answers || []).some(a => { const na = normAns(a); return na.length >= 5 && !/\d/.test(na) && oneEdit(na, v); })) return true;
     if (f.number !== undefined) { const m = v.match(/\d+/); if (m && +m[0] === f.number) return true; }
-    if (f.keywords) return f.keywords.some(g => g.every(k => v.includes(normAns(k))));
+    if (f.keywords) return f.keywords.some(g => g.every(k => (" " + v + " ").includes(" " + normAns(k))));   // am Wortanfang, wie in Teil 2 und 3 („übermorgen“ enthält nicht „morgen“)
     return false;
   }
   TASKS.recall = function (T, area, api) {
@@ -771,7 +773,7 @@
               picked.add(i); b.classList.add("on"); b.disabled = true;
               if (picked.size < step.pick) { return; }
             }
-            showLines(step.after, () => { si++; if (si >= n.steps.length) { const help = hc.level(); record({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, text: st.picks.join(" | "), duration: Math.round((Date.now() - st.t0) / 1000) }); applyEffects(n.effects, id); finish(); goNode(n.next); } else stepUI(); });
+            showLines(step.after, () => { si++; if (si >= n.steps.length) { const help = hc.level(); record({ id: n.diag, result: classify(st.wrongs, help), attempts: st.wrongs, help, text: st.picks.join(" | "), duration: Math.round((Date.now() - st.t0) / 1000) }); applyEffects(n.effects, id); finish(); goNode(resolve(n.next)); } else stepUI(); });
           } else { st.wrongs++; showLines(ch.reply, () => stepUI()); }
         }, extra);
         dlg.appendChild(hc.bubble); hc.update();
@@ -880,9 +882,16 @@
     im.src = "assets/img/it_" + id + ".png";
     return pic;
   }
+  /* « Montrer à » + Name: à le → au, à les → aux (le gardien → « Montrer au gardien ») */
+  function showTo(name) {
+    const to = G.ui.inv.showTo;
+    if (/^le /.test(name)) return to.replace(/à$/, "au") + " " + name.slice(3) + " :";
+    if (/^les /.test(name)) return to.replace(/à$/, "aux") + " " + name.slice(4) + " :";
+    return to + " " + name + " :";
+  }
   function openInventory(pickCb) {
     const body = openModal("inv", !!pickCb);
-    body.appendChild(el("h2", "", esc(pickCb ? G.ui.inv.showTo + " " + pickCb.name + " :" : G.ui.inv.title)));
+    body.appendChild(el("h2", "", esc(pickCb ? showTo(pickCb.name) : G.ui.inv.title)));
     const grid = el("div", "igrid");
     if (!S.inv.length) grid.appendChild(el("p", "", esc(G.ui.inv.empty)));
     const detail = el("div", "idetail"); detail.hidden = true;
@@ -1051,7 +1060,7 @@
     sol.innerHTML = [
       "<i>Die Antworten stehen im Spiel jedes Mal in anderer Reihenfolge.</i>",
       "<b>M03</b> Vous avez vu cet homme ?", "<b>M04</b> ce matin = Père-Lachaise · cet après-midi = le Marais · ce soir = on ne sait pas",
-      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> Non, on cherche un homme. Vous avez vu ce mime ? (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune",
+      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> Non, on cherche un homme. Vous avez vu ce mime ? (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune", "<b>P05</b> Non. Marcel a pris notre sac à Montmartre. / On cherche Marcel. Il était ici ce matin ? (volé = falsch, sac Bernd = Reparatur)", "<b>P07</b> la balle rouge, sous le banc (pas la jaune, dans le panier)",
       "<b>B02</b> Je cherche un sac… oder Je cherche le spectacle… (Je voudrais du pain perdu = Reparatur)", "<b>B02b</b> Brun, grand, avec un visage de pain.", "<b>B04</b> affaires qui ne sont pas à lui · le mauvais sac · le programme a changé", "<b>L02</b> C, Belege: le nom + la version", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
       "<b>V03</b> Schritt 1: Excusez-moi, je crois qu'on a échangé… / Excusez-moi, vous avez notre sac. · Schritt 2: Pendant qu'on regardait la photo… / À Montmartre, vous avez pris notre sac.", "<b>C03</b> les vieux panneaux · en carton · son sac brun", "<b>V02b</b> à droite · derrière · éteinte · allumée"
     ].join("<br>");
@@ -1062,6 +1071,8 @@
       const T = G.nodes[id].task; const fs = (T.fields || []).concat((T.parts || []).filter(x => typeof x === "object"));
       return "<b>" + id + " · " + esc(G.nodes[id].title || "") + "</b> (" + esc(G.chars[T.who].name) + ")<br>" + fs.map(f => "– " + esc(f.label || "Lücke " + f.id) + " → <b>" + esc((f.answers || [])[0] || (f.keywords ? f.keywords.map(g => g.join(" + ")).join(" / ") : "")) + "</b>" + (f.where ? " · <i>" + esc(f.where) + "</i>" : "")).join("<br>");
     }).join("<br><br>")));
+    const mods = Object.keys(G.nodes).filter(id => G.nodes[id].type === "task" && G.nodes[id].task.model);
+    if (mods.length) { body.appendChild(el("h3", "", "Mustertexte (Schreibaufgaben)")); body.appendChild(el("div", "paper small", mods.map(id => "<b>" + id + " · " + esc(G.nodes[id].title || "") + "</b><br>" + esc(G.nodes[id].task.model)).join("<br><br>"))); }
     body.appendChild(el("h3", "", "Transkripte"));
     Object.keys(G.audio).forEach(k => body.appendChild(el("div", "paper small", "<b>" + k + ".mp3 · " + esc(G.chars[G.audio[k].who].name) + "</b><br>" + esc(G.audio[k].text))));
     body.appendChild(el("h3", "", "Ergebnisse auf diesem Gerät"));
@@ -1309,7 +1320,7 @@
     }
     $("#btn-resume").addEventListener("click", () => { if (part > 1) goPart(part, "resume"); else if (S) resumeGame(); });
     $("#btn-menu").addEventListener("click", goMenu);
-    $("#btn-start").addEventListener("click", () => { if (!$("#p1").value.trim()) { $("#p1").focus(); $("#p1").classList.add("bad"); return; } const old = part > 1 ? loadPart(part) : S; if (old && old.diag && old.diag.length && !confirm("Nouvelle partie ? L'ancienne partie sera remplacée.")) return; if (part > 1) goPart(part, "new"); else startNew(); });
+    $("#btn-start").addEventListener("click", () => { if (!$("#p1").value.trim()) { $("#p1").focus(); $("#p1").classList.add("bad"); return; } const old = part > 1 ? loadPart(part) : S; if (old && old.diag && old.diag.length && !confirm("Nouvelle partie ? L'ancienne partie est effacée.")) return; if (part > 1) goPart(part, "new"); else startNew(); });
     /* Solange eine Aufgabe, Zwischensequenz oder Fahrt offen ist, führt kein Knopf daran vorbei (auch nicht per Tastatur) */
     const busy = () => !modal.hidden && modal.classList.contains("nocl");
     $("#btn-carnet").addEventListener("click", () => { if (!busy()) openCarnet(); });

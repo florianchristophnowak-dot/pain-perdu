@@ -57,7 +57,7 @@ const PATCHES = [
   [R`fill="#555">le banc rouge</text>`, R`fill="#555">die rote Bank</text>`],
   [R`fill="#555">carrefour</text>`, R`fill="#555">Kreuzung</text>`],
   [R`text-anchor="end">entrée</text>`, R`text-anchor="end">Eingang</text>`],
-  [R`el("button", "btn small", "C'est celui-ci")`, R`el("button", "btn small", "Dieser hier")`],
+  [R`el("button", "btn small", "C'est celle-ci")`, R`el("button", "btn small", "Dieser hier")`],
   [R`area.appendChild(el("p", "q", "1. Choisis un tampon. 2. Clique sur la feuille."));`, R`area.appendChild(el("p", "q", "1. Wähle einen Stempel. 2. Klicke auf das Blatt."));`],
   [R`api.feedback({ who: "marie", fr: "Choisis d'abord un tampon." }, false)`, R`api.feedback({ who: "marie", fr: "Wähle zuerst einen Stempel." }, false)`],
   [R`fr: "Oui, ça, c'est l'ancien programme. Et pour l'affiche C ?" }`, R`fr: "Ja, das ist das alte Programm. Und Aushang C?" }`],
@@ -67,7 +67,7 @@ const PATCHES = [
   [R`confirm("Nouvelle partie ? La partie actuelle reste dans l'export.")`, R`confirm("Neues Spiel? Das jetzige Spiel bleibt im Export erhalten.")`],
   [R`const head = ["Datum", "Joueur",`, R`const head = ["Datum", "Spieler",`],
   [R`esc(G.ui.carnet.mission) + " :</b> "`, R`esc(G.ui.carnet.mission) + ":</b> "`],
-  [R`esc(pickCb ? G.ui.inv.showTo + " " + pickCb.name + " :" : G.ui.inv.title)`, R`esc(pickCb ? fmtTpl(G.ui.inv.showTo, { to: pickCb.to || pickCb.name }) : G.ui.inv.title)`],
+  [R`esc(pickCb ? showTo(pickCb.name) : G.ui.inv.title)`, R`esc(pickCb ? fmtTpl(G.ui.inv.showTo, { to: pickCb.to || pickCb.name }) : G.ui.inv.title)`],
   [R`openInventory({ name: h.label, fn: item =>`, R`openInventory({ name: h.label, to: h.to, fn: item =>`],
   [R`aria-label="Carte de Paris"`, R`aria-label="Stadtplan von Paris"`],
   [R`el("p", "hint", "✓ = tâches faites")`, R`el("p", "hint", "✓ = Aufgaben erledigt")`],
@@ -76,11 +76,11 @@ const PATCHES = [
 `, R``],
   [R`      "<i>Die Antworten stehen im Spiel jedes Mal in anderer Reihenfolge.</i>",
       "<b>M03</b> Vous avez vu cet homme ?", "<b>M04</b> ce matin = Père-Lachaise · cet après-midi = le Marais · ce soir = on ne sait pas",
-      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> Non, on cherche un homme. Vous avez vu ce mime ? (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune",
+      "<b>M04b</b> portait · regardions · a pris · est parti", "<b>P02</b> Non, on cherche un homme. Vous avez vu ce mime ? (ou Montrer la photo)", "<b>P04</b> tout droit → à gauche", "<b>P06</b> fermeture rouge + autocollant jaune", "<b>P05</b> Non. Marcel a pris notre sac à Montmartre. / On cherche Marcel. Il était ici ce matin ? (volé = falsch, sac Bernd = Reparatur)", "<b>P07</b> la balle rouge, sous le banc (pas la jaune, dans le panier)",
       "<b>B02</b> Je cherche un sac… oder Je cherche le spectacle… (Je voudrais du pain perdu = Reparatur)", "<b>B02b</b> Brun, grand, avec un visage de pain.", "<b>B04</b> affaires qui ne sont pas à lui · le mauvais sac · le programme a changé", "<b>L02</b> C, Belege: le nom + la version", "<b>L04</b> MODIFICATION auf C (Zusatz: ANCIEN PROGRAMME auf A)",
       "<b>V03</b> Schritt 1: Excusez-moi, je crois qu'on a échangé… / Excusez-moi, vous avez notre sac. · Schritt 2: Pendant qu'on regardait la photo… / À Montmartre, vous avez pris notre sac.", "<b>C03</b> les vieux panneaux · en carton · son sac brun", "<b>V02b</b> à droite · derrière · éteinte · allumée"`, R`      "<i>Die Antworten stehen im Spiel jedes Mal in anderer Reihenfolge.</i>",
       "<b>M03</b> Haben Sie diesen Mann gesehen?", "<b>M04</b> heute Morgen = Père-Lachaise · heute Nachmittag = Le Marais · heute Abend = weiß man nicht",
-      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> Nein, wir suchen einen Mann. Haben Sie diesen Pantomimen gesehen? (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber",
+      "<b>M04b</b> einen gestreiften Pullover · das Foto anschauten · die Tasche an der Treppe · zur Métro", "<b>P02</b> Nein, wir suchen einen Mann. Haben Sie diesen Pantomimen gesehen? (oder das Foto zeigen)", "<b>P04</b> geradeaus → links", "<b>P06</b> roter Reißverschluss + gelber Aufkleber", "<b>P05</b> Nein. Marcel hat in Montmartre unseren Rucksack genommen. / Wir suchen Marcel. War er heute Morgen hier? (gestohlen = falsch, Rucksack Bernd = Umweg)", "<b>P07</b> den roten Ball unter der Bank (nicht den gelben aus dem Korb)",
       "<b>B02</b> Ich suche einen Rucksack … oder Ich suche die Show … (Pain perdu bestellen = Umweg)", "<b>B02b</b> Braun, groß, mit einem Brotgesicht.", "<b>B04</b> Sachen, die ihm nicht gehören · die falsche Tasche · das Programm hat sich geändert", "<b>L02</b> C, Belege: Name + Fassung", "<b>L04</b> ÄNDERUNG auf C (Zusatz: ALTES PROGRAMM auf A)",
       "<b>V03</b> Schritt 1: Entschuldigung, ich glaube, wir haben … vertauscht / Entschuldigung, Sie haben unseren Rucksack. · Schritt 2: Während wir das Foto angeschaut haben … / In Montmartre haben Sie unseren Rucksack genommen.", "<b>C03</b> die alten Schilder · aus Pappe · seine braune Tasche", "<b>V02b</b> rechts · hinter · aus · an"`],
   [R`body.appendChild(el("h3", "", "Transkripte"));`, R`body.appendChild(el("h3", "", "Lesetexte (statt Hörtexte)"));`],
@@ -90,7 +90,7 @@ const PATCHES = [
   [R`snd.textContent = muted ? "🔇 Son" : "🔊 Son";`, R`snd.textContent = muted ? "🔇 Ton" : "🔊 Ton";`],
   [R`el("button", "btn skip", "Passer l'intro ▸")`, R`el("button", "btn skip", "Intro überspringen ▸")`],
   [R`big.setAttribute("aria-label", "Lancer l'intro")`, R`big.setAttribute("aria-label", "Intro starten")`],
-  [R`!confirm("Nouvelle partie ? L'ancienne partie sera remplacée.")`, R`!confirm("Neues Spiel? Das alte Spiel wird ersetzt.")`]
+  [R`!confirm("Nouvelle partie ? L'ancienne partie est effacée.")`, R`!confirm("Neues Spiel? Das alte Spiel wird ersetzt.")`]
 ];
 
 function engine(assets) {

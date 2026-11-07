@@ -241,7 +241,7 @@ select { font: inherit; padding: .35rem .5rem; border-radius: 6px; border: 1px s
 select.bad { border-color: var(--no); background: #fbe9e9; }
 select.good { border-color: var(--ok); background: #e9f6ee; }
 .gaptext { font-size: 1.15rem; line-height: 2.2; }
-.gaptext select { margin: 0 .2rem; }
+.gaptext select { margin: 0 .2rem; max-width: 100%; }   /* lange Optionen (Teil 3, I02) sprengen sonst auf dem Handy die Breite */
 .picklist { margin: .4rem 0; }
 .q { font-weight: 600; }
 textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; resize: vertical; }

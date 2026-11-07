@@ -890,7 +890,7 @@
     const chips = el("div", "chips");
     const ta = el("textarea"); ta.rows = T.rows || 6; ta.placeholder = "…"; ta.spellcheck = false;
     ta.setAttribute("autocorrect", "off"); ta.setAttribute("autocapitalize", "sentences");
-    (T.starters || []).forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\.\.\.$/, " "); ta.focus(); count(); }); chips.appendChild(c); });
+    (T.starters || []).forEach(s => { const c = el("button", "btn chip", esc(s)); c.addEventListener("click", () => { used.add(s); ta.value += (ta.value && !/\s$/.test(ta.value) ? " " : "") + s.replace(/\s*\.\.\.$/, " "); ta.focus(); count(); }); chips.appendChild(c); });
     if (T.starters) area.appendChild(chips);
     area.appendChild(ta);
     const cnt = el("div", "count"); area.appendChild(cnt);
