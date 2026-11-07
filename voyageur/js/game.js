@@ -368,6 +368,7 @@
   function runCut(id, n, finish) {
     const body = openModal("cut nocl");
     const pic = el("div", "cutpic"); setBg(pic, n.bg); body.appendChild(pic);
+    drawSigns(pic, bgSigns(n.bg));   // Zwischenbild mit dem Hintergrund einer Szene: dieselben Schilder wie dort
     if (n.sign) {   // lesbarer Text kommt vom Spiel, nicht aus dem Bild (Tafel der Klasse)
       const sg = el("div", "cutsign" + (n.signAt ? " at" : ""), esc(n.sign));
       if (n.signAt) { const a = n.signAt; sg.style.left = a.x + "%"; sg.style.top = a.y + "%"; sg.style.width = a.w + "%"; sg.style.height = a.h + "%"; }   // auf die Tafel im Bild, in % des Bildes
@@ -1779,16 +1780,29 @@
   }
 
   /* ---------- Szene ---------- */
+  /* Teil 3: lesbarer Text auf geraden, frontalen Schildern im Hintergrund kommt vom Spiel, nicht aus dem Bild (labels der Szene,
+     x und y = Mitte in % des Bildes). Dieselben Schilder stehen auch auf jedem Zwischenbild mit diesem Hintergrund (bgSigns), damit
+     ein Schild nie einmal beschriftet und einmal leer ist. Schrift auf gewölbten oder schrägen Flächen steht im Bild selbst
+     (tools/aufdrucke.py, Banner der Brocante). */
+  function drawSigns(node, labels) {
+    $$(".slabel", node).forEach(d => d.remove());
+    (labels || []).forEach(l => {
+      if (l.showIf && !cond(l.showIf)) return;
+      const d = el("div", "slabel" + (l.cls ? " " + l.cls : ""), esc(l.text));
+      d.style.left = l.x + "%"; d.style.top = l.y + "%";
+      node.appendChild(d);
+    });
+  }
+  function bgSigns(bg) { const sc = Object.values(G.scenes).find(s => s.bg === bg && s.labels); return sc ? sc.labels : null; }
   function drawHotspots() {
     const sc = S && S.scene && G.scenes[S.scene]; if (!sc) return;
-    $$(".hotspot, .slabel", stage).forEach(h => h.remove());
-    /* Teil 3: lesbarer Text auf dem Hintergrund (Schilder) kommt vom Spiel, nicht aus dem Bild */
-    (sc.labels || []).forEach(l => { if (l.showIf && !cond(l.showIf)) return; const d = el("div", "slabel" + (l.cls ? " " + l.cls : ""), esc(l.text)); d.style.left = l.x + "%"; d.style.top = l.y + "%"; stage.appendChild(d); });
+    $$(".hotspot", stage).forEach(h => h.remove());
+    drawSigns(stage, sc.labels);
     const lit = hlOn && hlOn.scene === S.scene;
     sc.hotspots.forEach(h => {
       if ((h.showIf && !cond(h.showIf)) || (h.hideIf && cond(h.hideIf))) return;
       const done = h.doneIf && cond(h.doneIf), open = h.doneIf && !done && (!h.openIf || cond(h.openIf));
-      const b = el("button", "hotspot" + (done ? " done" : "") + (lit && open ? " hl" : "") + (h.lab ? " lab-" + h.lab : ""), "<span>" + esc(h.label) + "</span>");   // lab "l"/"r": Beschriftung am Bildrand nach innen
+      const b = el("button", "hotspot" + (done ? " done" : "") + (lit && open ? " hl" : "") + (h.lab ? " lab-" + h.lab : ""), "<span>" + esc(h.label) + "</span>");   // lab "l"/"r": Beschriftung am Bildrand nach innen; "t": über dem Kasten (auf einem beschrifteten Banner)
       b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.style.width = h.w + "%"; b.style.height = h.h + "%";
       b.addEventListener("click", e => { e.stopPropagation(); if (!afterBusy()) verbMenu(h, b); });
       stage.appendChild(b);

@@ -318,7 +318,6 @@ window.GAME = (function () {
         { id: "classe", neutral: true, x: 0, y: 38, w: 76, h: 56, line: lino("La classe. Tout le monde sourit. Sauf M. Nowak.") }
       ],
       labels: [
-        { x: 93.5, y: 68.8, text: "Galeries\nLafayette", cls: "bag" },
         { x: 95.35, y: 61.6, text: "Galeries\nLafayette", cls: "tag", minZoom: 2.5 },
         { x: 91.6, y: 57.2, text: "8 €", cls: "pencil", minZoom: 2 }
       ],

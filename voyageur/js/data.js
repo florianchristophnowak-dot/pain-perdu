@@ -197,12 +197,13 @@ window.GAME = (function () {
       name: "Musée d'Orsay · la brocante du quai", bg: "bg_orsay", free: true,
       enter: [{ if: "O06_done", node: "Or" }, { if: ["O03_done", "O04_done"], node: "O05" }, { if: "O01_done", node: null }, { node: "O00" }],
       help: [{ if: "!O02_done", key: "S_orsay1" }, { if: "!O06_done", key: "S_orsay2" }],
-      labels: [{ x: 46, y: 26.5, text: "Brocante du quai", cls: "paint big" }],
+      /* « Brocante du quai » steht im Bild selbst (tools/aufdrucke.py): Das Banner hängt durch und rechts höher, das kann Schrift
+         des Spiels nicht nachbilden. Die Beschriftung des Hotspots steht deshalb über dem Banner (lab "t"). */
       hotspots: [
         { id: "album", label: "l'album", x: 40, y: 70, w: 30, h: 22, actions: { regarder: [{ if: "O02_done", node: "Oa" }, { node: "O02" }] }, showIf: "O01_done", doneIf: "O02_done" },
         { id: "delmas", label: "le vendeur", x: 41, y: 34, w: 28, h: 35.5, actions: { parler: [{ if: "O03_done", node: "Or" }, { if: "O02_done", node: "O03" }, { node: "Ox" }] }, showIf: "O01_done", doneIf: "O03_done", openIf: "O02_done" },
         { id: "fiche", label: "la fiche de vente", x: 21.5, y: 79, w: 9, h: 13.5, actions: { lire: [{ if: "O04_done", node: "Of" }, { if: "O02_done", node: "O04d" }, { node: "Oxf" }] }, showIf: "O01_done", doneIf: "O04_done", openIf: "O02_done" },
-        { id: "brocante", label: "la brocante", x: 24, y: 19.5, w: 44, h: 14.5, actions: { regarder: "Ob" }, showIf: "O01_done" },
+        { id: "brocante", label: "la brocante", x: 24, y: 19.5, w: 44, h: 14.5, actions: { regarder: "Ob" }, showIf: "O01_done", lab: "t" },
         { id: "horloge", label: "l'horloge", x: 21, y: 6, w: 8, h: 13, actions: { regarder: "Oh" }, showIf: "O01_done" },
         { id: "responsable", label: "le monsieur", x: 80.5, y: 33, w: 15, h: 44, actions: { regarder: "Orp" }, showIf: "O01_done" },
         { id: "appareil", label: "l'appareil photo", x: 90.5, y: 79, w: 7.5, h: 15, actions: { regarder: "Oc" }, showIf: "O01_done", lab: "r" }
@@ -259,7 +260,6 @@ window.GAME = (function () {
     },
     finale: {
       name: "Musée d'Orsay · le stand du vendeur", bg: "bg_orsay", enter: [{ if: "finished", node: "Fr" }, { if: "W2_done", node: "F05" }, { if: "F04_done", node: "W2" }, { node: "F00" }],
-      labels: [{ x: 46, y: 26.5, text: "Brocante du quai", cls: "paint big" }],
       hotspots: [
         { id: "delmas", label: "le vendeur", x: 41, y: 34, w: 28, h: 35.5, actions: { parler: "Fr" }, showIf: "finished" }
       ]
