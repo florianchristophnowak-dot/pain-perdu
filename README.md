@@ -27,7 +27,7 @@ Die Platzhalter werden ersetzt, sobald eine Datei mit dem passenden Namen liegt.
 
 | Typ | Dateien (in `assets/img/` bzw. `assets/audio/`) |
 | --- | --- |
-| Hintergründe | `bg_montmartre`, `bg_pere_lachaise`, `bg_boulangerie`, `bg_librairie`, `bg_louvre_cour`; Phase 2: `bg_catacombes`, `bg_lampes` |
+| Hintergründe | `bg_montmartre`, `bg_pere_lachaise`, `bg_boulangerie`, `bg_librairie`, `bg_louvre_cour`; Phase 2: `bg_catacombes_entree`, `bg_atelier` (die Kulissenwerkstatt), `bg_lampes` |
 | Zwischensequenzen | `cut_confusion`, `cut_final` |
 | Porträts (quadratisch, PNG) | `pt_lino`, `pt_marie`, `pt_kiosque`, `pt_gardien`, `pt_chloe`, `pt_nora`, `pt_lenoir`, `pt_marcel`, `pt_assistante` |
 | Aufnahmen (MP3) | `au_kiosque.mp3`, `au_gardien.mp3`, `au_marcel.mp3`; Phase 2: `au_assistante.mp3`, `au_chloe.mp3` |

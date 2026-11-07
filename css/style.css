@@ -353,6 +353,10 @@ textarea { width: 100%; font: inherit; font-size: 1.05rem; padding: .6rem; borde
 
 /* Zettel: auf Papier notieren */
 .docimg { display: block; max-width: 100%; max-height: 46vh; border-radius: 8px; border: 1px solid var(--line); margin: .3rem auto .5rem; }
+/* Hilfe-Stufe mit action "material": das Material leuchtet (Bild, Aushänge, Satzanfänge, Stempel), wie in Teil 2 und 3 */
+.material .docimg { box-shadow: 0 0 0 3px rgba(241,194,125,.75); }
+.material .poster { box-shadow: 0 0 0 3px rgba(241,194,125,.75), 2px 3px 0 #d9ccb2; }
+.material .btn.chip, .material .btn.stamp { background: #fff3a0; border-color: #f1c27d; }
 
 /* ---------- Smartphones und kleine Fenster ---------- */
 /* Grundsätzlich: Symbole der Kopfzeile nur auf kleinen Bildschirmen, keine Doppeltipp-Lupe, kein Markieren auf der Bühne */

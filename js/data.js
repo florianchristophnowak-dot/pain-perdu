@@ -231,7 +231,7 @@ window.GAME = (function () {
         { id: "tel", label: "le téléphone", x: 73.5, y: 54, w: 7, h: 6.5, actions: { regarder: "C02c" }, showIf: "C02_done" }
       ]
     },
-    repetition: { name: "La répétition de Chloé", bg: "bg_catacombes", enter: null, hotspots: [] },
+    repetition: { name: "L'atelier des décors", bg: "bg_atelier", enter: null, hotspots: [] },
     lampes: { name: "Cour du Louvre · les lampes", bg: "bg_lampes", enter: null, hotspots: [] }
   };
 
@@ -381,9 +381,9 @@ window.GAME = (function () {
       { who: "marie", fr: "Donc le sac brun est à lui. Et Bernd ? Il l'a pris... par erreur ?" },
       { who: "lino", fr: "Ou c'est un voleur très organisé.", de: "Oder ein sehr gut organisierter Dieb." }
     ],
-    next: [{ if: "C03_done", node: "END" }, { node: "P06c" }] };   // Chloés Probe schon am Telefon gehört (Catacombes zuerst): kein zweites Angebot
+    next: [{ if: "C03_done", node: "END" }, { node: "P06c" }] };   // Chloés Werkstatt schon am Telefon besucht (Catacombes zuerst): kein zweites Angebot
   N.P06c = { type: "choice", who: "chloe", noDiag: true,
-    lines: [{ who: "chloe", fr: "Demain, on répète aux Catacombes. Aujourd'hui, on prépare les décors. Vous voulez écouter ?" }],
+    lines: [{ who: "chloe", fr: "Demain, on répète aux Catacombes. Aujourd'hui, on prépare les décors dans notre atelier, à la cave. Vous voulez écouter ?" }],
     choices: [
       { fr: "Oui, avec plaisir !", kind: "ok", next: "C03s" },
       { fr: "Plus tard, merci. On cherche notre sac.", kind: "ok", reply: [{ who: "chloe", fr: "D'accord. Bonne chance !" }], next: "END" }
@@ -696,13 +696,13 @@ window.GAME = (function () {
         traps: [{ answers: ["01 42 72 18 90"], digits: true, who: "nora", fr: "« Boulangerie Nora, bonjour ! Du pain perdu ? ... Chloé ? Non, elle n'est pas là. »" }] }],
       wrongText: "« Le numéro que vous avez demandé n'est pas attribué. »",
       /* Kennt man Chloé noch nicht (Catacombes vor dem Père-Lachaise), grüßt sie anders */
-      success: [{ if: "P05_done", who: "chloe", fr: "Allô ? Ah, c'est vous ! Attendez, je vous passe la répétition." },
-        { who: "chloe", fr: "Allô ? Oui, c'est Chloé. Vous cherchez Marcel ? Attendez, je vous passe la répétition." }],
+      success: [{ if: "P05_done", who: "chloe", fr: "Allô ? Ah, c'est vous ! Attendez, écoutez : on prépare les décors à l'atelier." },
+        { who: "chloe", fr: "Allô ? Oui, c'est Chloé. Vous cherchez Marcel ? Attendez, écoutez : on prépare les décors à l'atelier." }],
       leaveLines: [{ who: "marie", fr: "On va l'appeler plus tard." }] },
     next: "C03s" };
   N.C03s = { type: "scene", scene: "repetition", next: "C03" };
   N.C03 = { type: "audio", audio: "au_chloe", next: "C03t" };
-  N.C03t = { type: "task", diag: "D_C03", audio: "au_chloe", title: "La répétition de Chloé",
+  N.C03t = { type: "task", diag: "D_C03", audio: "au_chloe", title: "L'atelier des décors",
     task: { kind: "gap", intro: "Qu'est-ce que Chloé dit ? Complète.",
       parts: ["On ne doit pas prendre ", { id: "q1", opts: ["les vieux panneaux", "les crânes", "le nouveau panneau"], answer: "les vieux panneaux" }, ". Les crânes sont ", { id: "q2", opts: ["en carton", "vrais", "en plastique"], answer: "en carton" }, ". Marcel doit apporter ", { id: "q3", opts: ["son sac brun", "les crânes", "un pain"], answer: "son sac brun" }, "."],
       wrong: { who: "marie", fr: "Écoute encore. Qu'est-ce qu'elle dit vraiment ?" } },
@@ -759,7 +759,7 @@ window.GAME = (function () {
     D_B01: "Flyer gelesen", D_B02: "Gesprächsweg bei Nora", D_B02b: "Rucksack beschreiben", D_B04: "Drei gesicherte Aussagen", D_B06: "Nachricht an Nowak",
     D_L02: "Aushang C gewählt", D_L02q: "Abfrage Lenoir: Nachname vor den Aushängen", D_L04: "Stempel", D_V01q: "Abfrage Assistentin: Name + Uhrzeit",
     D_V03: "Finale: Gespräch in zwei Schritten", D_V03q: "Abfrage Finale: Inhalt des Rucksacks", D_V05: "Rapport final",
-    D_P07: "Gaston und der Ball", D_X01: "Abfrage Vosges: neuer Ort", D_C02: "Abfrage Catacombes: Tag + Uhrzeit", D_C02n: "Chloés Nummer gewählt", D_C03: "Chloés Probe", D_V02b: "Brotschatten",
+    D_P07: "Gaston und der Ball", D_X01: "Abfrage Vosges: neuer Ort", D_C02: "Abfrage Catacombes: Tag + Uhrzeit", D_C02n: "Chloés Nummer gewählt", D_C03: "Chloés Kulissenwerkstatt", D_V02b: "Brotschatten",
     D_NOWAK: "Nowak nach dem Inhalt gefragt (Nachschlagen)"
   };
 
@@ -775,7 +775,7 @@ window.GAME = (function () {
     ["le carrefour", "die Kreuzung"], ["le banc", "die Bank (zum Sitzen)"], ["le chemin", "der Weg"], ["la sortie", "der Ausgang"], ["descendre, descend", "hinuntergehen; beim Weg: bergab führen"],
     ["tout droit", "geradeaus"], ["tourner à gauche, tournez à gauche", "links abbiegen"], ["le témoin", "der Zeuge, die Zeugin"], ["le rapport", "der Bericht"], ["l'indice (m)", "der Hinweis"],
     ["la preuve", "der Beweis"], ["le voleur, voler", "der Dieb, stehlen"], ["l'erreur (f), par erreur", "der Irrtum, aus Versehen"], ["le mauvais sac", "die falsche Tasche"],
-    ["pressé, pressée", "in Eile"], ["échanger, échange, échangé", "tauschen"], ["la compagnie", "die Theatergruppe"], ["la répétition, répéter", "die Probe, proben"], ["le décor", "die Kulisse"],
+    ["pressé, pressée", "in Eile"], ["échanger, échange, échangé", "tauschen"], ["la compagnie", "die Theatergruppe"], ["la répétition, répéter", "die Probe, proben"], ["le décor", "die Kulisse"], ["l'atelier (m)", "die Werkstatt"], ["la cave", "der Keller"],
     ["le crâne", "der Schädel"], ["les feuilles mortes", "das welke Laub"], ["l'échelle (f)", "die Leiter"], ["l'étagère (f)", "das Regal"], ["le panier", "der Korb"], ["la Joconde", "die Mona Lisa"], ["l'urgence (f)", "der Notfall; pour les urgences: für Notfälle"], ["en carton", "aus Pappe"], ["le panneau", "das Schild; auch: die Tafel (für Aushänge)"], ["le pain perdu", "Arme Ritter (Süßspeise)"], ["mouillé", "nass"], ["le gant", "der Handschuh"],
     ["rayé", "gestreift"], ["le béret", "die Baskenmütze"], ["le foulard", "das Halstuch"], ["tenir, tient, tenait", "halten"], ["apporter, apporté", "bringen, mitbringen"], ["laisser un message", "eine Nachricht hinterlassen"],
     ["les affaires (f)", "die Sachen"], ["dedans", "darin, drinnen"], ["là-bas", "dort, dorthin"], ["ressembler à, ressemble à", "aussehen wie"], ["la cour", "der Hof"], ["l'entrée (f)", "der Eingang"],

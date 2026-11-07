@@ -197,7 +197,7 @@ window.GAME = (function () {
         { id: "tel", label: "das Telefon", x: 73.5, y: 54, w: 7, h: 6.5, actions: { regarder: "C02c" }, showIf: "C02_done" }
       ]
     },
-    repetition: { name: "Chloés Probe", bg: "bg_catacombes", enter: null, hotspots: [] },
+    repetition: { name: "Die Kulissenwerkstatt", bg: "bg_atelier", enter: null, hotspots: [] },
     lampes: { name: "Innenhof des Louvre · die Lampen", bg: "bg_lampes", enter: null, hotspots: [] }
   };
 
@@ -347,9 +347,9 @@ window.GAME = (function () {
       { who: "marie", fr: "Also gehört die braune Tasche ihm. Und Bernd? Hat er ihn ... aus Versehen genommen?" },
       { who: "lino", fr: "Oder er ist ein sehr gut organisierter Dieb." }
     ],
-    next: [{ if: "C03_done", node: "END" }, { node: "P06c" }] };   // Chloés Probe schon am Telefon gehört (Catacombes zuerst): kein zweites Angebot
+    next: [{ if: "C03_done", node: "END" }, { node: "P06c" }] };   // Chloés Werkstatt schon am Telefon besucht (Catacombes zuerst): kein zweites Angebot
   N.P06c = { type: "choice", who: "chloe", noDiag: true,
-    lines: [{ who: "chloe", fr: "Morgen proben wir in den Katakomben. Heute bereiten wir die Kulissen vor. Wollt ihr zuhören?" }],
+    lines: [{ who: "chloe", fr: "Morgen proben wir in den Katakomben. Heute bereiten wir in unserer Werkstatt im Keller die Kulissen vor. Wollt ihr zuhören?" }],
     choices: [
       { fr: "Ja, gern!", kind: "ok", next: "C03s" },
       { fr: "Später, danke. Wir suchen unseren Rucksack.", kind: "ok", reply: [{ who: "chloe", fr: "Okay. Viel Glück!" }], next: "END" }
@@ -662,13 +662,13 @@ window.GAME = (function () {
         traps: [{ answers: ["01 42 72 18 90"], digits: true, who: "nora", fr: "„Bäckerei Nora, guten Tag! Pain perdu? ... Chloé? Nein, die ist nicht hier.“" }] }],
       wrongText: "„Kein Anschluss unter dieser Nummer.“",
       /* Kennt man Chloé noch nicht (Katakomben vor dem Père-Lachaise), grüßt sie anders */
-      success: [{ if: "P05_done", who: "chloe", fr: "Hallo? Ach, ihr seid's! Wartet, ich lese euch vor, was wir proben." },
-        { who: "chloe", fr: "Hallo? Ja, hier ist Chloé. Ihr sucht Marcel? Wartet, ich lese euch vor, was wir proben." }],
+      success: [{ if: "P05_done", who: "chloe", fr: "Hallo? Ach, ihr seid's! Wartet, ich lese euch vor, was wir in der Werkstatt vorbereiten." },
+        { who: "chloe", fr: "Hallo? Ja, hier ist Chloé. Ihr sucht Marcel? Wartet, ich lese euch vor, was wir in der Werkstatt vorbereiten." }],
       leaveLines: [{ who: "marie", fr: "Wir rufen sie später an." }] },
     next: "C03s" };
   N.C03s = { type: "scene", scene: "repetition", next: "C03" };
   N.C03 = { type: "audio", audio: "au_chloe", next: "C03t" };
-  N.C03t = { type: "task", diag: "D_C03", audio: "au_chloe", title: "Chloés Probe",
+  N.C03t = { type: "task", diag: "D_C03", audio: "au_chloe", title: "Die Kulissenwerkstatt",
     task: { kind: "gap", intro: "Was sagt Chloé? Ergänze.",
       parts: ["Man darf ", { id: "q1", opts: ["die alten Schilder", "die Schädel", "das neue Schild"], answer: "die alten Schilder" }, " nicht nehmen. Die Schädel sind ", { id: "q2", opts: ["aus Pappe", "echt", "aus Plastik"], answer: "aus Pappe" }, ". Marcel muss ", { id: "q3", opts: ["seine braune Tasche", "die Schädel", "ein Brot"], answer: "seine braune Tasche" }, " mitbringen."],
       wrong: { who: "marie", fr: "Lies noch mal genau. Was sagt sie wirklich?" } },
@@ -725,7 +725,7 @@ window.GAME = (function () {
     D_B01: "Flyer gelesen", D_B02: "Gesprächsweg bei Nora", D_B02b: "Rucksack beschreiben", D_B04: "Drei gesicherte Aussagen", D_B06: "Nachricht an Nowak",
     D_L02: "Aushang C gewählt", D_L02q: "Abfrage Lenoir: Nachname vor den Aushängen", D_L04: "Stempel", D_V01q: "Abfrage Assistentin: Name + Uhrzeit",
     D_V03: "Finale: Gespräch in zwei Schritten", D_V03q: "Abfrage Finale: Inhalt des Rucksacks", D_V05: "Abschlussbericht",
-    D_P07: "Gaston und der Ball", D_X01: "Abfrage Vosges: neuer Ort", D_C02: "Abfrage Katakomben: Tag + Uhrzeit", D_C02n: "Chloés Nummer gewählt", D_C03: "Chloés Probe", D_V02b: "Brotschatten",
+    D_P07: "Gaston und der Ball", D_X01: "Abfrage Vosges: neuer Ort", D_C02: "Abfrage Katakomben: Tag + Uhrzeit", D_C02n: "Chloés Nummer gewählt", D_C03: "Chloés Kulissenwerkstatt", D_V02b: "Brotschatten",
     D_NOWAK: "Nowak nach dem Inhalt gefragt (Nachschlagen)"
   };
 
